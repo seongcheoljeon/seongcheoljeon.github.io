@@ -1,4 +1,5 @@
 site_name: Seongcheol Jeon - blog
+site_url: https://seongcheoljeon.github.io
 theme:
   name: material
   features:
