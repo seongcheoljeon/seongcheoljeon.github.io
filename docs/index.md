@@ -1,22 +1,21 @@
 ---
-comments: true
-한글
+블로그를 새롭게 생성하여 셋업하는 중...
 ---
 
-# Welcome to MkDocs
+# Welcome to Seongcheol's Blog!
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+기존의 블로그가 궁금하다면..? [tistory](https://nomad-programmer.tistory.com).
 
 ## Commands
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+* `test1` - test
+* `test2` - test
+* `test3` - test
+* `test4` - test
 
 ## Project layout
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+    aaaa
+    bbbb
+        cccc
+        dddd
