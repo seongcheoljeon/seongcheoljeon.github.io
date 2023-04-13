@@ -1,18 +1,118 @@
 site_name: Seongcheol Jeon - blog
+site_author: Seongcheol Jeon
 site_url: https://seongcheoljeon.github.io
+
+repo_url: https://github.com/seongcheoljeon/IndividualHDA
+repo_name: seongcheoljeon/IndividualHDA
+
+copyright: Copyright &copy; 2023 <a href="https://github.com/seongcheoljeon" target="_blank" rel="noopener">Seongcheol Jeon</a>
+
+extra:
+  generator: false
+
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/seongcheoljeon
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/saelly55
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/seongcheol-jeon-368a17205
+
+  alternate:
+    - name: Korean
+      link: /
+      lang: ko
+    - name: English
+      link: /en/
+      lang: en
+
+  consent:
+    title: Cookie consent
+    description:
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+extra_javascript:
+  - js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - "css/extra.css"
+  - "https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css"
+
+plugins:
+  search:
+    lang: 'ko'
+
+nav:
+  - Home: index.md
+  - introduction.md
+  - material.md
+  - section1:
+      section1-1:
+        section1-1-1:
+          sample_page.md
+      section1-2:
+        section1-2-1:
+          sample_page.md  
+  - extensions.md
+  - 본문:
+    - 테스트: contents_test/test.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - footnotes
+  - def_list
+  - attr_list
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.smartsymbols
+  - pymdownx.keys
+  - pymdownx.highlight:
+      use_pygments: true
+      noclasses: true
+      pygments_style: monokai
+      linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      # options:
+      #   custom_icons:
+      #     - overrides/.icons
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+
 theme:
   name: material
+  font:
+    text: Noto Sans 
+    code: Inconsolata
+  favicon: "static/favicon/favicon.ico"
+  custom_dir: overrides
+  extra_css: [css/pymdownx.css]
   features:
+    - content.code.annotate
     - navigation.tabs
-    - navigation.sections
-    - toc.integrate
+    - navigation.tabs.sticky
+    # - navigation.sections
+    # - navigation.expand
     - navigation.top
-    - search.suggest
-    - search.highlight
-    - content.tabs.link
-    - content.code.annotation
+    - header.autohide
     - content.code.copy
-  language: en
   palette:
     - scheme: default
       toggle:
@@ -27,14 +127,6 @@ theme:
       primary: teal
       accent: lime
 
-extra:
-  social:
-    - icon: fontawesome/brands/github-alt
-      link: https://github.com/seongcheoljeon
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/saelly55
-    - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/in/seongcheol-jeon-368a17205
-
-copyright:
-  &copy 2023 <a href="https://github.com/seongcheoljeon" target="_blank" rel="noopener">Seongcheol Jeon</a>
+  icon:
+    repo: fontawesome/brands/github
+  
