@@ -1,6 +1,7 @@
 ---
 블로그를 새롭게 생성하여 셋업하는 중...
 ---
+:smile:
 
 # Welcome to Seongcheol's Blog!
 

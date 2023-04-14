@@ -51,6 +51,12 @@ nav:
   - Home: index.md
   - introduction.md
   - material.md
+
+  - Programming:
+      - C/C++:
+        - programming/c_cpp/multiple_recursive_calls.md
+        - asldkfjlskdjf.md
+
   - section1:
       section1-1:
         section1-1-1:
@@ -98,10 +104,12 @@ markdown_extensions:
 
 theme:
   name: material
+  favicon: assets/favicon/favicon-16x16.png
+  logo: assets/images/logo.png
+  locale: en
   font:
     text: Noto Sans 
     code: Inconsolata
-  favicon: "static/favicon/favicon.ico"
   custom_dir: overrides
   extra_css: [css/pymdownx.css]
   features:
@@ -115,17 +123,19 @@ theme:
     - content.code.copy
   palette:
     - scheme: default
+      primary: pink
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/brightness-7
         name: Switch to dark mode
-      primary: teal
       accent: purple
     - scheme: slate
+      #primary: teal
+      primary: red 
       toggle:
-        icon: material/toggle-switch
+        icon: material/brightness-4
         name: Switch to light mode
-      primary: teal
-      accent: lime
+      #accent: lime
+      accent: deep orange 
 
   icon:
     repo: fontawesome/brands/github
