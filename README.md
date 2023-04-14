@@ -1,1 +1,1 @@
-# seongcheoljeon.github.io
+# [Seongcheol Jeon's BLOG](https://seongcheoljeon.github.io)

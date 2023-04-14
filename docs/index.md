@@ -1,22 +1,42 @@
 ---
-블로그를 새롭게 생성하여 셋업하는 중...
+공사중...
 ---
 :smile:
 
-# Welcome to Seongcheol's Blog!
+# Welcome to Seongcheol Jeon's Blog!
 
-기존의 블로그가 궁금하다면..? [tistory](https://nomad-programmer.tistory.com).
+기존의 블로그가 궁금하다면..? [TISTORY](https://nomad-programmer.tistory.com).
 
-## Commands
+## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Skills
+* C/C++
+* C#
+* Python
+* SHELL
+* Shader
+    * HLSL
+    * GLSL
+    * RSL
+* SQL/NoSQL
+* Docker
 
-* `test1` - test
-* `test2` - test
-* `test3` - test
-* `test4` - test
+## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Framework
+* GUI
+    * QT
+    * MFC
+    * WinForms
+* WEB
+    * FastAPI
+    * Flask
+    * Django
 
-## Project layout
+## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Operating System
+* Linux
+* Windows
+* MacOS
 
-    aaaa
-    bbbb
-        cccc
-        dddd
+## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Projects
+* VFX
+    * 명량
+    * 부산행
+* Game
+  

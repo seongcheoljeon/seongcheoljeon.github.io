@@ -49,7 +49,6 @@ plugins:
 
 nav:
   - Home: index.md
-  - introduction.md
   - material.md
 
   - Programming:
