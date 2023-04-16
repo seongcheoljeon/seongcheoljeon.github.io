@@ -47,26 +47,6 @@ plugins:
   search:
     lang: 'ko'
 
-nav:
-  - Home: index.md
-  - material.md
-
-  - Programming:
-      - C/C++:
-        - programming/c_cpp/multiple_recursive_calls.md
-        - asldkfjlskdjf.md
-
-  - section1:
-      section1-1:
-        section1-1-1:
-          sample_page.md
-      section1-2:
-        section1-2-1:
-          sample_page.md  
-  - extensions.md
-  - 본문:
-    - 테스트: contents_test/test.md
-
 markdown_extensions:
   - toc:
       permalink: true
@@ -107,8 +87,8 @@ theme:
   logo: assets/images/logo.png
   locale: en
   font:
-    text: Noto Sans 
-    code: Inconsolata
+    text: Roboto
+    code: Roboto Mono
   custom_dir: overrides
   extra_css: [css/pymdownx.css]
   features:
@@ -139,3 +119,29 @@ theme:
   icon:
     repo: fontawesome/brands/github
   
+nav:
+  - Home: index.md
+  - material.md
+
+  - Programming:
+    - Algorithm:
+      - programming/algorithm/index.md
+    - C/C++:
+      - programming/c_cpp/index.md
+      - programming/c_cpp/multiple_recursive_calls.md
+    - C#:
+      - programming/csharp/index.md
+    - Python:
+      - programming/python/index.md
+      - programming/python/asyncio.md
+
+  - section1:
+      section1-1:
+        section1-1-1:
+          sample_page.md
+      section1-2:
+        section1-2-1:
+          sample_page.md  
+  - extensions.md
+  - 본문:
+    - 테스트: contents_test/test.md
