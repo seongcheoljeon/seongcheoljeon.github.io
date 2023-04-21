@@ -1,4 +1,4 @@
-# Five Lines of Code
+# 1. Five Lines of Code
 
 파이브 라인스 오브 코드 <sub>다섯 줄 제한 규칙으로 시작하는 체계적이고 효과적인 리팩터링 수련법</sub>
 
