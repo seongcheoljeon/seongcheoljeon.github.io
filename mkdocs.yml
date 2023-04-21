@@ -137,10 +137,12 @@ nav:
       - contents/programming/python/asyncio.md
 
   - Book Review:
-    - General Book:
+    - General Book: 
       - contents/book_review/general_book/index.md
-    - Development Book:
+      - contents/book_review/general_book/1_lay_and_read_algorithm.md
+    - Development Book: 
       - contents/book_review/development_book/index.md
+      - contents/book_review/development_book/1_five_lines_of_code.md
 
   - section1:
       section1-1:

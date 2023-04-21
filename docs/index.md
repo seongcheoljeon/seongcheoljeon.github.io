@@ -19,7 +19,8 @@
 * C/C++
 * C#
 * Python
-* SHELL
+* Javascript
+* Shell
 * Shader
     * HLSL
     * GLSL
@@ -29,6 +30,10 @@
 * Network
 
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Framework
+* Graphics
+    * OpenGL
+    * WebGL
+    * DirectX
 * GUI
     * QT
     * MFC
@@ -42,8 +47,6 @@
 * Linux
     * Rocky
     * Ubuntu
-* Windows
-* MacOS
 
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Projects
 * __VFX__
