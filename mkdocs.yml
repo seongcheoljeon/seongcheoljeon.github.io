@@ -128,7 +128,8 @@ nav:
       - programming/algorithm/index.md
     - C/C++:
       - programming/c_cpp/index.md
-      - programming/c_cpp/multiple_recursive_calls.md
+      - programming/c_cpp/1_multiple_recursive_calls.md
+      - programming/c_cpp/2_virtual_keyword.md
     - C#:
       - programming/csharp/index.md
     - Python:
