@@ -11,6 +11,10 @@
     * Unreal
     * Unity
 
+## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Skills 
+* Object Oriented Programming (OOP)
+* Test Driven Development (TDD)
+
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Programming
 * C/C++
 * C#
@@ -36,11 +40,13 @@
 
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Operating System
 * Linux
+    * Rocky
+    * Ubuntu
 * Windows
 * MacOS
 
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Projects
-* VFX
+* __VFX__
     * 더 테러 라이브 (The Terror, LIVE) 2013
     * 조선미녀삼총사 (The Huntresses) 2013
     * 몽키킹1: 손오공의 탄생 (The Monkey King) 2013
@@ -63,12 +69,12 @@
     * 스윙키즈 (Swing Kids) 2018
     * 뺑반 (Hit-and-Run Squad) 2018
     * 천화 (SKYFIRE) 2019
-* Drama
+* __Drama__
     * 도깨비 (Dokkaebi) 2016
     * 그하늘, 그바다 (The Starry Night, The Starry Sea) 2016
-* Game
+* __Game__
     * 오픈 월드 액션 어드벤처 (2021 ~ 현재)
-* TD (VFX)
+* __TD (VFX)__
     * Houdini Run/Render Shell Script (C/C++, Bash, Python)
     * Render Pipeline, Pixar Tractor (Python, Flask, MariaDB, Apache HTTP Server)
         * Wedge
@@ -76,12 +82,12 @@
             * Frame by Frame
             * Node by Node
         * Queue
-        * Tree Algorithm
+        * Binary Tree Algorithm
     * Shot Pipeline (Python, Flask, MariaDB, Apache HTTP Server)
     * Asset Library (Python, Qt, Flask, MariaDB, Apache HTTP Server)
     * Backup Automation Tool (Python, Qt, Flask, MariaDB, Apache HTTP Server)
     * Create HDA Assets (C/C++, Python, Houdini)
-* TA (Game)
+* __TA (Game)__
     * Shader (HLSL)
         * Water Shader
         * Waterfall Shader
