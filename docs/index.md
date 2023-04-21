@@ -67,16 +67,22 @@
     * 도깨비 (Dokkaebi) 2016
     * 그하늘, 그바다 (The Starry Night, The Starry Sea) 2016
 * Game
-    * 오픈 월드 액션 어드벤처 (2021 ~ 2023)
+    * 오픈 월드 액션 어드벤처 (2021 ~ 현재)
 * TD (VFX)
-    * Houdini Run/Render Shell Script
-    * Render Dependency (Pixar Tractor)
-    * Shot Pipeline
-    * Asset Library
-    * Backup Automation Tool
-    * Create HDA Assets
+    * Houdini Run/Render Shell Script (C/C++, Bash, Python)
+    * Render Pipeline, Pixar Tractor (Python, Flask, MariaDB, Apache HTTP Server)
+        * Wedge
+        * Dependency
+            * Frame by Frame
+            * Node by Node
+        * Queue
+        * Tree Algorithm
+    * Shot Pipeline (Python, Flask, MariaDB, Apache HTTP Server)
+    * Asset Library (Python, Qt, Flask, MariaDB, Apache HTTP Server)
+    * Backup Automation Tool (Python, Qt, Flask, MariaDB, Apache HTTP Server)
+    * Create HDA Assets (C/C++, Python, Houdini)
 * TA (Game)
-    * Shader
+    * Shader (HLSL)
         * Water Shader
         * Waterfall Shader
         * Lava Shader
@@ -84,6 +90,10 @@
         * Burn (Wood/Lather) Shader
         * Lightning Shader
         * Iron Melting Shader
+        * Growth Shader
+        * Particle Simulation Shader
+        * PostProcess Shader
+        * Raymarching Shader
         * ...
 
 
