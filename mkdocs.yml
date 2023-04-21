@@ -121,28 +121,34 @@ theme:
   
 nav:
   - Home: index.md
-  - material.md
+  - contents/material.md
 
   - Programming:
     - Algorithm:
-      - programming/algorithm/index.md
+      - contents/programming/algorithm/index.md
     - C/C++:
-      - programming/c_cpp/index.md
-      - programming/c_cpp/1_multiple_recursive_calls.md
-      - programming/c_cpp/2_virtual_keyword.md
+      - contents/programming/c_cpp/index.md
+      - contents/programming/c_cpp/1_multiple_recursive_calls.md
+      - contents/programming/c_cpp/2_virtual_keyword.md
     - C#:
-      - programming/csharp/index.md
+      - contents/programming/csharp/index.md
     - Python:
-      - programming/python/index.md
-      - programming/python/asyncio.md
+      - contents/programming/python/index.md
+      - contents/programming/python/asyncio.md
+
+  - Book Review:
+    - General Book:
+      - contents/book_review/general_book/index.md
+    - Development Book:
+      - contents/book_review/development_book/index.md
 
   - section1:
       section1-1:
         section1-1-1:
-          sample_page.md
+          contents/sample_page.md
       section1-2:
         section1-2-1:
-          sample_page.md  
-  - extensions.md
+          contents/sample_page.md  
+  - contents/extensions.md
   - 본문:
-    - 테스트: contents_test/test.md
+    - 테스트: contents/contents_test/test.md
