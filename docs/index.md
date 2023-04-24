@@ -75,17 +75,12 @@
 * __Drama__
     * 도깨비 (Dokkaebi) 2016
     * 그하늘, 그바다 (The Starry Night, The Starry Sea) 2016
+    * 크리미널 마인드 (Criminal Minds) 2017
 * __Game__
     * 오픈 월드 액션 어드벤처 (2021 ~ 현재)
 * __TD (VFX)__
     * Houdini Run/Render Shell Script (C/C++, Bash, Python)
     * Render Pipeline, Pixar Tractor (Python, Flask, MariaDB, Apache HTTP Server)
-        * Wedge
-        * Dependency
-            * Frame by Frame
-            * Node by Node
-        * Queue
-        * Binary Tree Algorithm
     * Shot Pipeline (Python, Flask, MariaDB, Apache HTTP Server)
     * Asset Library (Python, Qt, Flask, MariaDB, Apache HTTP Server)
     * Backup Automation Tool (Python, Qt, Flask, MariaDB, Apache HTTP Server)

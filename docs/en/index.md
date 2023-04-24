@@ -75,17 +75,12 @@ old blog: [TISTORY](https://nomad-programmer.tistory.com)
 * __Drama__
     * Dokkaebi <2016>
     * The Starry Night, The Starry Sea <2016>
+    * Criminal Minds <2017>
 * __Game__
     * Open World Action Adventure (2021 ~ Present)
 * __TD (VFX)__
     * Houdini Run/Render Shell Script (C/C++, Bash, Python)
     * Render Pipeline, Pixar Tractor (Python, Flask, MariaDB, Apache HTTP Server)
-        * Wedge
-        * Dependency
-            * Frame by Frame
-            * Node by Node
-        * Queue
-        * Binary Tree Algorithm
     * Shot Pipeline (Python, Flask, MariaDB, Apache HTTP Server)
     * Asset Library (Python, Qt, Flask, MariaDB, Apache HTTP Server)
     * Backup Automation Tool (Python, Qt, Flask, MariaDB, Apache HTTP Server)
