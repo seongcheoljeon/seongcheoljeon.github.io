@@ -79,11 +79,11 @@ old blog: [TISTORY](https://nomad-programmer.tistory.com)
 * __Game__
     * Open World Action Adventure (2021 ~ Present)
 * __TD (VFX)__
-    * Houdini Run/Render Shell Script (C/C++, Bash, Python)
-    * Render Pipeline, Pixar Tractor (Python, Flask, MariaDB, Apache HTTP Server)
-    * Shot Pipeline (Python, Flask, MariaDB, Apache HTTP Server)
-    * Asset Library (Python, Qt, Flask, MariaDB, Apache HTTP Server)
-    * Backup Automation Tool (Python, Qt, Flask, MariaDB, Apache HTTP Server)
+    * Houdini Run/Render Shell Script (C/C++, Bash, Python, RDBMS)
+    * Render Pipeline, Pixar Tractor (Python, Flask, RDBMS, Apache HTTP Server)
+    * Shot Pipeline (Python, Flask, RDBMS, Apache HTTP Server)
+    * Asset Library (Python, Qt, Flask, RDBMS, Apache HTTP Server)
+    * Backup Automation Tool (Python, Qt, Flask, RDBMS, Apache HTTP Server)
     * Create HDA Assets (C/C++, Python, Houdini)
 * __TA (Game)__
     * Shader (HLSL)

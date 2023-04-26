@@ -140,6 +140,7 @@ nav:
     - General Book: 
       - contents/book_review/general_book/index.md
       - contents/book_review/general_book/1_lay_and_read_algorithm.md
+      - contents/book_review/general_book/2_story_of_multi_core_cpu.md
     - Development Book: 
       - contents/book_review/development_book/index.md
       - contents/book_review/development_book/1_five_lines_of_code.md
