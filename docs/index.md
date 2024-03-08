@@ -32,16 +32,11 @@
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Framework
 * Graphics
     * OpenGL
-    * WebGL
-    * DirectX
 * GUI
     * QT
-    * MFC
-    * WinForms
 * WEB
     * FastAPI
     * Flask
-    * Django
 
 ## <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Operating System
 * Linux
