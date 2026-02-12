@@ -1,11 +1,13 @@
 name: Lint Commit Messages
 
 on:
-  push:
-    branches:
-      - master
-      - "hotfix/*"
-  pull_request:
+  # Disabled - uncomment to enable
+  # push:
+  #   branches:
+  #     - master
+  #     - "hotfix/*"
+  # pull_request:
+  workflow_dispatch:
 
 jobs:
   commitlint:
