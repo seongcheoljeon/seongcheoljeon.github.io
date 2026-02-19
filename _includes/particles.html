@@ -17,6 +17,8 @@
 
 <script>
   (function () {
+    if (navigator.maxTouchPoints > 0 || window.innerWidth <= 1024) return;
+
     const canvas = document.getElementById('particles-canvas');
     const ctx = canvas.getContext('2d');
 

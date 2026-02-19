@@ -1,7 +1,7 @@
 <!-- Custom Crosshair Cursor -->
 <style>
-  * {
-    cursor: none !important;
+  @media (min-width: 1025px) {
+    * { cursor: none !important; }
   }
 
   #crosshair {
@@ -86,6 +86,8 @@
 
 <script>
   (function () {
+    if (navigator.maxTouchPoints > 0 || window.innerWidth <= 1024) return;
+
     const crosshair = document.getElementById('crosshair');
     if (!crosshair) return;
 
