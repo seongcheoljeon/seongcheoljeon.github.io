@@ -9,6 +9,14 @@
   margin-bottom: 1.2em; /* Override BS Inline-code style */
 }
 
+/* Apply JetBrains Mono to all code elements */
+code,
+pre,
+kbd,
+.highlight {
+  font-family: 'JetBrains Mono', monospace;
+}
+
 .highlight {
   @extend %rounded;
   @extend %code-snippet-bg;
