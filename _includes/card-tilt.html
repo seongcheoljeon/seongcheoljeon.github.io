@@ -1,0 +1,51 @@
+<!-- Post Card 3D Hover Effect -->
+<style>
+  .post-preview {
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    will-change: transform;
+  }
+</style>
+
+<script>
+  (function () {
+    const MAX_TILT = 8;        /* 최대 기울기 각도 (deg) */
+    const SCALE   = 1.03;      /* 호버 시 확대 비율 */
+
+    function applyTilt(card, e) {
+      const rect   = card.getBoundingClientRect();
+      const cx     = rect.left + rect.width  / 2;
+      const cy     = rect.top  + rect.height / 2;
+      const dx     = (e.clientX - cx) / (rect.width  / 2);
+      const dy     = (e.clientY - cy) / (rect.height / 2);
+      const rotX   = -dy * MAX_TILT;
+      const rotY   =  dx * MAX_TILT;
+
+      card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${SCALE})`;
+    }
+
+    function resetTilt(card) {
+      card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+    }
+
+    function bindCard(card) {
+      card.addEventListener('mousemove', function (e) {
+        applyTilt(card, e);
+      });
+      card.addEventListener('mouseleave', function () {
+        resetTilt(card);
+      });
+    }
+
+    function init() {
+      document.querySelectorAll('.post-preview').forEach(bindCard);
+    }
+
+    /* 초기 바인딩 */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
