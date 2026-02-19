@@ -10,7 +10,7 @@
     /* GoatCounter 공개 API: 사이트 전체 총 방문수 */
     var url = 'https://' + id + '.goatcounter.com/api/v0/stats/total';
 
-    fetch(url, { headers: { 'Content-Type': 'application/json' } })
+    fetch(url, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer qj6qd9i73mqz10prw4795bgkb23wtriihyj2qcj13d2ufs8bg6' } })
       .then(function (res) {
         if (!res.ok) throw new Error('API error');
         return res.json();
