@@ -1,0 +1,347 @@
+---
+layout: default
+---
+
+{% include lang.html %}
+
+<article class="px-1">
+  <div id="terminal-about">
+    <div class="terminal-window">
+      <!-- 타이틀 바 -->
+      <div class="terminal-titlebar">
+        <span class="terminal-btn terminal-btn-close"></span>
+        <span class="terminal-btn terminal-btn-minimize"></span>
+        <span class="terminal-btn terminal-btn-maximize"></span>
+        <span class="terminal-title">seongcheol@github ~ zsh</span>
+      </div>
+      <!-- 출력 영역 -->
+      <div class="terminal-body" id="terminal-body"></div>
+    </div>
+  </div>
+</article>
+
+<style>
+  #terminal-about {
+    padding: 1rem 0 3rem;
+  }
+
+  .terminal-window {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 0.88rem;
+    max-width: 860px;
+    border: 1px solid rgba(138, 180, 248, 0.15);
+  }
+
+  .terminal-titlebar {
+    background: #2a2a2e;
+    padding: 0.65rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .terminal-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .terminal-btn-close {
+    background: #ff5f57;
+  }
+  .terminal-btn-minimize {
+    background: #febc2e;
+  }
+  .terminal-btn-maximize {
+    background: #28c840;
+  }
+
+  .terminal-title {
+    margin-left: auto;
+    margin-right: auto;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.78rem;
+  }
+
+  .terminal-body {
+    background: #111114;
+    padding: 1.4rem 1.6rem 1.8rem;
+    min-height: 420px;
+    color: #c8c8d0;
+    line-height: 1.75;
+  }
+
+  .t-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    min-height: 1.75em;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  .t-line.visible {
+    opacity: 1;
+  }
+
+  .t-prompt {
+    color: #28c840;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .t-cmd {
+    color: #8ab4f8;
+  }
+
+  .t-output {
+    color: #c8c8d0;
+    padding-left: 0;
+    width: 100%;
+  }
+
+  .t-output.indent {
+    padding-left: 1.4rem;
+  }
+
+  .t-key {
+    color: #febc2e;
+  }
+  .t-value {
+    color: #c8c8d0;
+  }
+  .t-tag {
+    color: #ff79c6;
+  }
+  .t-sep {
+    color: rgba(138, 180, 248, 0.3);
+  }
+
+  .t-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: #8ab4f8;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* 다크/라이트 공통 */
+  [data-mode="light"] .terminal-body {
+    background: #1a1a1f;
+  }
+  [data-mode="light"] .terminal-titlebar {
+    background: #2f2f35;
+  }
+</style>
+
+<script>
+  (function () {
+    const body = document.getElementById("terminal-body");
+    if (!body) return;
+
+    /* ── 터미널 출력 데이터 ── */
+    const LINES = [
+      { type: "prompt", cmd: "whoami" },
+      { type: "output", html: '<span class="t-value">Seongcheol Jeon</span>' },
+      { type: "blank" },
+
+      { type: "prompt", cmd: "cat profile.json" },
+      { type: "output", html: '<span class="t-sep">{</span>' },
+      {
+        type: "output",
+        html: '<span class="t-key indent">  "role"</span><span class="t-sep">: </span><span class="t-tag">"Graphics Programmer"</span><span class="t-sep">,</span>',
+        cls: "indent"
+      },
+      {
+        type: "output",
+        html: '<span class="t-key indent">  "engine"</span><span class="t-sep">: </span><span class="t-tag">"Unreal Engine"</span><span class="t-sep">,</span>',
+        cls: "indent"
+      },
+      {
+        type: "output",
+        html: '<span class="t-key indent">  "focus"</span><span class="t-sep">: </span><span class="t-tag">"Rendering Pipeline, RDG, Custom Shader"</span>',
+        cls: "indent"
+      },
+      { type: "output", html: '<span class="t-sep">}</span>' },
+      { type: "blank" },
+
+      { type: "prompt", cmd: "cat skills.txt" },
+      { type: "output", html: '<span class="t-value">Vulkan</span>' },
+      { type: "output", html: '<span class="t-value">OpenGL</span>' },
+      { type: "output", html: '<span class="t-value">DirectX</span>' },
+      {
+        type: "output",
+        html: '<span class="t-value">Unreal Engine (RDG, SceneViewExtension)</span>'
+      },
+      { type: "output", html: '<span class="t-value">GLSL / HLSL</span>' },
+      { type: "output", html: '<span class="t-value">Houdini / PCG</span>' },
+      { type: "blank" },
+
+      { type: "prompt", cmd: "cat interests.txt" },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">Real-Time Rendering</span>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">Ray Tracing</span>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">Path Tracing</span>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">BVH Algorithm</span>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">GPGPU</span>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">Procedural Generation</span>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-tag">▸</span> <span class="t-value">Physics Simulation</span>'
+      },
+      { type: "blank" },
+
+      { type: "prompt", cmd: "cat contact.txt" },
+      {
+        type: "output",
+        html: '<span class="t-key">GitHub</span>  <span class="t-sep">→</span>  <a href="https://github.com/seongcheoljeon" target="_blank" style="color:#8ab4f8;">github.com/seongcheoljeon</a>'
+      },
+      {
+        type: "output",
+        html: '<span class="t-key">Email</span>   <span class="t-sep">→</span>  <span class="t-value">seongcheoljeon@icloud.com</span>'
+      },
+      { type: "blank" },
+
+      { type: "prompt", cmd: "" } /* 마지막 프롬프트 + 커서 */
+    ];
+
+    /* ── 렌더링 ── */
+    const CHAR_DELAY = 30; /* 타이핑 속도 ms/char */
+    const LINE_DELAY = 120; /* 줄 사이 딜레이 ms */
+    const CMD_PAUSE = 350; /* 커맨드 입력 후 출력까지 딜레이 */
+
+    function makeLine(html, extraClass) {
+      const el = document.createElement("div");
+      el.className = "t-line" + (extraClass ? " " + extraClass : "");
+      el.innerHTML = html;
+      body.appendChild(el);
+      requestAnimationFrame(function () {
+        el.classList.add("visible");
+      });
+      return el;
+    }
+
+    function typeText(el, text, callback) {
+      let i = 0;
+      function tick() {
+        if (i < text.length) {
+          el.textContent += text[i++];
+          setTimeout(tick, CHAR_DELAY);
+        } else if (callback) {
+          setTimeout(callback, CMD_PAUSE);
+        }
+      }
+      tick();
+    }
+
+    /* 커서 엘리먼트 */
+    let cursorEl = null;
+
+    function removeCursor() {
+      if (cursorEl && cursorEl.parentNode) {
+        cursorEl.parentNode.removeChild(cursorEl);
+        cursorEl = null;
+      }
+    }
+
+    function addCursor(parent) {
+      removeCursor();
+      cursorEl = document.createElement("span");
+      cursorEl.className = "t-cursor";
+      parent.appendChild(cursorEl);
+    }
+
+    function processLine(index) {
+      if (index >= LINES.length) return;
+
+      const line = LINES[index];
+      const next = function () {
+        setTimeout(function () {
+          processLine(index + 1);
+        }, LINE_DELAY);
+      };
+
+      if (line.type === "blank") {
+        makeLine("&nbsp;");
+        next();
+        return;
+      }
+
+      if (line.type === "output") {
+        makeLine('<span class="t-output">' + line.html + "</span>", line.cls);
+        next();
+        return;
+      }
+
+      if (line.type === "prompt") {
+        /* 프롬프트 줄 생성 */
+        const row = document.createElement("div");
+        row.className = "t-line";
+        body.appendChild(row);
+        requestAnimationFrame(function () {
+          row.classList.add("visible");
+        });
+
+        const prompt = document.createElement("span");
+        prompt.className = "t-prompt";
+        prompt.textContent = "seongcheol@github ~ $";
+        row.appendChild(prompt);
+
+        const cmdSpan = document.createElement("span");
+        cmdSpan.className = "t-cmd";
+        row.appendChild(cmdSpan);
+
+        if (line.cmd === "") {
+          /* 마지막 빈 프롬프트: 커서만 표시 */
+          addCursor(row);
+          return;
+        }
+
+        addCursor(cmdSpan);
+        typeText(cmdSpan, " " + line.cmd, function () {
+          removeCursor();
+          body.scrollTop = body.scrollHeight;
+          next();
+        });
+        return;
+      }
+    }
+
+    processLine(0);
+  })();
+</script>
