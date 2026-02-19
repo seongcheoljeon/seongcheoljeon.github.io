@@ -1,0 +1,198 @@
+<!-- Particles Network Effect -->
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<style>
+  #particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 1s ease;
+  }
+</style>
+
+<script>
+  (function () {
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function isDarkMode() {
+      const mode = document.documentElement.getAttribute('data-mode');
+      if (mode === 'dark') return true;
+      if (mode === 'light') return false;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    function getColors() {
+      if (isDarkMode()) {
+        return {
+          particle: [138, 180, 248],
+          line: [138, 180, 248],
+          glowOuter: [100, 160, 255],
+        };
+      } else {
+        return {
+          particle: [30, 100, 220],
+          line: [30, 100, 220],
+          glowOuter: [10, 70, 200],
+        };
+      }
+    }
+
+    const CONFIG = {
+      particleCount: 80,
+      particleAlpha: 0.6,
+      lineAlpha: 0.15,
+      minRadius: 1,
+      maxRadius: 2.5,
+      minSpeed: 0.15,
+      maxSpeed: 0.4,
+      connectionDistance: 150,
+      mouseInfluenceRadius: 120,
+      mouseInfluenceStrength: 0.03,
+      glowRatio: 0.05,
+    };
+
+    let particles = [];
+    let mouse = { x: null, y: null };
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function randomBetween(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function createParticle() {
+      const isGlow = Math.random() < CONFIG.glowRatio;
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: randomBetween(-CONFIG.maxSpeed, CONFIG.maxSpeed) || CONFIG.minSpeed,
+        vy: randomBetween(-CONFIG.maxSpeed, CONFIG.maxSpeed) || CONFIG.minSpeed,
+        radius: isGlow ? randomBetween(0.8, 3.5) : randomBetween(CONFIG.minRadius, CONFIG.maxRadius),
+        isGlow,
+      };
+    }
+
+    function initParticles() {
+      particles = Array.from({ length: CONFIG.particleCount }, createParticle);
+    }
+
+    function updateParticle(p) {
+      if (mouse.x !== null) {
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONFIG.mouseInfluenceRadius) {
+          const force = (CONFIG.mouseInfluenceRadius - dist) / CONFIG.mouseInfluenceRadius;
+          p.vx += dx * force * CONFIG.mouseInfluenceStrength;
+          p.vy += dy * force * CONFIG.mouseInfluenceStrength;
+        }
+      }
+
+      const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (speed > CONFIG.maxSpeed) {
+        p.vx = (p.vx / speed) * CONFIG.maxSpeed;
+        p.vy = (p.vy / speed) * CONFIG.maxSpeed;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+      p.x = Math.max(0, Math.min(canvas.width, p.x));
+      p.y = Math.max(0, Math.min(canvas.height, p.y));
+    }
+
+    function drawParticle(p) {
+      const colors = getColors();
+      const [r, g, b] = colors.particle;
+
+      if (p.isGlow) {
+        const glowRadius = p.radius * 6;
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowRadius);
+        const [gr, gg, gb] = colors.glowOuter;
+        grad.addColorStop(0,   'rgba(' + r + ', ' + g + ', ' + b + ', 1.0)');
+        grad.addColorStop(0.2, 'rgba(' + r + ', ' + g + ', ' + b + ', 0.8)');
+        grad.addColorStop(0.5, 'rgba(' + gr + ', ' + gg + ', ' + gb + ', 0.3)');
+        grad.addColorStop(1.0, 'rgba(' + gr + ', ' + gg + ', ' + gb + ', 0.0)');
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(220, 235, 255, 1.0)';
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + CONFIG.particleAlpha + ')';
+        ctx.fill();
+      }
+    }
+
+    function drawConnections() {
+      const colors = getColors();
+      const [r, g, b] = colors.line;
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < CONFIG.connectionDistance) {
+            const alpha = CONFIG.lineAlpha * (1 - dist / CONFIG.connectionDistance);
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(function(p) {
+        updateParticle(p);
+        drawParticle(p);
+      });
+      drawConnections();
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', function() {
+      resize();
+      initParticles();
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', function() {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    resize();
+    initParticles();
+    animate();
+  })();
+</script>

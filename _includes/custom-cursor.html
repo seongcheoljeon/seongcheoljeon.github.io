@@ -1,0 +1,139 @@
+<!-- Custom Crosshair Cursor -->
+<style>
+  * {
+    cursor: none !important;
+  }
+
+  #crosshair {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease;
+  }
+
+  #crosshair .ch-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 1.5px solid rgba(138, 180, 248, 0.9);
+    border-radius: 50%;
+    transition: width 0.15s ease, height 0.15s ease, opacity 0.15s ease;
+  }
+
+  #crosshair .ch-line-h,
+  #crosshair .ch-line-v {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: rgba(138, 180, 248, 0.9);
+  }
+
+  /* 가로선 */
+  #crosshair .ch-line-h {
+    width: 16px;
+    height: 1px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* 세로선 */
+  #crosshair .ch-line-v {
+    width: 1px;
+    height: 16px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* 중심 점 */
+  #crosshair .ch-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    height: 3px;
+    background: rgba(138, 180, 248, 1.0);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* 클릭 시 링 확대 */
+  #crosshair.clicking .ch-ring {
+    width: 36px;
+    height: 36px;
+    opacity: 0.5;
+  }
+
+  /* 링크/버튼 호버 시 */
+  #crosshair.hovering .ch-ring {
+    width: 36px;
+    height: 36px;
+    border-color: rgba(180, 210, 255, 1.0);
+  }
+
+  #crosshair.hovering .ch-dot {
+    background: rgba(180, 210, 255, 1.0);
+  }
+</style>
+
+<div id="crosshair" aria-hidden="true">
+  <div class="ch-ring"></div>
+  <div class="ch-line-h"></div>
+  <div class="ch-line-v"></div>
+  <div class="ch-dot"></div>
+</div>
+
+<script>
+  (function () {
+    const crosshair = document.getElementById('crosshair');
+    if (!crosshair) return;
+
+    let mouseX = -100, mouseY = -100;
+    let rafId;
+
+    function moveCrosshair() {
+      crosshair.style.left = mouseX + 'px';
+      crosshair.style.top  = mouseY + 'px';
+    }
+
+    window.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(moveCrosshair);
+    });
+
+    window.addEventListener('mousedown', function () {
+      crosshair.classList.add('clicking');
+    });
+
+    window.addEventListener('mouseup', function () {
+      crosshair.classList.remove('clicking');
+    });
+
+    /* 링크/버튼 호버 감지 */
+    document.addEventListener('mouseover', function (e) {
+      const target = e.target.closest('a, button, [role="button"], input, textarea, select, label');
+      if (target) {
+        crosshair.classList.add('hovering');
+      }
+    });
+
+    document.addEventListener('mouseout', function (e) {
+      const target = e.target.closest('a, button, [role="button"], input, textarea, select, label');
+      if (target) {
+        crosshair.classList.remove('hovering');
+      }
+    });
+
+    /* 화면 벗어날 때 숨김 */
+    document.addEventListener('mouseleave', function () {
+      crosshair.style.opacity = '0';
+    });
+
+    document.addEventListener('mouseenter', function () {
+      crosshair.style.opacity = '1';
+    });
+  })();
+</script>

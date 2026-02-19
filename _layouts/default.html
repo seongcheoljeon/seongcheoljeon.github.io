@@ -70,6 +70,10 @@ layout: compress
 
     <div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div>
 
+    {% include particles.html %}
+    {% include typed-tagline.html %}
+    {% include custom-cursor.html %}
+
     {% if site.pwa.enabled %}
       {% include_cached notification.html lang=lang %}
     {% endif %}
