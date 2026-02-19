@@ -9,6 +9,7 @@ categories: [Blogging, Tutorial]
 tags: [getting started]
 pin: true
 media_subpath: '/assets/img/common'
+comments: true
 ---
 
 ## Creating a Site Repository
