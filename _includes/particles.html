@@ -49,8 +49,8 @@
       particleCount: 80,
       particleAlpha: 0.6,
       lineAlpha: 0.15,
-      minRadius: 1,
-      maxRadius: 2.5,
+      minRadius: .33,
+      maxRadius: 1.0,
       minSpeed: 0.15,
       maxSpeed: 0.4,
       connectionDistance: 150,
@@ -78,7 +78,7 @@
         y: Math.random() * canvas.height,
         vx: randomBetween(-CONFIG.maxSpeed, CONFIG.maxSpeed) || CONFIG.minSpeed,
         vy: randomBetween(-CONFIG.maxSpeed, CONFIG.maxSpeed) || CONFIG.minSpeed,
-        radius: isGlow ? randomBetween(0.8, 3.5) : randomBetween(CONFIG.minRadius, CONFIG.maxRadius),
+        radius: isGlow ? randomBetween(0.5, 1.0) : randomBetween(CONFIG.minRadius, CONFIG.maxRadius),
         isGlow,
       };
     }
