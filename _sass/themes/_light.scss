@@ -1,6 +1,6 @@
 @mixin styles {
   /* Framework color */
-  --main-bg: white;
+  --main-bg: #fafafa;
   --mask-bg: #c1c3c5;
   --main-border-color: #f3f3f3;
 
@@ -10,7 +10,7 @@
   --text-muted-highlight-color: inherit;
   --heading-color: #2a2a2a;
   --label-color: #585858;
-  --blockquote-border-color: #eeeeee;
+  --blockquote-border-color: #d0d0d0;
   --blockquote-text-color: #757575;
   --link-color: #0056b2;
   --link-underline-color: #dee2e6;
@@ -44,7 +44,7 @@
   --topbar-bg: rgb(255 255 255 / 70%);
   --topbar-text-color: rgb(78 78 78);
   --search-border-color: rgb(240 240 240);
-  --search-icon-color: #c2c6cc;
+  --search-icon-color: #9ea3aa;
   --input-focus-border-color: #b8b8b8;
 
   /* Home page */
@@ -59,8 +59,8 @@
   --btn-share-hover-color: #0d6efd;
   --card-bg: white;
   --card-hover-bg: #e2e2e2;
-  --card-shadow: rgb(104 104 104 / 5%) 0 2px 6px 0,
-    rgb(211 209 209 / 15%) 0 0 0 1px;
+  --card-shadow:
+    rgb(104 104 104 / 5%) 0 2px 6px 0, rgb(211 209 209 / 15%) 0 0 0 1px;
   --footnote-target-bg: lightcyan;
   --tb-odd-bg: #fbfcfd;
   --tb-border-color: #eaeaea;
@@ -99,11 +99,11 @@
   --highlight-bg-color: #f6f8fa;
   --highlighter-rouge-color: #3f596f;
   --highlight-lineno-color: #9e9e9e;
-  --inline-code-bg: rgb(25 25 28 / 5%);
+  --inline-code-bg: rgb(25 25 28 / 8%);
   --code-color: #3a3a3a;
-  --code-header-text-color: #a3a3a3;
+  --code-header-text-color: #888888;
   --code-header-muted-color: #e5e5e5;
-  --code-header-icon-color: #c9c8c8;
+  --code-header-icon-color: #aaaaaa;
   --clipboard-checked-color: #43c743;
 
   [class^='prompt-'] {
