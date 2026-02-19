@@ -1,0 +1,81 @@
+<!-- TOC Scroll Spy Enhancement -->
+<style>
+  /* 기존 .is-active-link 스타일 강화 */
+  #toc-wrapper ul .is-active-link {
+    color: var(--toc-highlight) !important;
+    font-weight: 600;
+    background: rgba(138, 180, 248, 0.08);
+    border-radius: 4px;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  #toc-wrapper ul .is-active-link::before {
+    display: inline-block;
+    width: 2px !important;
+    height: 1.25rem;
+    background: rgba(138, 180, 248, 0.9) !important;
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(138, 180, 248, 0.7);
+    /* 글로우 펄스 애니메이션 */
+    animation: toc-pulse 2s ease-in-out infinite;
+  }
+
+  #toc-wrapper ul .toc-link {
+    transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s ease;
+    border-radius: 4px;
+  }
+
+  #toc-wrapper ul .toc-link:hover {
+    padding-left: 1.5rem !important;
+    background: rgba(138, 180, 248, 0.05);
+  }
+
+  @keyframes toc-pulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(138, 180, 248, 0.5); }
+    50%       { box-shadow: 0 0 10px rgba(138, 180, 248, 0.9); }
+  }
+
+  /* 라이트 테마 */
+  [data-mode='light'] #toc-wrapper ul .is-active-link {
+    background: rgba(30, 100, 220, 0.07);
+  }
+
+  [data-mode='light'] #toc-wrapper ul .is-active-link::before {
+    background: rgba(30, 100, 220, 0.9) !important;
+    box-shadow: 0 0 6px rgba(30, 100, 220, 0.5);
+  }
+
+  [data-mode='light'] #toc-wrapper ul .toc-link:hover {
+    background: rgba(30, 100, 220, 0.04);
+  }
+</style>
+
+<script>
+  (function () {
+    /* 활성 TOC 항목으로 자동 스크롤 */
+    var tocWrapper = document.getElementById('toc-wrapper');
+    if (!tocWrapper) return;
+
+    var lastActive = null;
+
+    var observer = new MutationObserver(function () {
+      var active = tocWrapper.querySelector('.is-active-link');
+      if (!active || active === lastActive) return;
+      lastActive = active;
+
+      /* TOC 내에서 활성 항목이 보이도록 스크롤 */
+      var wrapperRect = tocWrapper.getBoundingClientRect();
+      var activeRect  = active.getBoundingClientRect();
+
+      if (activeRect.top < wrapperRect.top || activeRect.bottom > wrapperRect.bottom) {
+        active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
+
+    observer.observe(tocWrapper, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+  })();
+</script>

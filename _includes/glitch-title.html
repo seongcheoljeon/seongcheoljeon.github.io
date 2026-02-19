@@ -1,0 +1,98 @@
+<!-- Glitch Effect on Site Title -->
+<style>
+  .site-title {
+    position: relative;
+  }
+
+  .site-title.glitching {
+    animation: glitch-skew 0.3s steps(2) forwards;
+  }
+
+  .site-title.glitching::before,
+  .site-title.glitching::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-weight: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+  }
+
+  .site-title.glitching::before {
+    color: rgba(255, 80, 80, 0.85);
+    clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+    animation: glitch-red 0.3s steps(2) forwards;
+  }
+
+  .site-title.glitching::after {
+    color: rgba(80, 200, 255, 0.85);
+    clip-path: polygon(0 55%, 100% 55%, 100% 75%, 0 75%);
+    animation: glitch-blue 0.3s steps(2) forwards;
+  }
+
+  @keyframes glitch-skew {
+    0%   { transform: skewX(0deg); }
+    25%  { transform: skewX(-3deg); }
+    50%  { transform: skewX(2deg); }
+    75%  { transform: skewX(-1deg); }
+    100% { transform: skewX(0deg); }
+  }
+
+  @keyframes glitch-red {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-4px); }
+    50%  { transform: translateX(3px); }
+    75%  { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+  }
+
+  @keyframes glitch-blue {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(4px); }
+    50%  { transform: translateX(-3px); }
+    75%  { transform: translateX(2px); }
+    100% { transform: translateX(0); }
+  }
+</style>
+
+<script>
+  (function () {
+    function init() {
+      var title = document.querySelector('.site-title');
+      if (!title) return;
+
+      /* data-text 속성에 텍스트 저장 (::before, ::after content용) */
+      title.setAttribute('data-text', title.textContent.trim());
+
+      function triggerGlitch() {
+        if (title.classList.contains('glitching')) return;
+
+        title.classList.add('glitching');
+        setTimeout(function () {
+          title.classList.remove('glitching');
+        }, 350);
+
+        /* 다음 글리치까지 랜덤 딜레이 (3~9초) */
+        scheduleNext();
+      }
+
+      function scheduleNext() {
+        var delay = 3000 + Math.random() * 6000;
+        setTimeout(triggerGlitch, delay);
+      }
+
+      /* 최초 1.5초 후 시작 */
+      setTimeout(triggerGlitch, 1500);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

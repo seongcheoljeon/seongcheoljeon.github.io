@@ -37,6 +37,10 @@ layout: compress
             <div class="access">
               {% include_cached update-list.html lang=lang %}
               {% include_cached trending-tags.html lang=lang %}
+              {% include sidebar-visitor-panel.html lang=lang %}
+              {% include sidebar-blog-stats.html lang=lang %}
+              {% include sidebar-heatmap.html lang=lang %}
+              {% include sidebar-tag-cloud.html lang=lang %}
             </div>
 
             {% for _include in layout.panel_includes %}
@@ -75,6 +79,11 @@ layout: compress
     {% include custom-cursor.html %}
     {% include card-tilt.html %}
     {% include mouse-trail.html %}
+    {% include scroll-fade-in.html %}
+    {% include code-line-highlight.html %}
+    {% include glitch-title.html %}
+    {% include tag-hover.html %}
+    {% include sidebar-visitor.html %}
 
     {% if site.pwa.enabled %}
       {% include_cached notification.html lang=lang %}

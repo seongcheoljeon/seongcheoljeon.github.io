@@ -1,0 +1,62 @@
+<!-- Scroll Trigger Fade-in Effect -->
+<style>
+  .fade-in-target {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+
+  .fade-in-target.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  (function () {
+    /* 관찰 대상 선택자 */
+    var SELECTORS = [
+      /* 홈 포스트 카드 */
+      '.post-preview',
+      /* 포스트 본문 섹션 */
+      '.content > h2',
+      '.content > h3',
+      '.content > p',
+      '.content > pre',
+      '.content > blockquote',
+      '.content > ul',
+      '.content > ol',
+      '.content > table',
+      /* 관련 포스트 */
+      '#related-posts .card',
+      /* 태그/카테고리 */
+      '.tag-item',
+      '.category-item',
+    ].join(', ');
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target); /* 한 번만 실행 */
+        }
+      });
+    }, {
+      threshold: 0.08,
+      rootMargin: '0px 0px -40px 0px',
+    });
+
+    function init() {
+      document.querySelectorAll(SELECTORS).forEach(function (el) {
+        el.classList.add('fade-in-target');
+        observer.observe(el);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

@@ -1,0 +1,128 @@
+<!-- Sidebar Blog Stats: Total Posts & Avg Read Time -->
+{% assign total_posts = site.posts | size %}
+{% assign total_words = 0 %}
+{% for post in site.posts %}
+  {% assign words = post.content | number_of_words %}
+  {% assign total_words = total_words | plus: words %}
+{% endfor %}
+{% if total_posts > 0 %}
+  {% assign avg_words = total_words | divided_by: total_posts %}
+  {% assign avg_read = avg_words | divided_by: 200 %}
+  {% if avg_read < 1 %}{% assign avg_read = 1 %}{% endif %}
+{% else %}
+  {% assign avg_read = 0 %}
+{% endif %}
+
+<section id="sidebar-blog-stats" class="mt-3">
+  <h2 class="panel-heading">Blog Stats</h2>
+  <div class="sidebar-stats-wrapper mt-2 mb-1 me-3">
+
+    <!-- 총 포스트 수 -->
+    <div class="stat-item">
+      <i class="fas fa-pen-nib stat-icon"></i>
+      <span class="stat-value" id="stat-post-count" data-target="{{ total_posts }}">0</span>
+      <span class="stat-label">posts published</span>
+    </div>
+
+    <!-- 평균 읽기 시간 -->
+    <div class="stat-item mt-1">
+      <i class="fas fa-clock stat-icon"></i>
+      <span class="stat-value" id="stat-avg-read" data-target="{{ avg_read }}">0</span>
+      <span class="stat-label">min avg read</span>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .sidebar-stats-wrapper {
+    font-size: 0.85rem;
+    color: var(--text-muted-color);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .stat-icon {
+    font-size: 0.8rem;
+    color: rgba(138, 180, 248, 0.7);
+    width: 1rem;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    color: rgba(138, 180, 248, 0.9);
+    min-width: 1.5rem;
+    text-align: right;
+  }
+
+  .stat-label {
+    color: var(--text-muted-color);
+  }
+
+  [data-mode='light'] .stat-icon,
+  [data-mode='light'] .stat-value {
+    color: rgba(30, 100, 220, 0.85);
+  }
+</style>
+
+<script>
+  (function () {
+    function countUp(el) {
+      var target = parseInt(el.getAttribute('data-target'), 10);
+      if (isNaN(target) || target <= 0) { el.textContent = '0'; return; }
+
+      var duration = 700;
+      var steps    = 20;
+      var step     = 0;
+      var CHARS    = '0123456789';
+
+      var timer = setInterval(function () {
+        step++;
+        var progress      = step / steps;
+        var confirmed     = Math.floor(progress * target.toString().length);
+        var targetStr     = target.toString();
+        var display       = '';
+
+        for (var i = 0; i < targetStr.length; i++) {
+          if (i >= targetStr.length - confirmed) {
+            display += targetStr[i];
+          } else {
+            display += CHARS[Math.floor(Math.random() * CHARS.length)];
+          }
+        }
+
+        el.textContent = display;
+
+        if (step >= steps) {
+          clearInterval(timer);
+          el.textContent = target.toString();
+        }
+      }, duration / steps);
+    }
+
+    function init() {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(entry.target);
+          entry.target.querySelectorAll('.stat-value').forEach(countUp);
+        });
+      }, { threshold: 0.3 });
+
+      var section = document.getElementById('sidebar-blog-stats');
+      if (section) observer.observe(section);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

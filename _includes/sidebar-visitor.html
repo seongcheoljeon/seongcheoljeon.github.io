@@ -1,0 +1,60 @@
+<!-- Sidebar Visitor Counter via GoatCounter API -->
+<script>
+  (function () {
+    var el = document.getElementById('sidebar-visit-count');
+    if (!el) return;
+
+    var id = '{{ site.analytics.goatcounter.id }}';
+    if (!id) return;
+
+    /* GoatCounter 공개 API: 사이트 전체 총 방문수 */
+    var url = 'https://' + id + '.goatcounter.com/api/v0/stats/total';
+
+    fetch(url, { headers: { 'Content-Type': 'application/json' } })
+      .then(function (res) {
+        if (!res.ok) throw new Error('API error');
+        return res.json();
+      })
+      .then(function (data) {
+        /* total 필드: { total: N, total_unique: N } */
+        var count = (data.total_unique !== undefined) ? data.total_unique : data.total;
+        if (count === undefined) throw new Error('No data');
+
+        /* 매트릭스 카운트업 애니메이션 */
+        var CHARS    = '0123456789';
+        var target   = count.toString();
+        var steps    = 16;
+        var duration = 800;
+        var step     = 0;
+
+        el.style.fontFamily = "'JetBrains Mono', monospace";
+        el.style.color      = 'rgba(138, 180, 248, 0.9)';
+
+        var timer = setInterval(function () {
+          step++;
+          var progress      = step / steps;
+          var confirmedFrom = Math.floor(progress * target.length);
+          var display       = '';
+
+          for (var i = 0; i < target.length; i++) {
+            if (i >= target.length - confirmedFrom) {
+              display += target[i];
+            } else {
+              display += CHARS[Math.floor(Math.random() * CHARS.length)];
+            }
+          }
+
+          el.textContent = display;
+
+          if (step >= steps) {
+            clearInterval(timer);
+            el.textContent  = Number(count).toLocaleString();
+            el.style.color  = 'var(--text-muted-color)';
+          }
+        }, duration / steps);
+      })
+      .catch(function () {
+        el.textContent = '–';
+      });
+  })();
+</script>

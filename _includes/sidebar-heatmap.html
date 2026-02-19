@@ -1,0 +1,246 @@
+<!-- Sidebar Post Activity Heatmap -->
+{% assign post_dates = "" %}
+{% for post in site.posts %}
+  {% assign d = post.date | date: "%Y-%m-%d" %}
+  {% unless forloop.first %}
+    {% assign post_dates = post_dates | append: "," %}
+  {% endunless %}
+  {% assign post_dates = post_dates | append: d %}
+{% endfor %}
+
+<section id="sidebar-heatmap" class="mt-3">
+  <h2 class="panel-heading">Activity</h2>
+  <div class="heatmap-wrapper mt-2 mb-1">
+    <canvas id="heatmap-canvas"></canvas>
+    <div id="heatmap-tooltip" class="heatmap-tooltip"></div>
+  </div>
+</section>
+
+<style>
+  .heatmap-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  #heatmap-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .heatmap-tooltip {
+    position: fixed;
+    background: var(--card-bg, #1e1e1e);
+    border: 1px solid rgba(138, 180, 248, 0.3);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted-color);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+
+  .heatmap-tooltip.visible {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  (function () {
+    var RAW  = '{{ post_dates }}';
+    var canvas  = document.getElementById('heatmap-canvas');
+    var tooltip = document.getElementById('heatmap-tooltip');
+    if (!canvas) return;
+
+    var ctx = canvas.getContext('2d');
+
+    /* 포스트 날짜 → { 'YYYY-MM-DD': count } */
+    var countMap = {};
+    if (RAW.trim()) {
+      RAW.split(',').forEach(function (d) {
+        d = d.trim();
+        if (!d) return;
+        countMap[d] = (countMap[d] || 0) + 1;
+      });
+    }
+
+    /* 설정 */
+    var WEEKS      = 52;
+    var CELL       = 9;
+    var GAP        = 2;
+    var STEP       = CELL + GAP;
+    var LABEL_H    = 14;  /* 월 레이블 높이 */
+    var COLS       = WEEKS;
+    var ROWS       = 7;
+    var W          = COLS * STEP - GAP;
+    var H          = ROWS * STEP - GAP + LABEL_H;
+
+    /* 다크/라이트 색상 */
+    function isDark() {
+      var mode = document.documentElement.getAttribute('data-mode');
+      if (mode === 'dark')  return true;
+      if (mode === 'light') return false;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    function getColors() {
+      return isDark()
+        ? {
+            empty:  'rgba(255,255,255,0.04)',
+            level1: 'rgba(138,180,248,0.25)',
+            level2: 'rgba(138,180,248,0.5)',
+            level3: 'rgba(138,180,248,0.75)',
+            level4: 'rgba(138,180,248,1.0)',
+            label:  'rgba(255,255,255,0.3)',
+          }
+        : {
+            empty:  'rgba(0,0,0,0.06)',
+            level1: 'rgba(30,100,220,0.2)',
+            level2: 'rgba(30,100,220,0.45)',
+            level3: 'rgba(30,100,220,0.7)',
+            level4: 'rgba(30,100,220,0.95)',
+            label:  'rgba(0,0,0,0.4)',
+          };
+    }
+
+    function cellColor(count, colors) {
+      if (!count)    return colors.empty;
+      if (count < 2) return colors.level1;
+      if (count < 4) return colors.level2;
+      if (count < 6) return colors.level3;
+      return colors.level4;
+    }
+
+    /* 오늘부터 52주 전 일요일 계산 */
+    function getStartDate() {
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      var day   = today.getDay(); /* 0=일 */
+      var start = new Date(today);
+      start.setDate(today.getDate() - day - (WEEKS - 1) * 7);
+      return start;
+    }
+
+    /* YYYY-MM-DD */
+    function toKey(d) {
+      var y  = d.getFullYear();
+      var m  = ('0' + (d.getMonth() + 1)).slice(-2);
+      var dd = ('0' + d.getDate()).slice(-2);
+      return y + '-' + m + '-' + dd;
+    }
+
+    /* 셀 데이터 빌드 */
+    function buildCells(start) {
+      var cells = [];
+      var cur   = new Date(start);
+      for (var col = 0; col < COLS; col++) {
+        for (var row = 0; row < ROWS; row++) {
+          var key   = toKey(cur);
+          cells.push({ col: col, row: row, date: key, count: countMap[key] || 0 });
+          cur.setDate(cur.getDate() + 1);
+        }
+      }
+      return cells;
+    }
+
+    /* 월 레이블 위치 계산 */
+    function buildMonthLabels(start) {
+      var labels = [];
+      var cur    = new Date(start);
+      var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var lastM  = -1;
+      for (var col = 0; col < COLS; col++) {
+        var m = cur.getMonth();
+        if (m !== lastM) {
+          labels.push({ col: col, label: MONTHS[m] });
+          lastM = m;
+        }
+        cur.setDate(cur.getDate() + 7);
+      }
+      return labels;
+    }
+
+    var cells, monthLabels, startDate;
+
+    function draw() {
+      var dpr = window.devicePixelRatio || 1;
+      canvas.width  = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.scale(dpr, dpr);
+
+      var colors = getColors();
+      ctx.clearRect(0, 0, W, H);
+
+      /* 월 레이블 */
+      ctx.font      = '9px JetBrains Mono, monospace';
+      ctx.fillStyle = colors.label;
+      monthLabels.forEach(function (ml) {
+        ctx.fillText(ml.label, ml.col * STEP, 10);
+      });
+
+      /* 셀 */
+      cells.forEach(function (c) {
+        var x = c.col * STEP;
+        var y = c.row * STEP + LABEL_H;
+        ctx.beginPath();
+        ctx.roundRect
+          ? ctx.roundRect(x, y, CELL, CELL, 2)
+          : ctx.rect(x, y, CELL, CELL);
+        ctx.fillStyle = cellColor(c.count, colors);
+        ctx.fill();
+      });
+    }
+
+    function init() {
+      startDate   = getStartDate();
+      cells       = buildCells(startDate);
+      monthLabels = buildMonthLabels(startDate);
+      draw();
+    }
+
+    /* 툴팁 */
+    canvas.addEventListener('mousemove', function (e) {
+      var rect = canvas.getBoundingClientRect();
+      var mx   = e.clientX - rect.left;
+      var my   = e.clientY - rect.top - LABEL_H;
+      var col  = Math.floor(mx / STEP);
+      var row  = Math.floor(my / STEP);
+
+      if (col < 0 || col >= COLS || row < 0 || row >= ROWS) {
+        tooltip.classList.remove('visible');
+        return;
+      }
+
+      var idx  = col * ROWS + row;
+      var cell = cells[idx];
+      if (!cell) { tooltip.classList.remove('visible'); return; }
+
+      tooltip.textContent = cell.date + ' — ' + cell.count + ' post' + (cell.count !== 1 ? 's' : '');
+      tooltip.style.left  = (e.clientX + 12) + 'px';
+      tooltip.style.top   = (e.clientY - 28) + 'px';
+      tooltip.classList.add('visible');
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+      tooltip.classList.remove('visible');
+    });
+
+    /* 테마 전환 감지 */
+    var themeObserver = new MutationObserver(draw);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+
+    window.addEventListener('resize', draw);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

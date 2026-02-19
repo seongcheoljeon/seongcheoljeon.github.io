@@ -1,0 +1,90 @@
+<!-- Tag / Category Hover Effect -->
+<style>
+  /* 공통 베이스 */
+  .tag,
+  .post-tag,
+  .category-item {
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease !important;
+  }
+
+  /* 호버 */
+  .tag:hover,
+  .post-tag:hover {
+    border-color: rgba(138, 180, 248, 0.7) !important;
+    box-shadow: 0 0 8px rgba(138, 180, 248, 0.35) !important;
+    transform: translateY(-2px);
+    color: rgba(138, 180, 248, 1.0) !important;
+  }
+
+  /* Ripple 엘리먼트 */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(138, 180, 248, 0.25);
+    transform: scale(0);
+    animation: ripple-expand 0.55s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes ripple-expand {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* 라이트 테마 */
+  [data-mode='light'] .tag:hover,
+  [data-mode='light'] .post-tag:hover {
+    border-color: rgba(30, 100, 220, 0.6) !important;
+    box-shadow: 0 0 8px rgba(30, 100, 220, 0.25) !important;
+    color: rgba(30, 100, 220, 1.0) !important;
+  }
+
+  [data-mode='light'] .ripple {
+    background: rgba(30, 100, 220, 0.18);
+  }
+</style>
+
+<script>
+  (function () {
+    function addRipple(e) {
+      var el   = e.currentTarget;
+      var rect = el.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      var x    = e.clientX - rect.left - size / 2;
+      var y    = e.clientY - rect.top  - size / 2;
+
+      var ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.cssText = [
+        'width:'  + size + 'px',
+        'height:' + size + 'px',
+        'left:'   + x    + 'px',
+        'top:'    + y    + 'px',
+      ].join(';');
+
+      el.appendChild(ripple);
+
+      ripple.addEventListener('animationend', function () {
+        ripple.parentNode && ripple.parentNode.removeChild(ripple);
+      });
+    }
+
+    function bindAll() {
+      document.querySelectorAll('.tag, .post-tag').forEach(function (el) {
+        if (el.dataset.rippleBound) return;
+        el.dataset.rippleBound = '1';
+        el.addEventListener('click', addRipple);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindAll);
+    } else {
+      bindAll();
+    }
+  })();
+</script>

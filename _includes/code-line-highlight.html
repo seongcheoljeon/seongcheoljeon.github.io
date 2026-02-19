@@ -1,0 +1,66 @@
+<!-- Code Block Line Highlight -->
+<style>
+  .highlight .rouge-code pre,
+  .highlight pre {
+    position: relative;
+  }
+
+  .highlight .rouge-code .line,
+  .highlight .code-line {
+    display: block;
+    padding: 0 1rem;
+    margin: 0 -1rem;
+    border-left: 2px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .highlight .rouge-code .line:hover,
+  .highlight .code-line:hover {
+    background: rgba(138, 180, 248, 0.08);
+    border-left-color: rgba(138, 180, 248, 0.6);
+  }
+</style>
+
+<script>
+  (function () {
+    function wrapLines(block) {
+      /* 이미 처리된 블록 스킵 */
+      if (block.dataset.lineWrapped) return;
+      block.dataset.lineWrapped = '1';
+
+      var html = block.innerHTML;
+
+      /* 줄 단위로 분리 후 span.code-line 으로 감싸기 */
+      var lines = html.split('\n');
+
+      /* 마지막 빈 줄 제거 */
+      if (lines[lines.length - 1].trim() === '') {
+        lines.pop();
+      }
+
+      block.innerHTML = lines.map(function (line) {
+        return '<span class="code-line">' + line + '</span>';
+      }).join('\n');
+    }
+
+    function init() {
+      /* Rouge 렌더링 구조: .highlight > .rouge-code > pre > code */
+      document.querySelectorAll('.highlight .rouge-code pre code').forEach(function (code) {
+        wrapLines(code);
+      });
+
+      /* fallback: 일반 pre > code */
+      document.querySelectorAll('pre code').forEach(function (code) {
+        if (!code.closest('.highlight')) {
+          wrapLines(code);
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

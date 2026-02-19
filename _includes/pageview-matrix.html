@@ -1,0 +1,106 @@
+<!-- Matrix Style Pageview Counter -->
+<style>
+  #pageviews {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+    min-width: 2.5em;
+    text-align: right;
+  }
+
+  #pageviews.matrix-counting {
+    color: rgba(138, 180, 248, 0.9);
+    text-shadow: 0 0 6px rgba(138, 180, 248, 0.6);
+  }
+
+  #pageviews.matrix-done {
+    color: var(--text-muted-color);
+    text-shadow: none;
+    transition: color 0.4s ease, text-shadow 0.4s ease;
+  }
+
+  [data-mode='light'] #pageviews.matrix-counting {
+    color: rgba(30, 100, 220, 0.9);
+    text-shadow: 0 0 6px rgba(30, 100, 220, 0.4);
+  }
+</style>
+
+<script>
+  (function () {
+    var CHARS = '0123456789';
+
+    function randomChar() {
+      return CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
+
+    function matrixCount(el, targetNum) {
+      var target   = targetNum.toString();
+      var length   = target.length;
+      var duration = 900;   /* 전체 애니메이션 ms */
+      var steps    = 18;
+      var interval = duration / steps;
+      var step     = 0;
+
+      el.classList.add('matrix-counting');
+      el.classList.remove('matrix-done');
+
+      var timer = setInterval(function () {
+        step++;
+        var progress = step / steps;
+
+        /* 뒤에서부터 순서대로 확정 */
+        var confirmedFrom = Math.floor(progress * length);
+        var display = '';
+
+        for (var i = 0; i < length; i++) {
+          if (i >= length - confirmedFrom) {
+            display += target[i];
+          } else {
+            display += randomChar();
+          }
+        }
+
+        el.textContent = display;
+
+        if (step >= steps) {
+          clearInterval(timer);
+          el.textContent = target;
+          el.classList.remove('matrix-counting');
+          el.classList.add('matrix-done');
+        }
+      }, interval);
+    }
+
+    function init() {
+      var el = document.getElementById('pageviews');
+      if (!el) return;
+
+      /* GoatCounter가 숫자를 주입하는 것을 감지 */
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          if (m.type === 'childList' || m.type === 'characterData') {
+            var raw = el.textContent.trim().replace(/,/g, '');
+            var num = parseInt(raw, 10);
+            if (!isNaN(num) && num > 0) {
+              observer.disconnect();
+              matrixCount(el, num);
+            }
+          }
+        });
+      });
+
+      observer.observe(el, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

@@ -62,7 +62,7 @@ analytics:
   google:
     id: G-0EDSTPKBEZ
   goatcounter:
-    id: # fill in your GoatCounter ID
+    id: seongcheoljeon
   umami:
     id: # fill in your Umami ID
     domain: # fill in your Umami domain
@@ -76,7 +76,7 @@ analytics:
 
 # Page views settings
 pageviews:
-  provider: # now only supports 'goatcounter'
+  provider: goatcounter
 
 # Prefer color scheme setting.
 #
@@ -90,6 +90,7 @@ pageviews:
 #     dark — Use the dark color scheme
 #
 # theme_mode: # [light | dark]
+theme_mode: dark
 
 # The CDN endpoint for media resources.
 # Notice that once it is assigned, the CDN url
