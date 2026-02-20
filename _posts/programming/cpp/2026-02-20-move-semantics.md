@@ -5,7 +5,7 @@ description: >-
 author: seongcheol
 date: 2026-02-20 12:05:00 +0900
 categories: [Programming, C++]
-tags: [C++, std::move]
+tags: [C++, move]
 pin: true
 media_subpath: '/assets/img/common'
 image:
