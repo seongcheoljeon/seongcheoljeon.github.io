@@ -154,11 +154,7 @@
     color-scheme: none;
   }
 
-  /* --- Syntax highlight theme from `rougify style base16.dark` --- */
-
-  .highlight .gp {
-    color: #87939d;
-  }
+  /* --- Syntax highlight theme (VA-inspired) --- */
 
   .highlight table td {
     padding: 5px;
@@ -168,80 +164,73 @@
     margin: 0;
   }
 
+  /* Default text & background */
   .highlight,
-  .highlight .w {
+  .highlight .w,
+  .highlight .n {
     color: #e0e0e0;
     background-color: #0d0d0f;
   }
 
+  /* Error */
   .highlight .err {
-    color: #151515;
-    background-color: #ac4142;
+    color: #f48771;
+    background-color: #5a1a1a;
   }
 
+  /* Comments */
   .highlight .c,
   .highlight .ch,
   .highlight .cd,
   .highlight .cm,
-  .highlight .cpf,
   .highlight .c1,
   .highlight .cs {
-    color: #848484;
+    color: #6a9955;
+    font-style: italic;
   }
 
+  /* Preprocessor directive: #include, #define, #pragma */
   .highlight .cp {
-    color: #f4bf75;
+    color: #c8c8c8;
   }
 
-  .highlight .nt {
-    color: #f4bf75;
+  /* Preprocessor file: <algorithm>, "file.h" */
+  .highlight .cpf {
+    color: #ce9178;
   }
 
+  /* Preprocessor format string inside macros */
+  .highlight .cs {
+    color: #6a9955;
+    font-style: italic;
+  }
+
+  /* Keywords: if, for, while, return, switch, case, break... */
+  .highlight .k,
+  .highlight .kn,
+  .highlight .kp,
+  .highlight .kr,
+  .highlight .kv,
+  .highlight .kc,
+  .highlight .kd,
+  .highlight .kt {
+    color: #569cc5;
+  }
+
+  /* Operators: +, -, *, /, =, ::, ->, ... */
   .highlight .o,
   .highlight .ow {
     color: #d0d0d0;
   }
 
+  /* Punctuation: {, }, (, ), ;, ... */
   .highlight .p,
-  .highlight .pi {
+  .highlight .pi,
+  .highlight .nl {
     color: #d0d0d0;
   }
 
-  .highlight .gi {
-    color: #90a959;
-  }
-
-  .highlight .gd {
-    color: #f08a8b;
-    background-color: #320000;
-  }
-
-  .highlight .gh {
-    color: #6a9fb5;
-    background-color: #0d0d0f;
-    font-weight: bold;
-  }
-
-  .highlight .k,
-  .highlight .kn,
-  .highlight .kp,
-  .highlight .kr,
-  .highlight .kv {
-    color: #aa759f;
-  }
-
-  .highlight .kc {
-    color: #d28445;
-  }
-
-  .highlight .kt {
-    color: #d28445;
-  }
-
-  .highlight .kd {
-    color: #d28445;
-  }
-
+  /* Strings: "hello", 'a' */
   .highlight .s,
   .highlight .sb,
   .highlight .sc,
@@ -250,42 +239,32 @@
   .highlight .s2,
   .highlight .sh,
   .highlight .sx,
-  .highlight .s1 {
-    color: #90a959;
-  }
-
+  .highlight .s1,
   .highlight .sa {
-    color: #aa759f;
+    color: #ce9178;
   }
 
-  .highlight .sr {
-    color: #75b5aa;
-  }
-
-  .highlight .si {
-    color: #b76d45;
-  }
-
+  /* String escape: \n, \t */
   .highlight .se {
-    color: #b76d45;
+    color: #d7ba7d;
   }
 
-  .highlight .nn {
-    color: #f4bf75;
+  /* String interpolation: #{var} */
+  .highlight .si {
+    color: #d7ba7d;
   }
 
-  .highlight .nc {
-    color: #f4bf75;
+  /* Regex */
+  .highlight .sr {
+    color: #d16969;
   }
 
-  .highlight .no {
-    color: #f4bf75;
+  /* String symbol */
+  .highlight .ss {
+    color: #ce9178;
   }
 
-  .highlight .na {
-    color: #6a9fb5;
-  }
-
+  /* Numbers: 42, 3.14, 0xFF */
   .highlight .m,
   .highlight .mb,
   .highlight .mf,
@@ -294,10 +273,156 @@
   .highlight .il,
   .highlight .mo,
   .highlight .mx {
-    color: #90a959;
+    color: #b5cea8;
   }
 
-  .highlight .ss {
-    color: #90a959;
+  /* Class / Type name */
+  .highlight .nc {
+    color: #ffd700;
+  }
+
+  /* Namespace (std::, glm::, Eigen::, ...) */
+  .highlight .nn {
+    color: #b8d7a3;
+  }
+
+  /* Function / Method name */
+  .highlight .nf,
+  .highlight .fm {
+    color: #ff8000;
+  }
+
+  /* Decorator: @property, @override */
+  .highlight .nd {
+    color: #bd63c5;
+  }
+
+  /* Enum constant / Named constant */
+  .highlight .no {
+    color: #b9771e;
+  }
+
+  /* Built-in names: print, len, sizeof */
+  .highlight .nb,
+  .highlight .bp {
+    color: #4ec9b0;
+  }
+
+  /* Attribute / Member field */
+  .highlight .na {
+    color: #9cdcfe;
+  }
+
+  /* Property (CSS property, Python @property) */
+  .highlight .py {
+    color: #9cdcfe;
+  }
+
+  /* Variable: global, class, magic */
+  .highlight .nv,
+  .highlight .vc,
+  .highlight .vg,
+  .highlight .vm {
+    color: #9cdcfe;
+  }
+
+  /* Instance member variable (obj->member, this->member) */
+  .highlight .vi {
+    color: #bdb76b;
+  }
+
+  /* HTML/XML tag */
+  .highlight .nt {
+    color: #569cc5;
+  }
+
+  /* Generic: prompt */
+  .highlight .gp {
+    color: #87939d;
+  }
+
+  /* Diff: added */
+  .highlight .gi {
+    color: #b5cea8;
+    background-color: #1a3a1a;
+  }
+
+  /* Diff: deleted */
+  .highlight .gd {
+    color: #f08a8b;
+    background-color: #3a1a1a;
+  }
+
+  /* Generic heading (Markdown h1, h2) */
+  .highlight .gh {
+    color: #569cc5;
+    font-weight: bold;
+  }
+
+  /* Generic subheading */
+  .highlight .gu {
+    color: #4ec9b0;
+    font-weight: bold;
+  }
+
+  /* Generic output */
+  .highlight .go {
+    color: #888888;
+  }
+
+  /* Generic traceback */
+  .highlight .gt {
+    color: #f48771;
+  }
+
+  /* Generic emphasis */
+  .highlight .ge {
+    font-style: italic;
+  }
+
+  /* Generic strong */
+  .highlight .gs {
+    font-weight: bold;
+  }
+
+  /* Generic emphasis + strong */
+  .highlight .ges {
+    font-style: italic;
+    font-weight: bold;
+  }
+
+  /* Generic error */
+  .highlight .gr {
+    color: #f48771;
+  }
+
+  /* Generic lineno (line numbers in shell output) */
+  .highlight .gl {
+    color: #808080;
+  }
+
+  /* Literal::Date */
+  .highlight .ld {
+    color: #ce9178;
+  }
+
+  /* Name::Entity (HTML entities: &amp;) */
+  .highlight .ni {
+    color: #d7ba7d;
+  }
+
+  /* Name::Exception */
+  .highlight .ne {
+    color: #ff8000;
+  }
+
+  /* Name::Other */
+  .highlight .nx {
+    color: #e0e0e0;
+  }
+
+  /* Other */
+  .highlight .x {
+    color: #e0e0e0;
   }
 }

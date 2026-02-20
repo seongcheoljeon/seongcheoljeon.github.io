@@ -93,7 +93,7 @@ a.push_back(55);
 
 ## Unreal Engine에서의 주요 사용처
 
-```cpp
+```ue_cpp
 // TArray, TMap 등 컨테이너 소유권 이전
 TArray<FMyData> source = BuildData();
 TArray<FMyData> dest = MoveTemp(source); // UE의 std::move 래퍼
