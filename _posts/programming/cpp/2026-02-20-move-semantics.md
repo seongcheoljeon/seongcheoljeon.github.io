@@ -1,11 +1,11 @@
 ---
-title: std::move semantics
+title: C++ Rvalue Reference, Perfect Forwarding
 description: >-
-  std::move semantics
+  Explore how C++ rvalue references power move semantics and perfect forwarding. Understand lvalue vs rvalue categories, when to use std::move vs std::forward, and how universal references eliminate unnecessary copies in template code.
 author: seongcheol
 date: 2026-02-20 12:05:00 +0900
 categories: [Programming, C++]
-tags: [C++, move]
+tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization]
 pin: true
 media_subpath: '/assets/img/common'
 image:
@@ -39,6 +39,11 @@ C++의 모든 `expression`은 `value category`를 가진다.
 | :-----  | :--------------------------- | :------------------ |
 | lvalue  | 이름이 있는, 주소를 취할 수 있는 것 | `int x = 5;` -> `x` |
 | rvalue  | 임시 객체(곧 소멸), 이름 없는 것   | `5`, `foo()` 반환값  |
+
+> C++11 이후 공식 분류는 `lvalue`/`pvalue`/`xvalue`로 세분화 된다.  
+> `std::move(x)`가 만들어내는 것은 엄밀히 `xvalue`(eXpiring value)이며, `rvalue`의 하위 분류다.
+> 이 글에서는 이해를 위해 `lvalue`/`rvalue`로 단순화해서 다룬다.
+{: .prompt-info }
 
 - `move semantics`의 동기
   - 어차피 소멸될 `rvalue`라면, 복사 대신 자원을 훔쳐오는(steal) 것이 효율적이다.
@@ -124,20 +129,20 @@ std::string t = std::move(s);
 const std::vector<int> v = {1, 2, 3};
 auto w = std::move(v); 
 
-// 실제로는 복사 됨! cosnt T&&는 move ctor에 안 맞음
+// 실제로는 복사 됨! const T&&는 move ctor에 안 맞음
 ```
 
 ### return 값에 std::move 쓰지 말 것 (NRVO 방해)
 
 ```cpp
-// 나쁨: NRVO(Named Return Value Optimization)를 억제
+// ❌ NRVO(Named Return Value Optimization)를 억제
 std::vector<int> Foo()
 {
   std::vector<int> v;
   return std::move(v);
 }
 
-// 좋은: 컴파일러가 직접 최적화
+// ✅ 컴파일러가 직접 최적화
 std::vector<int> Foo()
 {
   std::vector<int> v;
@@ -145,6 +150,210 @@ std::vector<int> Foo()
 }
 ```
 
-## ☝🏻 한 줄 요약
+---
 
-`std::move`는 `캐스팅`이고, 실제 이동 비용은 `0`이다. 이동의 실질적 작업은 **`move constructor / assignment`**가 담당하며, 그 효율은 타입이 어떻게 구현되어 있는지에 달려 있다.
+## std::forward
+
+### template에서 std::move를 쓰면 안 되는 이유
+
+`std::move`는 항상 `rvalue`로 명시적인 `캐스팅`을 한다. 
+`template` 함수에서는 들어온 값이 `lvalue`인지 `rvalue`인지 모르므로, 무조건 `std::move`를 쓰면, 의도치 않게 `lvalue`를 훔쳐가는 **버그**가 생긴다.
+
+```cpp
+// ❌ 잘못된 예: lvalue가 들어와도 명시적으로 이동됨
+template<typename T>
+void Wrap(T&& value)
+{
+  Foo(std::move(val));
+}
+
+// ✅ 올바른 예: std::forward로 원래 vlaue category를 그대로 전달
+template<typename T>
+void Wrap(T&& val)
+{
+  Foo(std::forward<T>(val));
+}
+```
+
+- **lvalue** -> `std::forward`가 `lvalue reference`로 전달.
+- **rvalue** -> `std::forward`가 `rvalue reference`로 전달.
+
+> 이 패턴을 **`Perfect Forwarding`**이라 한다.
+{: .prompt-tip }
+
+
+## Perferct Forwarding
+
+### `&&`의 두 가지 얼굴
+
+```cpp
+// (A) rvalue reference - rvalue만 받는다.
+void Foo(int&& val);
+
+// (B) Forwarding Reference - lvalue도 rvalue도 받는다.
+template<typename T>
+void Bar(T&& val);
+```
+
+```cpp
+int x = 5;
+
+Foo(x); // ❌ 컴파일 에러: x는 lvalue
+Foo(5); // ✅ ok
+
+Bar(x); // ✅ ok
+Bar(5); // ✅ ok
+```
+
+`&&`를 쓰는데, `Bar`만 lvalue를 받을 수 있는 이유 -> **타입 추론이 일어나기 때문이다.**
+
+### `T`는 어떻게 추론되는가?
+
+```cpp
+template<typename T>
+void Bar(T&& val);
+
+int x = 5;
+Bar(x);            // lvalue 전달 -> T = int&
+Bar(5);            // rvalue 전달 -> T = int
+Bar(std::move(x)); // rvalue 전달 -> T = int
+```
+
+> 규칙 : `lvalue`를 넘기면 `T`가 `int&`로, `rvalue`를 넘기면 `T`가 `int`로 **추론**된다.   
+> 즉, __`T`안에 원래 value category 정보가 담긴다.__
+{: .prompt-tip }
+
+### Reference Collapsing
+
+`T = int&` 일 때, 매개변수 타입 `T&&`를 전개하면 `int& &&`가 된다.
+C++는 reference가 중첩될 때, 다음과 같은 규칙으로 정리한다.
+
+| 조합      | 결과    |
+| :-----   | :----- |
+| `T& &`   | `T&`   |
+| `T& &&`  | `T&`   |
+| `T&& &`  | `T&`   |
+| `T&& &&` | `T&&`  |
+
+> **`&& (rvalue)`끼리 만날 때만 `&& (rvalue)`, 나머지는 전부 `& (lvalue)`
+{: prompt-tip }
+
+전개해보면:
+```cpp
+Bar(x);    // T = int& -> T&& = int& && = int&      <- lvalue reference
+Bar(5);    // T = int  -> T&& = int&&               <- rvalue reference
+```
+
+### 이름이 생기면 lvalue가 된다.
+
+다음의 코드가 핵심적인 문제다.
+```cpp
+template<typename T>
+void Bar(T&& val)
+{
+  // rvalue로 넘겼어도, val은 이름이 생겼으니 lvalue이다.
+  Foo(val); // 항상 lvalue로 전달됨.
+}
+```
+
+```cpp
+Bar(5);
+
+// val의 타입은 int&& (rvalue reference)
+// 하지만 val 자체는 이름이 있으므로 lvalue expression
+// Foo(val)은 lvalue를 전달
+```
+
+원래 `rvalue`였다는 정보가 소실된다.
+이것을 복원하는 것이 **`std::forward`**의 역할이다.
+
+### std::forward의 실제 구현
+
+```cpp
+template<typename T>
+constexpr T&& forward(std::remove_reference_t<T>& val) noexcept
+{
+  return static_cast<T&&>(val);
+}
+```
+
+`static_cast<T&&>`에 **Reference Collapsing**을 적용하면:
+```cpp
+// Bar(x) 호출 -> T = int&
+std::forward<int&>(val)
+-> static_cast<int& &&>(val)
+-> static_cast<int&>(val)     // lvalue reference - 원래대로 lvalue
+
+// Bar(5) 호출 -> T = int
+std::forward<int>(val)
+-> static_cast<int&&>(val)    // rvalue reference - 원래대로 rvalue 복원
+```
+
+**`T`에 담긴 category 정보를 `static_cast`로 꺼내는 구조다.**
+
+### Perfect Forwarding 완성
+
+```cpp
+template<typename T>
+void Bar(T&& val)             // 1. Forwarding Reference
+{
+  Foo(std::forward<T>(val));  // 2. T로 원래 category 복원
+}
+```
+
+```cpp
+int x = 5;
+
+Bar(x);            // T = int&  -> forward<int&>  -> Foo에 lvalue로 전달
+Bar(5);            // T = int   -> forward<int>   -> Foo에 rvalue로 전달
+Bar(std::move(x)); // T = int   -> forward<int>   -> Foo에 rvalue로 전달
+```
+
+### __`std::move`__ vs __`std::forward`__ 비교
+
+```cpp
+// std::move - 무조건 rvalue로 캐스팅
+// 용도: "이 값 이제 안 씀"을 명시할 때
+template<typename T>
+constexpr std::remove_reference_t<T>&& move(T&& t) noexcept
+{
+  return static_cast<std::remove_reference_t<T>&&>(t); // 항상 T&&
+}
+
+// std::forward - T에 따라 lvalue 또는 rvalue로 캐스팅
+// 용도: template에서 원래 category를 보존할 때
+template<typename T>
+constexpr T&& forward(std::remove_reference_t<T>& val) noexcept
+{
+  return static_cast<T&&>(val); // T가 int&면 int&, int면 int&&
+}
+```
+
+```cpp
+// ❌ template에서 std::move - lvalue가 들어와도 강제로 rvalue
+template<typename T>
+void Wrong(T&& val)
+{
+  Foo(std::move(val)); // x(lvalue)를 넘겨도 훔쳐감(이동됨) - 버그
+}
+
+// ✅ template에서 std::forward - 원래 category 그대로
+template<typename T>
+void Correct(T&& val)
+{
+  Foo(std::forward<T>(val)); // x면 lvalue로, 5면 rvalue로
+}
+```
+
+
+## 👏🏻 요약
+
+- `std::move`는 `캐스팅`이고, 실제 이동 비용은 `0`이다. 이동의 실질적 작업은 **`move constructor / assignment`**가 담당하며, 그 효율은 타입이 어떻게 구현되어 있는지에 달려 있다.
+- `T&&` -> Forwarding Reference: lvalue/rvalue 모두 수용, `T`에 `category` 보존.
+- `Reference Collapsing`: `&&`끼리 만날 때만 `&&`, 나머지는 `&`
+- `std::forward<T>`: `T`에 담긴 `category` 정보를 `static_cast`로 복원.
+
+
+## Reference Link
+
+- [UE5.7 Forward](https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Core/Forward?application_version=5.7)
