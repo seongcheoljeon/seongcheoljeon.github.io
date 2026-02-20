@@ -9,7 +9,7 @@ tags: [C++, move]
 pin: true
 media_subpath: '/assets/img/common'
 image:
-  path: /title/cpp_title.jpg
+  path: title/cpp_title.jpg
 ---
 
 ## std::move
