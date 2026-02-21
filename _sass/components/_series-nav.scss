@@ -1,0 +1,120 @@
+.series-nav {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+
+  .series-nav-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+
+    .series-name {
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .series-part {
+      color: var(--text-muted-color);
+      font-size: 0.8rem;
+    }
+  }
+
+  .series-nav-posts {
+    display: flex;
+    flex-direction: column;
+
+    .series-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-muted-color);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: var(--post-tag-bg);
+        color: var(--link-color);
+      }
+
+      &.active {
+        background: var(--post-tag-bg);
+        color: var(--link-color);
+        font-weight: 600;
+
+        .series-nav-num {
+          background: var(--link-color);
+          color: #fff;
+        }
+      }
+
+      .series-nav-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        background: var(--border-color);
+        color: var(--text-muted-color);
+        font-size: 0.75rem;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+
+      .series-nav-title {
+        flex: 1;
+      }
+    }
+  }
+
+  .series-nav-arrows {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    gap: 1rem;
+
+    .series-arrow {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      color: var(--link-color);
+      text-decoration: none;
+      max-width: 45%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.75;
+      }
+
+      &.prev {
+        margin-right: auto;
+      }
+
+      &.next {
+        margin-left: auto;
+      }
+
+      &.disabled {
+        visibility: hidden;
+      }
+    }
+  }
+}

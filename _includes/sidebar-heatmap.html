@@ -115,14 +115,19 @@
       return colors.level4;
     }
 
-    /* 오늘부터 52주 전 일요일 계산 */
+    /* 올해 1월 1일 계산 */
     function getStartDate() {
       var today = new Date();
+      var year  = today.getFullYear();
+      return new Date(year, 0, 1); /* 1월 1일 */
+    }
+
+    /* WEEKS를 올해 경과 주수로 동적 계산 */
+    function calcWeeks(start) {
+      var today = new Date();
       today.setHours(0, 0, 0, 0);
-      var day   = today.getDay(); /* 0=일 */
-      var start = new Date(today);
-      start.setDate(today.getDate() - day - (WEEKS - 1) * 7);
-      return start;
+      var diff  = Math.ceil((today - start) / (1000 * 60 * 60 * 24 * 7)) + 1;
+      return Math.min(diff, 53);
     }
 
     /* YYYY-MM-DD */
@@ -199,6 +204,10 @@
 
     function init() {
       startDate   = getStartDate();
+      WEEKS       = calcWeeks(startDate);
+      COLS        = WEEKS;
+      W           = COLS * STEP - GAP;
+      H           = ROWS * STEP - GAP + LABEL_H;
       cells       = buildCells(startDate);
       monthLabels = buildMonthLabels(startDate);
       draw();

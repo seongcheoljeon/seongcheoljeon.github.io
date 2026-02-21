@@ -1,0 +1,119 @@
+---
+layout: default
+---
+
+{% include lang.html %}
+
+<div id="page-series" class="px-1">
+  <h1 class="page-heading">Series</h1>
+
+  {% assign all_series = site.posts | map: "series" | compact | uniq | sort %}
+
+  {% if all_series.size == 0 %}
+    <p class="text-muted">No series yet.</p>
+  {% else %}
+    {% for series_name in all_series %}
+      {% assign series_posts = site.posts | where: "series", series_name | sort: "series_part" %}
+      {% assign total = series_posts | size %}
+
+      <div class="series-block mb-5">
+        <h2 class="series-block-title">
+          <i class="fas fa-layer-group fa-fw me-1"></i>
+          {{ series_name }}
+          <span class="series-block-count">{{ total }} posts</span>
+        </h2>
+
+        <ul class="series-block-list">
+          {% for post in series_posts %}
+            <li class="series-block-item {% if post.url == page.url %}active{% endif %}">
+              <span class="series-block-num">{{ post.series_part }}</span>
+              <a href="{{ post.url | relative_url }}" class="series-block-link">
+                {{ post.title }}
+              </a>
+              <span class="series-block-date">
+                {{ post.date | date: "%Y-%m-%d" }}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<style>
+  #page-series .page-heading {
+    margin-bottom: 2rem;
+  }
+
+  .series-block-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .series-block-count {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--text-muted-color);
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .series-block-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .series-block-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--post-tag-bg);
+    }
+  }
+
+  .series-block-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--text-muted-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .series-block-link {
+    flex: 1;
+    color: var(--link-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .series-block-date {
+    font-size: 0.78rem;
+    color: var(--text-muted-color);
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+</style>
