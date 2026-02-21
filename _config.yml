@@ -217,6 +217,21 @@ exclude:
   - purgecss.js
   - "*.config.js"
   - "package*.json"
+  - "_posts/**/*.png"
+  - "_posts/**/*.jpg"
+  - "_posts/**/*.jpeg"
+  - "_posts/**/*.gif"
+  - "_posts/**/*.webp"
+  - "_posts/**/*.svg"
+  - "_posts/**/*.avif"
+  - "_posts/**/*.bmp"
+  - "_posts/**/*.tiff"
+  - "_posts/**/*.tif"
+  - "_posts/**/*.ico"
+  - "_posts/**/*.mp4"
+  - "_posts/**/*.webm"
+  - "_posts/**/*.mov"
+  - "_posts/**/*.pdf"
 
 jekyll-archives:
   enabled: [categories, tags]

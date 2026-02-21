@@ -14,8 +14,11 @@
 
 {%- if url -%}
   {% unless url contains ':' %}
-    {%- comment -%} Add media resources subpath prefix {%- endcomment -%}
-    {% assign url = include.subpath | default: '' | append: '/' | append: url %}
+    {%- comment -%} Add media resources subpath prefix (skip if url is already absolute path starting with '/') {%- endcomment -%}
+    {% assign _first_char = url | slice: 0 %}
+    {% unless _first_char == '/' %}
+      {% assign url = include.subpath | default: '' | append: '/' | append: url %}
+    {% endunless %}
 
     {%- comment -%} Prepend CND URL {%- endcomment -%}
     {% if site.cdn %}

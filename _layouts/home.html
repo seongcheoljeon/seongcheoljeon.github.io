@@ -57,12 +57,15 @@ layout: default
 
           {% if post.media_subpath %}
             {% unless src contains '://' %}
-              {% assign src = post.media_subpath
-                | append: '/'
-                | append: src
-                | replace: '///', '/'
-                | replace: '//', '/'
-              %}
+              {% assign _src_first = src | slice: 0 %}
+              {% unless _src_first == '/' %}
+                {% assign src = post.media_subpath
+                  | append: '/'
+                  | append: src
+                  | replace: '///', '/'
+                  | replace: '//', '/'
+                %}
+              {% endunless %}
             {% endunless %}
           {% endif %}
 

@@ -1,15 +1,15 @@
 ---
 title: C++ Rvalue Reference, Perfect Forwarding
 description: >-
-  Explore how C++ rvalue references power move semantics and perfect forwarding. Understand lvalue vs rvalue categories, when to use std::move vs std::forward, and how universal references eliminate unnecessary copies in template code.
+  C++ rvalue 참조가 어떻게 이동 시맨틱스와 완벽한 포워딩을 구현하는지 살펴보자. lvalue와 rvalue의 범주 차이, std::move와 std::forward를 언제 사용해야 하는지, 그리고 유니버설 참조가 템플릿 코드에서 불필요한 복사를 어떻게 제거하는지 이해해 보자.
 author: seongcheol
 date: 2026-02-20 12:05:00 +0900
 categories: [Programming, C++]
 tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization]
 pin: true
-media_subpath: '/assets/img/common'
+media_subpath: "/_post/programming/cpp"
 image:
-  path: title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.jpg
 ---
 
 ## std::move
