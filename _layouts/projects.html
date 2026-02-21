@@ -49,7 +49,7 @@ layout: default
     <i class="fas fa-chevron-right"></i>
   </button>
   <div class="gallery-content">
-    <img id="gallery-img" src="" alt="">
+    <img id="gallery-img" alt="">
     <div id="gallery-counter" class="gallery-counter"></div>
   </div>
 </div>
@@ -512,7 +512,7 @@ layout: default
         modal.classList.remove('active');
         overlay.classList.remove('active');
         document.body.style.overflow = '';
-        img.src = '';
+        img.removeAttribute('src');
         images  = [];
       }
 
