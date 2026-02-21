@@ -434,7 +434,12 @@ for(auto& brick: bricks)
 이어서 `STL`알고리즘의 `remove_if()`와 `erase()` 함수를 사용한다. `remove_if()` 함수는 조건을 만족하는 객체들을 표시하고, `erase()` 함수는 이들 객체를 벡터에서 삭제한다.
 
 ```cpp
-bricks.erase(remove_if(begin(bricks), end(bricks), [](Brick& b){ return b._is_destoryed; }), end(bricks));
+bricks.erase(std::remove_if(bricks.begin(), bricks.end()
+    , [](Brick& b) -> bool
+    {
+        return b.IsDestroyed();
+    }
+), bricks.end());
 ```
 
 ## 최종 결과
