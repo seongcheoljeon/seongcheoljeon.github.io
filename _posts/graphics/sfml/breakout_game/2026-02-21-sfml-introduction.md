@@ -1,5 +1,5 @@
 ---
-title: Introduction to SFML
+title: SFML을 이용한 아주 간단한 게임
 description: >-
   SFML의 기본 개념을 소개하고 C++로 간단한 벽돌깨기 게임을 만들어보는 글이다. 윈도우 생성, 렌더링, 입력 처리, 게임 루프 구조까지 단계별로 정리한다.
 author: seongcheol
@@ -78,20 +78,30 @@ _Property -> Linker -> Input_
 
  현재까지의 전체 소스는 다음과 같다.
 
+ 아래의 코드는 윈도우를 하나 만들고 사용자가 윈도우를 닫을 때 종료된다. `sfml` 프로그램은 이런 종류의 루프를 가지며 메인 루프 또는 `게임 루프(game loop)`라고 불린다.
+
+ 게임 루프 내에서 제일 먼저 하는 일은 발생한 모든 이벤트를 확인하는 것이다. 보류중인 모든 이벤트가 처리될 수 있도록 `while` 루프를 사용한다.
+
+`pollEvent()`
+: 이 함수는 이벤트가 처리기기대기 중이면 `true`를 반환하고 그렇지 않으면 `false`를 반환한다.
+
  ```cpp
  #include <SFML/Graphics.hpp>
 
 
 int main()
 {
+    // 윈도우 생성
     sf::RenderWindow window(sf::VideoMode({
         static_cast<unsigned>(800), static_cast<unsigned>(600) }), "Breakout Game");
     window.setFramerateLimit(60);
 
+    // 윈도우가 오픈되어 있는 한 프로그램을 실행한다.
     while (window.isOpen())
     {
         window.clear(sf::Color::Blue);
 
+        // 윈도우의 이벤트를 처리한다.
         while (const std::optional<sf::Event> event = window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
@@ -100,6 +110,7 @@ int main()
             }
         }
 
+        // 현재 프레임을 종료한다.
         window.display();
     }
 
