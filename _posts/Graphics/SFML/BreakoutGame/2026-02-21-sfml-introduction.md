@@ -1,5 +1,5 @@
 ---
-title: "[Graphics/SFML] SFML을 이용한 아주 간단한 게임"
+title: "[Graphics/SFML] SFML을 이용한 간단한 게임"
 description: >-
   SFML의 기본 개념을 소개하고 C++로 간단한 벽돌깨기 게임을 만들어보는 글이다. 윈도우 생성, 렌더링, 입력 처리, 게임 루프 구조까지 단계별로 정리한다.
 author: seongcheol

@@ -7,7 +7,7 @@ date: 2026-02-20 12:05:00 +0900
 categories: [Programming, C++]
 tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization]
 pin: true
-media_subpath: "/_post/programming/cpp"
+media_subpath: "/_post/Programming/Cpp"
 image:
   path: /assets/img/common/title/cpp_title.jpg
 ---
@@ -269,6 +269,23 @@ Bar(5);
 
 ### std::forward의 실제 구현
 
+`std::forward`
+: `<utility>` 헤더에 정의되어 있다.
+
+```cpp
+// (1)
+template<typename T>
+constexpr T&& forward(std::remove_reference_t<T>& t) noexcept;
+
+// (2)
+template<typename T>
+constexpr T&& forward(std::remove_reference_t<T>&& t) noexcept;
+```
+
+> `(1)` 오버로딩의 경우, `lvalue`를 `T`에 따라 `lvalue` 혹은 `rvalue`로 전달한다.
+{: .prompt-tip}
+
+
 ```cpp
 template<typename T>
 constexpr T&& forward(std::remove_reference_t<T>& val) noexcept
@@ -356,4 +373,5 @@ void Correct(T&& val)
 
 ## Reference Link
 
-- [UE5.7 Forward](https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Core/Forward?application_version=5.7)
+- [UE5.7 - Forward](https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Core/Forward?application_version=5.7)
+- [Cpp Reference - std::forward](https://en.cppreference.com/w/cpp/utility/forward.html)
