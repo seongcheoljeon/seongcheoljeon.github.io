@@ -98,21 +98,51 @@ layout: page
       </div>
       <!-- .card-header -->
 
-      <!-- Sub-categories -->
+      <!-- Sub-categories (2단계) -->
       {% if sub_categories_size > 0 %}
         <div id="{{ LIST_PREFIX }}{{ group_index }}" class="collapse show" aria-expanded="true">
           <ul class="list-group">
             {% for sub_category in sub_categories %}
+
+              <!-- 3단계 수집 -->
+              {% assign third_categories = '' | split: '' %}
+              {% for post in site.posts %}
+                {% if post.categories[1] == sub_category and post.categories[0] == category_name %}
+                  {% assign third_category = post.categories[2] %}
+                  {% if third_category %}
+                    {% unless third_categories contains third_category %}
+                      {% assign third_categories = third_categories | push: third_category %}
+                    {% endunless %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              {% assign third_categories = third_categories | sort %}
+              {% assign third_categories_size = third_categories | size %}
+
               <li class="list-group-item">
-                <i class="far fa-folder fa-fw"></i>
+                <i class="far fa-folder{% if third_categories_size > 0 %}-open{% endif %} fa-fw"></i>
 
                 {% capture _sub_ctg_url %}/categories/{{ sub_category | slugify | url_encode }}/{% endcapture %}
                 <a href="{{ _sub_ctg_url | relative_url }}" class="mx-2">{{ sub_category }}</a>
 
                 {% assign posts_size = site.categories[sub_category] | size %}
                 <span class="text-muted small font-weight-light">
+                  {% if third_categories_size > 0 %}
+                    {{ third_categories_size }}
+                    {% if third_categories_size > 1 %}
+                      {{
+                        site.data.locales[lang].categories.category_measure.plural
+                        | default: site.data.locales[lang].categories.category_measure
+                      }}
+                    {% else %}
+                      {{
+                        site.data.locales[lang].categories.category_measure.singular
+                        | default: site.data.locales[lang].categories.category_measure
+                      }}
+                    {% endif -%}
+                    ,
+                  {% endif %}
                   {{ posts_size }}
-
                   {% if posts_size > 1 %}
                     {{
                       site.data.locales[lang].categories.post_measure.plural
@@ -125,7 +155,38 @@ layout: page
                     }}
                   {% endif %}
                 </span>
+
+                <!-- 3단계 카테고리 -->
+                {% if third_categories_size > 0 %}
+                  <ul class="list-group mt-2 ms-3">
+                    {% for third_category in third_categories %}
+                      <li class="list-group-item">
+                        <i class="far fa-folder fa-fw"></i>
+
+                        {% capture _third_ctg_url %}/categories/{{ third_category | slugify | url_encode }}/{% endcapture %}
+                        <a href="{{ _third_ctg_url | relative_url }}" class="mx-2">{{ third_category }}</a>
+
+                        {% assign third_posts_size = site.categories[third_category] | size %}
+                        <span class="text-muted small font-weight-light">
+                          {{ third_posts_size }}
+                          {% if third_posts_size > 1 %}
+                            {{
+                              site.data.locales[lang].categories.post_measure.plural
+                              | default: site.data.locales[lang].categories.post_measure
+                            }}
+                          {% else %}
+                            {{
+                              site.data.locales[lang].categories.post_measure.singular
+                              | default: site.data.locales[lang].categories.post_measure
+                            }}
+                          {% endif %}
+                        </span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
               </li>
+
             {% endfor %}
           </ul>
         </div>
