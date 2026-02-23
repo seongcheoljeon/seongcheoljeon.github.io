@@ -16,6 +16,7 @@ kbd,
 .highlight {
   font-family: 'JetBrains Mono', monospace;
   font-feature-settings: "liga" 1, "calt" 1;
+  font-variant-ligatures: normal; /* 브라우저 호환성 보완 */
 }
 
 .highlight {
