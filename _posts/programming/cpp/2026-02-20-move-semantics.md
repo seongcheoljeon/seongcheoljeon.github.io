@@ -362,6 +362,212 @@ void Correct(T&& val)
 }
 ```
 
+### 왜 wrapper 안에서 rvalue가 사라질까?
+
+```cpp
+#include <iostream>
+#include <utility>
+
+using namespace std;
+
+
+template<typename T>
+void wrapper(T x)
+{
+    func(x);
+}
+
+class Foo {};
+
+void func(Foo& val)
+{
+    cout << "lvalue reference" << endl;
+}
+
+void func(const Foo& val)
+{
+    cout << "const lvalue reference" << endl;
+}
+
+void func(Foo&& val)
+{
+    cout << "rvalue reference" << endl;
+}
+
+
+int main()
+{
+    Foo foo;
+    const Foo const_foo;
+
+    cout << "-------------------- original --------------------" << endl;
+    func(foo);
+    func(const_foo);
+    func(Foo());
+
+    cout << "-------------------- wrapper --------------------" << endl;
+    wrapper(foo);
+    wrapper(const_foo);
+    wrapper(Foo());
+
+    return 0;
+}
+```
+
+실행결과는 다음과 같다.
+: ```console
+-------------------- original --------------------
+lvalue reference
+const lvalue reference
+rvalue reference
+-------------------- wrapper --------------------
+lvalue reference
+lvalue reference
+lvalue reference
+```
+
+`original`의 경우, 예상대로 `lvalue`, `const lvalue`, `rvalue`가 각각 호출되었다.   
+ 그런데 `wrapper` 함수를 통해 `func`함수를 호출했을 때는 모두 `lvalue` 레펀런스를 받는 `func(Foo& val)` 함수가 호출되었다.
+
+ 이러한 일이 발생한 이유는, **C++ 컴파일러가 템플릿 타입을 추론할 때, 템프릿 인자 `T`가 레퍼런스가 아닌 일반적인 타입이라면 `const`를 무시하기 때문이다.
+
+```cpp
+template<typename T>
+void wrapper(T x) // x는 이름 있는 지역 변수
+{
+    func(x); // x는 항상 lvalue
+}
+```
+
+- `wrapper(foo)` -> lvalue reference
+: ```cpp
+wrapper(foo); // T = Foo, x는 foo의 복사본
+func(x);      // x는 이름 있는 변수 -> lvalue
+```
+
+- `wrapper(Foo())` -> lvalue reference
+: ```cpp
+wrapper(Foo()); // T = Foo, rvalue로 x를 초기화
+func(x);        // 하지만 x라는 이름이 생긴 순간 -> lvalue
+```
+
+- `wrapper(const_foo)` -> lvalue reference (const 제거)
+: ```cpp
+void wrapper(T x) // by-value
+```
+
+`by-value 템플릿`은 top-level `const`를 제거한다.
+
+| 전달 인자     | T 추론 결과 | x의 타입 |
+| ----------- | --------- | ------- |
+| `const Foo` | `Foo`     | `Foo`   |
+
+`by-value`는 `복사본`을 만든다. 본사본은 원본과 **독립적**이므로, 원본의 `const`가 복사본을 구속할 이유가 없다.
+
+```cpp
+const Foo const_foo;
+Foo x = const_foo;   // 복사본은 const가 아님!
+x = Foo();           // 복사본은 수정 가능!
+```
+
+따라서 `func(x)` 호출 시
+: 1. x의 타입 = `Foo` (const 아님)
+2. 이름 있음 -> lvalue
+3. `func(Foo&)` 호출
+
+그렇다면 다음의 같은 경우는 어떻게 될까?
+
+```cpp
+template<typename T>
+void wrapper(T& x)
+{
+    func(x);
+}
+```
+
+`wrapper(Foo())` 호출로 인하여 에러가 발생할 것이다.   
+그 이유는, `Foo()` 자체는 `const` 속성이 없으므로 템플릿 인자 추론에서 `T`가 `class Foo`로 추론된다. 하지만, `Foo&`는 `rvalue reference`가 될 수 없으므로 `컴파일 오류`가 발생하는 것이다.
+
+그러면, 다음과 같이 `const A&`와 `A&` 각각을 만들어주는 방법이 있다.
+
+```cpp
+#include <iostream>
+#include <utility>
+
+using namespace std;
+
+
+template<typename T>
+void wrapper(T& x)
+{
+    cout << ">> T&로 추론됨" << endl;
+    func(x);
+}
+
+template<typename T>
+void wrapper(const T& x)
+{
+    cout<< ">> const T&로 추론됨" << endl;
+    func(x);
+}
+
+class Foo {};
+
+void func(Foo& val)
+{
+    cout << "lvalue reference" << endl;
+}
+
+void func(const Foo& val)
+{
+    cout << "const lvalue reference" << endl;
+}
+
+void func(Foo&& val)
+{
+    cout << "rvalue reference" << endl;
+}
+
+
+int main()
+{
+    Foo foo;
+    const Foo const_foo;
+
+    cout << "-------------------- original --------------------" << endl;
+    func(foo);
+    func(const_foo);
+    func(Foo());
+
+    cout << "-------------------- wrapper --------------------" << endl;
+    wrapper(foo);
+    wrapper(const_foo);
+    wrapper(Foo());
+
+    return 0;
+}
+```
+
+결과는 다음과 같다.
+
+```console
+-------------------- original --------------------
+lvalue reference
+const lvalue reference
+rvalue reference
+-------------------- wrapper --------------------
+[[ T&로 추론됨 ]]
+lvalue reference
+[[ const T&로 추론됨 ]]
+const lvalue reference
+[[ const T&로 추론됨 ]]
+const lvalue reference
+```
+
+`foo`와 `const_foo`의 경우, 각각 `T&`와 `const T&`로 추론되어서 올바른 함수를 호출하고 있음을 알 수 있다.   
+반면, `Foo()`의 경우 `const T&`로 추론되면서 `func(const Foo&)` 함수를 호출하게 된다.
+
+---
 
 ## 👏🏻 요약
 
