@@ -371,7 +371,8 @@ void Correct(T&& val)
 - `std::forward<T>`: `T`에 담긴 `category` 정보를 `static_cast`로 복원.
 
 
-## Reference Link
+## 🔗 References
 
 - [UE5.7 - Forward](https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Core/Forward?application_version=5.7)
 - [Cpp Reference - std::forward](https://en.cppreference.com/w/cpp/utility/forward.html)
+- [Stack Overflow](https://stackoverflow.com/questions/13725747/what-are-the-reference-collapsing-rules-and-how-are-they-utilized-by-the-c-st)
