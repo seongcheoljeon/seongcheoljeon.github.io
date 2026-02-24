@@ -191,12 +191,12 @@
 
   /* Preprocessor directive: #include, #define, #pragma */
   .highlight .cp {
-    color: #c8c8c8;
+    color: #a0a0a0;
   }
 
-  /* Preprocessor file: <algorithm>, "file.h" */
+  /* Preprocessor macro identifier: WITH_EDITOR, PLATFORM_WINDOWS... */
   .highlight .cpf {
-    color: #ce9178;
+    color: #bd63c5;
   }
 
   /* Preprocessor format string inside macros */
@@ -212,9 +212,13 @@
   .highlight .kr,
   .highlight .kv,
   .highlight .kc,
-  .highlight .kd,
   .highlight .kt {
     color: #569cc5;
+  }
+
+  /* public, private, protected — 어두운 회색 */
+  .highlight .kd {
+    color: #707070;
   }
 
   /* Operators: +, -, *, /, =, ::, ->, ... */
@@ -225,9 +229,13 @@
 
   /* Punctuation: {, }, (, ), ;, ... */
   .highlight .p,
-  .highlight .pi,
-  .highlight .nl {
+  .highlight .pi {
     color: #d0d0d0;
+  }
+
+  /* Label (public:, private:, protected:) — 어두운 회색 */
+  .highlight .nl {
+    color: #707070;
   }
 
   /* Strings: "hello", 'a' */
