@@ -5,7 +5,7 @@ description: >-
 author: seongcheol
 date: 2026-02-20 12:05:00 +0900
 categories: [Programming, C++]
-tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization]
+tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization, Reference Collapsing Rule]
 pin: true
 media_subpath: "/_post/Programming/Cpp"
 image:
@@ -429,7 +429,7 @@ lvalue reference
 `original`의 경우, 예상대로 `lvalue`, `const lvalue`, `rvalue`가 각각 호출되었다.   
  그런데 `wrapper` 함수를 통해 `func`함수를 호출했을 때는 모두 `lvalue` 레펀런스를 받는 `func(Foo& val)` 함수가 호출되었다.
 
- 이러한 일이 발생한 이유는, **C++ 컴파일러가 템플릿 타입을 추론할 때, 템프릿 인자 `T`가 레퍼런스가 아닌 일반적인 타입이라면 `const`를 무시하기 때문이다.
+ 이러한 일이 발생한 이유는, **C++ 컴파일러가 템플릿 타입을 추론할 때, 템프릿 인자 `T`가 `레퍼런스`가 아닌 <span class="hl-blue">일반적인 타입</span>이라면 `const`를 무시하기 때문이다.
 
 ```cpp
 template<typename T>
@@ -485,7 +485,7 @@ void wrapper(T& x)
 }
 ```
 
-`wrapper(Foo())` 호출로 인하여 에러가 발생할 것이다.   
+`wrapper(Foo())` 호출로 인하여 <span class="hl-red">Error</span>가 발생할 것이다.   
 그 이유는, `Foo()` 자체는 `const` 속성이 없으므로 템플릿 인자 추론에서 `T`가 `class Foo`로 추론된다. 하지만, `Foo&`는 `rvalue reference`가 될 수 없으므로 `컴파일 오류`가 발생하는 것이다.
 
 그러면, 다음과 같이 `const A&`와 `A&` 각각을 만들어주는 방법이 있다.
@@ -500,14 +500,14 @@ using namespace std;
 template<typename T>
 void wrapper(T& x)
 {
-    cout << ">> T&로 추론됨" << endl;
+    cout << "[[ T&로 추론됨 ]]" << endl;
     func(x);
 }
 
 template<typename T>
 void wrapper(const T& x)
 {
-    cout<< ">> const T&로 추론됨" << endl;
+    cout<< "[[ const T&로 추론됨 ]]" << endl;
     func(x);
 }
 
@@ -566,6 +566,236 @@ const lvalue reference
 
 `foo`와 `const_foo`의 경우, 각각 `T&`와 `const T&`로 추론되어서 올바른 함수를 호출하고 있음을 알 수 있다.   
 반면, `Foo()`의 경우 `const T&`로 추론되면서 `func(const Foo&)` 함수를 호출하게 된다.
+
+`wrapper`안에 `x`가 `lvalue`라는 사실은 변하지 않고, 이에 언제나 `lvalue reference`를 받는 함수들이 <span class="hl-yellow">Overloading</span>된다.
+
+뿐만 아니라 다음과 같은 문제가 있다. 예를 들어, `func`가 인자를 1개가 아니라 2개를 받는다고 가정해보자. 그렇면 다음과 같은 **모든 조합**의 템플릿 함수들을 **정의**해야 한다.
+
+```cpp
+template<typename T>
+void wrapper(T& x, T& y)
+{
+    func(x, y);
+}
+
+template<typename T>
+void wrapper(const T& x, T& y)
+{
+    func(x, y);
+}
+
+template<typename T>
+void wrapper(T& x, const T& y)
+{
+    func(x, y);
+}
+
+template<typename T>
+void wrapper(const T& x, const T& y)
+{
+    func(x, y);
+}
+```
+
+이렇게 하는 것은 정말 불필요하고 귀찮은 일이다...🤮   
+위와 같이 코딩해야 하는 이유는? 단순히 일반적인 레퍼런스가 `rvalue`를 받을 수 없기 때문이다. 그렇다고 해서 디폴트로 상수 레퍼런스만 받게 된다면, 상수가 아닌 레퍼런스도 상수 레퍼런스로 캐스팅되는 어처구니없는 상황이 일어난다.
+
+`C++ 11`에서는 이것을 간단하게 해결할 수 있다. 그것은 `Universal Reference`를 이용하는 것이다.
+
+### 보편적 레퍼런스 (Universal Reference)
+
+```cpp
+#include <iostream>
+#include <utility>
+
+using std::cout;
+using std::endl;
+using std::string;
+
+
+template<typename T>
+void wrapper(T&& x)
+{
+    func(std::forward<T>(x));
+}
+
+class Foo {};
+
+void func(Foo& val)
+{
+    cout << "lvalue reference" << endl;
+}
+
+void func(const Foo& val)
+{
+    cout << "const lvalue reference" << endl;
+}
+
+void func(Foo&& val)
+{
+    cout << "rvalue reference" << endl;
+}
+
+
+int main()
+{
+    Foo foo;
+    const Foo const_foo;
+
+    cout << "-------------------- original --------------------" << endl;
+    func(foo);
+    func(const_foo);
+    func(Foo());
+
+    cout << "-------------------- wrapper --------------------" << endl;
+    wrapper(foo);
+    wrapper(const_foo);
+    wrapper(Foo());
+
+    return 0;
+}
+```
+
+```console
+-------------------- original --------------------
+lvalue reference
+const lvalue reference
+rvalue reference
+-------------------- wrapper --------------------
+lvalue reference
+const lvalue reference
+rvalue reference
+```
+
+결과는 위와 같다. 잘 작동하는 것을 볼 수 있다.
+
+
+```cpp
+template<typename T>
+void wrapper(T&& x)
+{
+    func(std::forward<T>(x));
+}
+```
+
+`wrapper`함수는 인자로 `T&&`를 받고 있다. 이렇게, 템플릿 인자 `T`에 대해 `rvalue reference`를 받는 형태를 <span class="hl-blue">보편적 레퍼런스 (Universal Reference)</span>라고 한다.   
+
+`보편적 레퍼런스`는 `rvalue reference`와 다르다. 다음과 같은 코드를 살펴보자.
+
+```cpp
+void PrintValue(int&& x)
+{
+    cout<<"rvalue reference: "<<x<<endl;
+}
+
+int main()
+{
+    PrintValue(5);
+
+    int x = 5;
+    PrintValue(x);
+
+    return 0;
+}
+```
+
+```console
+error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+      PrintValue(x);
+|                ^
+```
+
+이렇게 하면, <span class="hl-red">Compile Error</span>가 발생할 것이다. 위의 함수처럼 `int&&` 형태의 함수는 ***rvalue만을 인자로 받을 수 있다.***
+
+```cpp
+template <typename T>
+void wrapper(T&& x) { };
+```
+
+하지만 위와 같은 **템플릿 타입의 `rvalue reference`는 다르다.** 이 `보편적 레퍼런스`는 `rvalue`뿐만이 아니라 `lvalue` 역시 받을 수 있다.    
+그렇다면 `lvalue`가 왔을 때 `T`의 타입은 어떻게 해석될까?
+
+> C++에서는 `레퍼런스 겹침 규칙 (Reference Collapsing Rule)`에 따라 `T`의 타입을 추론한다.
+{: .prompt-tip}
+
+```cpp
+using T = int&
+T& x1;    // int& &; x1 -> int&
+T&& x2;   // int& &&; x2 -> int&
+
+using U = int&&
+U& x3;    // int&& &; x3 -> int&
+U&& x4;   // int&& &&; x4 -> int&&
+```
+
+그렇다면 다음은...
+```cpp
+wrapper(foo);
+wrapper(const_foo);
+```
+
+위의 2가지 호출의 경우 `T`가 각각 `Foo&`와 `const Foo&`로 추론될 것이다.
+```cpp
+wrapper(Foo());
+```
+
+위의 경우에는 `T`가 단순히 `Foo`로 추론된다.
+
+그런데 의문이 생기는 부분이 있다. 그것은 다음과 같다.
+```cpp
+func(x);
+```
+
+어째서 이렇게 하지 않았을까? 그것은 위에서 설명했듯이 `x`는 `lvalue`이기 때문이다. 따라서 `int&&`를 오버로딩하는 `func`를 호출하려 하였으나 실제로는 `const int&`를 오버로딩하는 `func`가 호출되게 된다.   
+그러므로 이 경우 `move`를 통해 `x`를 다시 `rvalue`로 변환해야 한다.
+
+그러나 아무때나 아무곳이나 `move`를 사용하면 안된다!! 인자로 받은 `x`가 `rvalue reference`일 때에만 `move`를 사용해야 한다. 만약 `lvalue reference`일 때, `move`를 적용한다면 `lvalue`에 오버로딩 되는 `func`가 아닌 `rvalue`에 오버로딩 되는 `func`가 호출된다.
+
+```cpp
+func(std::forward<T>(x));
+```
+
+이러한 문제를 해결해주는 것이 `forward` 함수이다. 이 함수는 `x`가 `rvalue reference`일 때만 `move`를 적용한 것처럼 작동한다. 
+
+`std::forward` 정의를 다시 한번 살펴보자.
+
+```cpp
+template <class T>
+T&& forward(typename std::remove_reference<T>::type& a) noexcept
+{
+    return static_cast<T&&>(a);
+}
+```
+`std_remove_reference`
+: 타입의 `reference`를 제거하는 `템플릿 메타 함수`이다.
+
+위와 같이 정의되어 있는데, `T`가 `Foo&`라면,
+```cpp
+Foo&&& forward(typename std::remove_reference<Foo&>::type& a) noexcept
+{
+    return static_cast<Foo&&&>(a);
+}
+```
+
+이렇게 되어, `레퍼런스 겹침 규칙`에 따라 다음과 같이 된다.
+
+```cpp
+Foo& forward(Foo& a) noexcept
+{
+    return static_cast<Foo&>(a);
+}
+```
+
+`T`가 `Foo`라면, 다음과 같이 된다.
+
+```cpp
+Foo&& forward(Foo& a) noexcept
+{
+    return static_cast<Foo&&>(a);
+}
+```
+
+위와 같이 `rvalue`로 `casting` 해 준다. 고로 성공적으로 인자를 전달하는 것이다.
 
 ---
 

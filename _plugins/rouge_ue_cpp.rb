@@ -351,9 +351,10 @@ module Rouge
       ].freeze
 
       # -----------------------------------------------------------------------
-      # UE Property / Function Specifiers (.na → sky blue #9cdcfe)
+      # UE Enum-like Specifiers (.no → amber #b9771e)
+      # These are actual enum values passed inside UPROPERTY/UFUNCTION macros.
       # -----------------------------------------------------------------------
-      UE_SPECIFIERS = %w[
+      UE_ENUM_SPECIFIERS = %w[
         BlueprintReadWrite
         BlueprintReadOnly
         BlueprintGetter
@@ -410,6 +411,47 @@ module Rouge
         SimpleDisplay
         FullyExpand
 
+        Exec
+        Server
+        Client
+        NetMulticast
+        Reliable
+        Unreliable
+        WithValidation
+        ServiceRequest
+        ServiceResponse
+
+        Abstract
+        Deprecated
+        HideDropdown
+        HideFunctions
+        MinimalAPI
+        Within
+        ClassGroup
+        ShowCategories
+        HideCategories
+        AutoCollapseCategories
+        AutoExpandCategories
+        ComponentWrapperClass
+        ConversionRoot
+        CustomConstructor
+        DefaultToInstanced
+        DontAutoCollapseCategories
+        DontCollapseCategories
+        Intrinsic
+        NoExport
+        PerObjectConfig
+        Placeable
+        NotPlaceable
+        Const
+        CustomReplicationFunction
+      ].freeze
+
+      # -----------------------------------------------------------------------
+      # UE Key Specifiers (.nn → green #b8d7a3)
+      # These are key=value pairs inside macros (Category="...", meta=(...))
+      # -----------------------------------------------------------------------
+      UE_KEY_SPECIFIERS = %w[
         Category
         Categories
         meta
@@ -447,42 +489,6 @@ module Rouge
         ExpandBoolAsExecs
         DefaultValue
         ReturnDisplayName
-
-        Exec
-        Server
-        Client
-        NetMulticast
-        Reliable
-        Unreliable
-        WithValidation
-        ServiceRequest
-        ServiceResponse
-
-        Abstract
-        Deprecated
-        HideDropdown
-        HideFunctions
-        MinimalAPI
-        Within
-        ClassGroup
-        ShowCategories
-        HideCategories
-        AutoCollapseCategories
-        AutoExpandCategories
-        ComponentWrapperClass
-        ConversionRoot
-        CustomConstructor
-        DefaultToInstanced
-        DontAutoCollapseCategories
-        DontCollapseCategories
-        Intrinsic
-        NoExport
-        PerObjectConfig
-        Placeable
-        NotPlaceable
-        Const
-        CustomReplicationFunction
-
         UIMin
         UIMax
         ClampMin
@@ -498,6 +504,13 @@ module Rouge
         InlineEditConditionToggle
         PinHiddenByDefault
         PinShownByDefault
+      ].freeze
+
+      # -----------------------------------------------------------------------
+      # UE Property / Function Specifiers (.na → sky blue #9cdcfe)
+      # Remaining specifiers not covered above.
+      # -----------------------------------------------------------------------
+      UE_SPECIFIERS = %w[
         NeedsLatentFixup
 
         SparseClassDataType
@@ -551,6 +564,34 @@ module Rouge
         int8_t int16_t int32_t int64_t
         uint8_t uint16_t uint32_t uint64_t
         intptr_t uintptr_t intmax_t uintmax_t
+        remove_reference remove_const remove_volatile remove_cv
+        remove_pointer remove_extent remove_all_extents
+        add_const add_volatile add_cv add_pointer add_lvalue_reference add_rvalue_reference
+        make_signed make_unsigned
+        decay enable_if conditional
+        is_same is_base_of is_convertible is_constructible is_assignable
+        is_void is_null_pointer is_integral is_floating_point is_array is_pointer
+        is_lvalue_reference is_rvalue_reference is_member_pointer is_enum is_union is_class
+        is_function is_trivial is_standard_layout is_pod is_abstract is_polymorphic is_final
+        is_const is_volatile is_signed is_unsigned is_arithmetic is_scalar is_compound
+        is_object is_reference is_member_function_pointer is_member_object_pointer
+        is_default_constructible is_copy_constructible is_move_constructible
+        is_copy_assignable is_move_assignable is_destructible
+        is_trivially_constructible is_trivially_copyable
+        underlying_type result_of invoke_result
+        alignment_of rank extent
+        integral_constant true_type false_type
+        type_identity void_t
+        conjunction disjunction negation
+        forward_iterator_tag bidirectional_iterator_tag random_access_iterator_tag
+        input_iterator_tag output_iterator_tag
+        iterator_traits
+        allocator allocator_traits
+        char_traits
+        numeric_limits
+        ratio ratio_add ratio_subtract ratio_multiply ratio_divide
+        complex valarray
+        reference_wrapper
       ].freeze
 
       # UE primitive/alias types → Name::Class (gold)
@@ -564,14 +605,78 @@ module Rouge
         TYPE_OF_NULL
       ].freeze
 
+      # STL objects (stream variables): standalone cout, cin, etc. → .vi
+      STL_OBJECTS = Set.new(%w[
+        cout cerr clog cin wcout wcin wcerr wclog
+      ]).freeze
+
+      # STL functions: standalone endl, forward, move, etc. → .nf
+      STL_FUNCTIONS = Set.new(%w[
+        endl ends flush
+        forward move move_if_noexcept
+        swap exchange
+        make_pair make_tuple make_optional make_unique make_shared
+        make_reverse_iterator make_move_iterator
+        get holds_alternative visit
+        static_pointer_cast dynamic_pointer_cast const_pointer_cast
+        begin end rbegin rend cbegin cend crbegin crend
+        find find_if find_if_not find_end find_first_of
+        count count_if
+        sort stable_sort partial_sort nth_element
+        reverse reverse_copy rotate rotate_copy
+        copy copy_if copy_n copy_backward
+        fill fill_n generate generate_n
+        transform
+        remove remove_if remove_copy remove_copy_if
+        replace replace_if replace_copy replace_copy_if
+        unique unique_copy
+        merge inplace_merge
+        min max minmax min_element max_element minmax_element clamp
+        accumulate reduce inner_product partial_sum adjacent_difference iota
+        all_of any_of none_of
+        for_each for_each_n
+        equal mismatch is_permutation
+        lower_bound upper_bound equal_range binary_search
+        push_heap pop_heap make_heap sort_heap
+        next_permutation prev_permutation
+        advance next prev distance
+        to_string to_wstring stoi stol stoll stoul stoull stof stod stold
+        bind ref cref invoke apply
+        async
+        format print println
+        hash
+      ]).freeze
+
+      STD_TYPES_SET  = Set.new(STD_TYPES).freeze
       STD_TYPES_RE    = /\Astd::(?:#{STD_TYPES.join('|')})\z/
+      STL_OBJECTS_RE  = /\A(?:#{STL_OBJECTS.to_a.join('|')})\z/
+      STL_FUNCS_RE    = /\A(?:#{STL_FUNCTIONS.to_a.join('|')})\z/
       UE_CORE_RE      = /\A(?:#{UE_CORE_MACROS.join('|')})\z/
       UE_UTIL_RE      = /\A(?:#{UE_UTIL_MACROS.join('|')})\z/
+      UE_ENUM_SPEC_RE = /\A(?:#{UE_ENUM_SPECIFIERS.join('|')})\z/
+      UE_KEY_SPEC_RE  = /\A(?:#{UE_KEY_SPECIFIERS.join('|')})\z/
       UE_SPEC_RE      = /\A(?:#{UE_SPECIFIERS.join('|')})\z/
       UE_TYPE_RE      = /\A[FUATEISN][A-Z][A-Za-z0-9_]+\z/
       UE_LOG_RE       = /\ALog[A-Z][A-Za-z0-9]+\z/
       UE_PRIM_RE      = /\A(?:#{UE_PRIMITIVE_TYPES.join('|')})\z/
       CPP_KEYWORD_RE  = /\A(?:#{CPP_KEYWORDS.join('|')})\z/
+
+      # All C++ keywords that should always be Keyword token even if lexer
+      # mis-classifies them as Name due to state machine confusion.
+      ALL_CPP_KEYWORDS = Set.new(%w[
+        if else for while do switch case break continue return goto
+        throw try catch default
+        namespace using template typename class struct enum union
+        virtual const static inline explicit operator new delete sizeof
+        typeof decltype alignof alignas noexcept static_assert
+        override final mutable volatile constexpr consteval constinit
+        const_cast static_cast dynamic_cast reinterpret_cast
+        auto register extern typedef friend
+        private public protected
+        true false nullptr NULL
+        co_await co_return co_yield
+        import module requires concept
+      ]).freeze
 
       # Token type aliases for readability
       T_NAME     = Rouge::Token::Tokens::Name
@@ -583,13 +688,21 @@ module Rouge
       T_NAME_B   = Rouge::Token::Tokens::Name::Builtin
       T_NAME_A   = Rouge::Token::Tokens::Name::Attribute
       T_NAME_VI  = Rouge::Token::Tokens::Name::Variable::Instance
+      T_NAME_VG  = Rouge::Token::Tokens::Name::Variable::Global
+      T_NAME_NO  = Rouge::Token::Tokens::Name::Constant
       T_OP       = Rouge::Token::Tokens::Operator
       T_PUNC     = Rouge::Token::Tokens::Punctuation
       T_TEXT     = Rouge::Token::Tokens::Text
       T_KW       = Rouge::Token::Tokens::Keyword
+      T_KW_DECL  = Rouge::Token::Tokens::Keyword::Declaration
       T_KW_TYPE  = Rouge::Token::Tokens::Keyword::Type
 
-      NAME_TOKENS = [T_NAME, T_NAME_O, T_NAME_C].freeze
+      CONTROL_KEYWORDS = Set.new(%w[
+        if else for while do switch break continue return goto
+        throw try catch case default
+      ]).freeze
+
+      NAME_TOKENS = [T_NAME, T_NAME_O, T_NAME_C, T_NAME_NS].freeze
 
       # -----------------------------------------------------------------------
       # Override lex to post-process every token regardless of state.
@@ -604,21 +717,127 @@ module Rouge
       end
 
       def post_process_tokens(tokens, &block)
-        # 1st pass: collect template parameter names
-        # e.g. template<typename T, class U, typename... Args> → collect T, U, Args
+        # 1st pass: collect template parameter names, locally declared type names,
+        # and locally declared variable names.
+        # template<typename T, class U> → T, U (template_params)
+        # class Foo / struct Foo        → Foo  (local_types)
+        # using MyType = ...            → MyType (local_types)
+        # Foo foo; / float x =          → foo, x (local_vars)
         template_params = Set.new
+        local_types     = Set.new
+        local_vars      = Set.new
+
+        is_type_token = ->(tok, val) {
+          tok == T_KW_TYPE ||
+          (NAME_TOKENS.include?(tok) && (
+            local_types.include?(val)     ||
+            template_params.include?(val) ||
+            STD_TYPES_SET.include?(val)   ||
+            UE_TYPE_RE.match?(val)        ||
+            UE_PRIM_RE.match?(val)
+          ))
+        }
+
         tokens.each_with_index do |(tok, val), idx|
-          next unless val == 'typename' || val == 'class'
-          j = idx + 1
-          j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
-          if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
-            template_params.add(tokens[j][1])
+          # Template parameters
+          if val == 'typename' || (val == 'class' && tok == T_KW)
+            j = idx + 1
+            j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+              name = tokens[j][1]
+              # Skip if followed by :: (it's a type, not a template param)
+              k = j + 1
+              k += 1 while k < tokens.size && tokens[k][0] == T_TEXT
+              if !(k < tokens.size && tokens[k][0] == T_OP && tokens[k][1] == '::')
+                template_params.add(name)
+              end
+            end
+          end
+
+          # class Foo / struct Foo / union Foo
+          if tok == T_KW && %w[class struct union].include?(val)
+            j = idx + 1
+            j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+              local_types.add(tokens[j][1])
+            end
+          end
+
+          # using MyType = ...
+          if tok == T_KW && val == 'using'
+            j = idx + 1
+            j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            next unless j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+            name = tokens[j][1]
+            k = j + 1
+            k += 1 while k < tokens.size && tokens[k][0] == T_TEXT
+            if k < tokens.size && tokens[k][0] == T_OP && tokens[k][1] == '='
+              local_types.add(name)
+            end
+          end
+
+          # Variable declarations: TypeName [*/&]* varName
+          # e.g. Foo foo;  float x = 0;  TArray<T>* ptr
+          if is_type_token.call(tok, val)
+            j = idx + 1
+            j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            # Skip pointer/ref operators
+            while j < tokens.size && tokens[j][0] == T_OP &&
+                  (tokens[j][1] == '*' || tokens[j][1] == '&' || tokens[j][1] == '&&' ||
+                   tokens[j][1].end_with?('>'))
+              j += 1
+              j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            end
+            if j < tokens.size && NAME_TOKENS.include?(tokens[j][0]) &&
+               !local_types.include?(tokens[j][1]) &&
+               !UE_TYPE_RE.match?(tokens[j][1]) &&
+               !UE_PRIM_RE.match?(tokens[j][1])
+              local_vars.add(tokens[j][1])
+            end
           end
         end
 
         i = 0
+        last_emitted_token = nil
+        last_emitted_value = nil
+        ue_macro_depth = 0   # > 0 means we're inside a UE macro call e.g. UPROPERTY(...)
+        punc_depth      = 0  # tracks nested () inside UE macro
         while i < tokens.size
           token, value = tokens[i]
+
+          # ------------------------------------------------------------------
+          # Global keyword restoration — must happen BEFORE any Name checks.
+          # Rouge mis-classifies keywords as Name when the lexer state is
+          # confused by unusual token sequences (e.g. Foo&&&).
+          # ------------------------------------------------------------------
+          # Track UE macro call depth (use value-based check, not token type,
+          # because post-processing hasn't run yet at this point)
+          if NAME_TOKENS.include?(token) && UE_CORE_RE.match?(value)
+            ue_macro_depth = 1 if ue_macro_depth == 0
+          end
+          if token == T_PUNC && ue_macro_depth > 0
+            value.each_char do |ch|
+              if ch == '('
+                punc_depth += 1
+              elsif ch == ')'
+                punc_depth -= 1
+                if punc_depth <= 0
+                  ue_macro_depth = 0
+                  punc_depth = 0
+                  break
+                end
+              end
+            end
+          end
+
+          if ALL_CPP_KEYWORDS.include?(value)
+            t = CONTROL_KEYWORDS.include?(value) ? T_KW_DECL : T_KW
+            block.call(t, value)
+            last_emitted_token = t
+            last_emitted_value = value
+            i += 1
+            next
+          end
 
           if NAME_TOKENS.include?(token)
 
@@ -660,7 +879,18 @@ module Rouge
               end
 
               # Emit final name
-              final_token = if STD_TYPES_RE.match?(full)
+              # UE enum convention: prefix starts with 'E' → member is a constant
+              prefix_is_enum = chain_names[0..-2].last&.match?(/\A[E][A-Z][A-Za-z0-9_]+\z/)
+
+              final_token = if prefix_is_enum
+                               T_NAME_NO
+                             elsif ns_prefix == 'std' && STL_OBJECTS.include?(final)
+                               # std::cout, std::cin, etc. → global variable (no bold)
+                               T_NAME_VG
+                             elsif ns_prefix == 'std' && (STL_FUNCTIONS.include?(final) || is_call || is_tmpl)
+                               # std::endl, std::forward<T>(), etc. → function
+                               T_NAME_F
+                             elsif STD_TYPES_RE.match?(full)
                                T_NAME_C
                              elsif is_call || is_tmpl
                                T_NAME_F
@@ -668,6 +898,8 @@ module Rouge
                                T_NAME_C
                              end
               block.call(final_token, final)
+              last_emitted_token = final_token
+              last_emitted_value = final
               i = consumed
               next
             end
@@ -684,35 +916,90 @@ module Rouge
             # ------------------------------------------------------------------
             # Single token reclassification
             # ------------------------------------------------------------------
+            next_i = i + 1
+            next_i += 1 while next_i < tokens.size && tokens[next_i][0] == T_TEXT
             is_func_call = !CPP_KEYWORD_RE.match?(value) &&
-                           i + 1 < tokens.size &&
-                           ((tokens[i + 1][0] == T_PUNC && tokens[i + 1][1].start_with?('(')) ||
-                            (tokens[i + 1][0] == T_OP   && tokens[i + 1][1] == '<'))
+                           !UE_TYPE_RE.match?(value) &&
+                           !UE_PRIM_RE.match?(value) &&
+                           next_i < tokens.size &&
+                           ((tokens[next_i][0] == T_PUNC && tokens[next_i][1].start_with?('(')) ||
+                            (tokens[next_i][0] == T_OP   && tokens[next_i][1] == '<'))
 
-            new_token = if template_params.include?(value)
+            # Use last_emitted_token (post-processed) instead of raw tokens array
+            is_after_namespace = last_emitted_value == 'namespace'
+
+            # Variable detection: last emitted token was a type or pointer/ref operator
+            last_was_type_like = last_emitted_token == T_NAME_C ||
+                                  last_emitted_token == T_KW_TYPE ||
+                                  (last_emitted_token == T_NAME && local_types.include?(last_emitted_value)) ||
+                                  (last_emitted_token == T_KW && %w[const volatile mutable static inline extern].include?(last_emitted_value))
+            is_after_type = last_was_type_like ||
+                            (last_emitted_token == T_OP && last_emitted_value == '*') ||
+                            (last_emitted_token == T_OP && last_emitted_value == '&') ||
+                            (last_emitted_token == T_OP && last_emitted_value&.end_with?('>'))
+
+            new_token = if is_after_namespace
+                          # namespace name takes priority over UE_TYPE_RE
+                          T_NAME_NS
+                        elsif local_types.include?(value)
+                          T_NAME_C
+                        elsif template_params.include?(value)
                           T_NAME_C
                         elsif UE_CORE_RE.match?(value)
                           T_NAME_D
                         elsif UE_UTIL_RE.match?(value)
                           T_NAME_B
-                        elsif UE_SPEC_RE.match?(value)
-                          T_NAME_A
+                        elsif ue_macro_depth > 0 && punc_depth > 0 &&
+                              !UE_CORE_RE.match?(value) && !UE_UTIL_RE.match?(value) &&
+                              !UE_TYPE_RE.match?(value) && !UE_PRIM_RE.match?(value) &&
+                              !template_params.include?(value)
+                          # Inside UE macro args: followed by '=' → key (.nn green)
+                          #                       otherwise      → enum value (.no amber)
+                          # key=value  only when followed by ="string"
+                          # meta=(...)  → enum value (amber)
+                          # Category="..." → key (green)
+                          eq_idx = i + 1
+                          eq_idx += 1 while eq_idx < tokens.size && tokens[eq_idx][0] == T_TEXT
+                          after_eq_idx = eq_idx + 1
+                          after_eq_idx += 1 while after_eq_idx < tokens.size && tokens[after_eq_idx][0] == T_TEXT
+                          is_key = eq_idx < tokens.size &&
+                                   tokens[eq_idx][0] == T_OP && tokens[eq_idx][1] == '=' &&
+                                   after_eq_idx < tokens.size &&
+                                   tokens[after_eq_idx][1].start_with?('"')
+                          is_key ? T_NAME_NS : T_NAME_NO
                         elsif UE_TYPE_RE.match?(value)
                           T_NAME_C
                         elsif UE_PRIM_RE.match?(value)
                           T_NAME_C
                         elsif UE_LOG_RE.match?(value)
                           T_NAME_B
+                        elsif STL_OBJECTS_RE.match?(value)
+                          T_NAME_VG
+                        elsif STL_FUNCS_RE.match?(value)
+                          T_NAME_F
                         elsif is_func_call
                           T_NAME_F
-                        elsif is_member_access
+                        elsif is_member_access || is_after_type
+                          T_NAME_VI
+                        elsif local_vars.include?(value)
                           T_NAME_VI
                         else
                           token
                         end
 
+            # Skip whitespace tokens when updating last_emitted
+            unless token == T_TEXT
+              last_emitted_token = new_token
+              last_emitted_value = value
+            end
             block.call(new_token, value)
+          elsif token == T_KW && CONTROL_KEYWORDS.include?(value)
+            block.call(T_KW_DECL, value)
           else
+            unless token == T_TEXT
+              last_emitted_token = token
+              last_emitted_value = value
+            end
             block.call(token, value)
           end
 

@@ -166,10 +166,14 @@
 
   /* Default text & background */
   .highlight,
-  .highlight .w,
-  .highlight .n {
+  .highlight .w {
     color: #e0e0e0;
     background-color: #0d0d0f;
+  }
+
+  /* Name (generic) — 일반 식별자, 타입명, 템플릿 파라미터 등 */
+  .highlight .n {
+    color: #ffd700;
   }
 
   /* Error */
@@ -189,36 +193,63 @@
     font-style: italic;
   }
 
+  /* Comment::Special (///, //!) */
+  .highlight .cx {
+    color: #4ec994;
+    font-style: italic;
+  }
+
   /* Preprocessor directive: #include, #define, #pragma */
   .highlight .cp {
     color: #a0a0a0;
   }
 
-  /* Preprocessor macro identifier: WITH_EDITOR, PLATFORM_WINDOWS... */
+  /* Preprocessor file: #include "file.h" 안의 파일명 — 문자열과 동일 계열 */
   .highlight .cpf {
-    color: #bd63c5;
+    color: #ce9178;
   }
 
-  /* Preprocessor format string inside macros */
-  .highlight .cs {
-    color: #6a9955;
-    font-style: italic;
+  /* Literal base */
+  .highlight .l {
+    color: #c8a96e;
   }
 
-  /* Keywords: if, for, while, return, switch, case, break... */
+  /* Literal::String::Format (f-string) */
+  .highlight .lf {
+    color: #e8b87a;
+  }
+
+  /* Name::Variable::Magic (__name__, __file__) */
+  .highlight .mg {
+    color: #c586c0;
+  }
+
+  /* Keywords: if, else, for, while, return, namespace, virtual, const, static, override... */
   .highlight .k,
   .highlight .kn,
-  .highlight .kp,
   .highlight .kr,
-  .highlight .kv,
-  .highlight .kc,
-  .highlight .kt {
-    color: #569cc5;
+  .highlight .kv {
+    color: #569cd6;
   }
 
-  /* public, private, protected — 어두운 회색 */
+  /* Keyword::Constant: true, false, null, nullptr */
+  .highlight .kc {
+    color: #569cd6;
+  }
+
+  /* Keyword::Pseudo: self, None, this */
+  .highlight .kp {
+    color: #4eb8d0;
+  }
+
+  /* Keyword::Type: int, void, float, bool */
+  .highlight .kt {
+    color: #569cd6;
+  }
+
+  /* Keyword::Control: if, else, for, while, do, switch, break, continue, return, goto, throw, try, catch */
   .highlight .kd {
-    color: #707070;
+    color: #d8a0df;
   }
 
   /* Operators: +, -, *, /, =, ::, ->, ... */
@@ -230,12 +261,22 @@
   /* Punctuation: {, }, (, ), ;, ... */
   .highlight .p,
   .highlight .pi {
-    color: #d0d0d0;
+    color: #b8b8b8;
   }
 
-  /* Label (public:, private:, protected:) — 어두운 회색 */
+  /* Punctuation::Label */
+  .highlight .pl {
+    color: #909090;
+  }
+
+  /* Punctuation::Marker */
+  .highlight .pm {
+    color: #989898;
+  }
+
+  /* Label (goto_label:, case:, public:) */
   .highlight .nl {
-    color: #707070;
+    color: #569cd6;
   }
 
   /* Strings: "hello", 'a' */
@@ -252,6 +293,11 @@
     color: #ce9178;
   }
 
+  /* String::Long (multiline string) */
+  .highlight .sl {
+    color: #d4a574;
+  }
+
   /* String escape: \n, \t */
   .highlight .se {
     color: #d7ba7d;
@@ -259,7 +305,7 @@
 
   /* String interpolation: #{var} */
   .highlight .si {
-    color: #d7ba7d;
+    color: #c8d070;
   }
 
   /* Regex */
@@ -267,9 +313,9 @@
     color: #d16969;
   }
 
-  /* String symbol */
+  /* String::Symbol: :name (Ruby) — 심볼은 문자열과 구별 */
   .highlight .ss {
-    color: #ce9178;
+    color: #e8904e;
   }
 
   /* Numbers: 42, 3.14, 0xFF */
@@ -284,9 +330,15 @@
     color: #b5cea8;
   }
 
+  /* Literal::Number::Long (123L) */
+  .highlight .ml {
+    color: #a8d8a0;
+  }
+
   /* Class / Type name */
   .highlight .nc {
     color: #ffd700;
+    font-style: italic;
   }
 
   /* Namespace (std::, glm::, Eigen::, ...) */
@@ -298,6 +350,7 @@
   .highlight .nf,
   .highlight .fm {
     color: #ff8000;
+    font-style: italic;
   }
 
   /* Decorator: @property, @override */
@@ -308,12 +361,13 @@
   /* Enum constant / Named constant */
   .highlight .no {
     color: #b9771e;
+    font-style: italic;
   }
 
-  /* Built-in names: print, len, sizeof */
+  /* Built-in names: sizeof, true, false (일부 lexer에서 .nb로 분류) */
   .highlight .nb,
   .highlight .bp {
-    color: #4ec9b0;
+    color: #569cd6;
   }
 
   /* Attribute / Member field */
@@ -321,27 +375,40 @@
     color: #9cdcfe;
   }
 
-  /* Property (CSS property, Python @property) */
+  /* Property (CSS property, Python @property) — 멤버 필드(.na)와 구별 */
   .highlight .py {
-    color: #9cdcfe;
+    color: #79b8d8;
   }
 
-  /* Variable: global, class, magic */
-  .highlight .nv,
-  .highlight .vc,
-  .highlight .vg,
+  /* Variable::Generic (지역/일반 변수) */
+  .highlight .nv {
+    color: #bdb76b;
+  }
+
+  /* Variable::Class (@@var, Ruby 클래스 변수) */
+  .highlight .vc {
+    color: #a8cce8;
+  }
+
+  /* Variable::Global — STL stream objects (cout, cin, cerr, clog) */
+  .highlight .vg {
+    color: #bdb76b;
+  }
+
+  /* Variable::Magic (__name__, __file__) */
   .highlight .vm {
-    color: #9cdcfe;
+    color: #c586c0;
   }
 
   /* Instance member variable (obj->member, this->member) */
   .highlight .vi {
     color: #bdb76b;
+    font-weight: bold;
   }
 
-  /* HTML/XML tag */
+  /* HTML/XML tag — 제어 키워드(.k)와 구별, teal 계열 */
   .highlight .nt {
-    color: #569cc5;
+    color: #56b6c2;
   }
 
   /* Generic: prompt */
@@ -369,8 +436,13 @@
 
   /* Generic subheading */
   .highlight .gu {
-    color: #4ec9b0;
+    color: #48b8c8;
     font-weight: bold;
+  }
+
+  /* Generic base */
+  .highlight .g {
+    color: #a0a0a8;
   }
 
   /* Generic output */
@@ -378,9 +450,14 @@
     color: #888888;
   }
 
+  /* Generic::Other */
+  .highlight .gx {
+    color: #7888a0;
+  }
+
   /* Generic traceback */
   .highlight .gt {
-    color: #f48771;
+    color: #e09060;
   }
 
   /* Generic emphasis */
@@ -401,7 +478,7 @@
 
   /* Generic error */
   .highlight .gr {
-    color: #f48771;
+    color: #f06858;
   }
 
   /* Generic lineno (line numbers in shell output) */
@@ -411,26 +488,26 @@
 
   /* Literal::Date */
   .highlight .ld {
-    color: #ce9178;
+    color: #c8b090;
   }
 
   /* Name::Entity (HTML entities: &amp;) */
   .highlight .ni {
-    color: #d7ba7d;
+    color: #b8a860;
   }
 
-  /* Name::Exception */
+  /* Name::Exception: std::exception, RuntimeError */
   .highlight .ne {
-    color: #ff8000;
+    color: #e06c75;
   }
 
-  /* Name::Other */
+  /* Name::Other — 기본색과 구별, 따뜻한 흰색 */
   .highlight .nx {
-    color: #e0e0e0;
+    color: #d4cfc0;
   }
 
-  /* Other */
+  /* Other — 기본색과 구별, 차가운 흰색 */
   .highlight .x {
-    color: #e0e0e0;
+    color: #c8c4bc;
   }
 }
