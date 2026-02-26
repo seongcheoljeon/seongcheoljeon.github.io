@@ -415,7 +415,7 @@ int main()
 ```
 
 실행결과는 다음과 같다.
-: ```console
+: ```output
 -------------------- original --------------------
 lvalue reference
 const lvalue reference
@@ -550,7 +550,7 @@ int main()
 
 결과는 다음과 같다.
 
-```console
+```output
 -------------------- original --------------------
 lvalue reference
 const lvalue reference
@@ -656,7 +656,7 @@ int main()
 }
 ```
 
-```console
+```output
 -------------------- original --------------------
 lvalue reference
 const lvalue reference
@@ -699,7 +699,7 @@ int main()
 }
 ```
 
-```console
+```output
 error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
       PrintValue(x);
 |                ^

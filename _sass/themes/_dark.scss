@@ -510,4 +510,121 @@
   .highlight .x {
     color: #c8c4bc;
   }
+
+  // ---------------------------------------------------------------------------
+  // output lexer — terminal style override
+  // Applies only to code blocks using ```output
+  // ---------------------------------------------------------------------------
+  .language-output {
+    .highlight {
+      background-color: #0d0d0d !important;
+      border: 1px solid #1e2e1e;
+      border-radius: 4px;
+    }
+
+    pre.highlight {
+      background-color: #0d0d0d !important;
+    }
+
+    // 기본 텍스트 색상 override (Chirpy 전역 색상 덮어쓰기)
+    code {
+      color: #39c139;
+    }
+
+    // Generic::Output — 코드 스니펫 / 일반 출력 (기본 초록)
+    .go {
+      color: #39c139;
+    }
+
+    // Generic::Error — "error:" / "fatal error:" 라벨 (빨간색)
+    .ge {
+      color: #f44747;
+      font-style: normal;
+      font-weight: bold;
+    }
+
+    // Generic::Emph — "warning:" 라벨 (노란색)
+    .gi {
+      color: #dcdcaa;
+      font-style: normal;
+    }
+
+    // Generic::Strong — ^ ~ | 마커 / 구분선 (밝은 초록, bold)
+    .gs {
+      color: #6ae46a;
+      font-weight: bold;
+    }
+
+    // Generic::Prompt — 파일 경로 (하늘색)
+    .gp {
+      color: #9cdcfe;
+    }
+
+    // Literal::String — 에러 메시지 본문 (밝은 흰색)
+    .s,
+    .s1,
+    .s2 {
+      color: #d4d4d4;
+      font-style: normal;
+    }
+
+    // Comment::Single — note: / dim 라인 (어두운 초록)
+    // #1e7b1e 대비비 3.62 → #3d9e3d 5.70 (WCAG AA 패스)
+    .c1,
+    .c {
+      color: #3d9e3d;
+      font-style: normal;
+    }
+
+    // Name::Builtin — LogTemp: 프리픽스 (teal)
+    .nb {
+      color: #4ec9b0;
+    }
+
+    // Punctuation — ":" 구분자
+    .p {
+      color: #808080;
+    }
+
+    // Keyword — rvalue, lvalue 등 value category 키워드 (연보라 풍색)
+    .k,
+    .kd,
+    .kn {
+      color: #c586c0;
+    }
+
+    // Keyword::Type — int, bool, float 등 C++ primitive 타입 (파란색)
+    .kt {
+      color: #569cd6;
+    }
+
+    // Name::Function — 함수/메서드 호출 (노란색)
+    .nf {
+      color: #dcdcaa;
+    }
+
+    // Name::Variable::Instance — 변수 (하늘색)
+    .vi {
+      color: #9cdcfe;
+    }
+
+    // Name::Class — FString, TArray 등 UE/STL 타입 (금색)
+    .nc {
+      color: #c8a060;
+    }
+
+    // Operator — &&, &, * 한정자
+    .o {
+      color: #b0b0b0;
+    }
+
+    // Literal::Number — 숫자, 0x... (연두)
+    .m,
+    .mi,
+    .mf,
+    .mh,
+    .mo {
+      color: #b5cea8;
+    }
+  }
 }
