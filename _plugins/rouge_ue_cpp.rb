@@ -723,9 +723,11 @@ module Rouge
         # class Foo / struct Foo        → Foo  (local_types)
         # using MyType = ...            → MyType (local_types)
         # Foo foo; / float x =          → foo, x (local_vars)
-        template_params = Set.new
-        local_types     = Set.new
-        local_vars      = Set.new
+        template_params   = Set.new
+        local_types       = Set.new
+        local_enums       = Set.new
+        local_namespaces  = Set.new
+        local_vars        = Set.new
 
         is_type_token = ->(tok, val) {
           tok == T_KW_TYPE ||
@@ -759,6 +761,31 @@ module Rouge
             j = idx + 1
             j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
             if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+              local_types.add(tokens[j][1])
+            end
+          end
+
+          # namespace Foo → local_namespaces
+          if tok == T_KW && val == 'namespace'
+            j = idx + 1
+            j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+              local_namespaces.add(tokens[j][1])
+            end
+          end
+
+          # enum Foo / enum class Foo → local_enums
+          if tok == T_KW && val == 'enum'
+            j = idx + 1
+            j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            # skip optional 'class' or 'struct' keyword
+            if j < tokens.size && tokens[j][0] == T_KW &&
+               %w[class struct].include?(tokens[j][1])
+              j += 1
+              j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+            end
+            if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+              local_enums.add(tokens[j][1])
               local_types.add(tokens[j][1])
             end
           end
@@ -873,14 +900,30 @@ module Rouge
               full      = "#{ns_prefix}::#{final}"
 
               # Emit namespace segments
-              chain_names[0..-2].each_with_index do |seg, idx|
-                block.call(T_NAME_NS, seg)
+              # local_types에 있으면 클래스 색(금색), 아니면 네임스페이스 색
+              chain_names[0..-2].each do |seg|
+                seg_tok = local_types.include?(seg) ? T_NAME_C : T_NAME_NS
+                block.call(seg_tok, seg)
                 block.call(T_OP, '::')
               end
 
               # Emit final name
-              # UE enum convention: prefix starts with 'E' → member is a constant
-              prefix_is_enum = chain_names[0..-2].last&.match?(/\A[E][A-Z][A-Za-z0-9_]+\z/)
+              # Determine if final segment is an enum member / constant:
+              #   1. UE convention: immediate parent starts with 'E' (EMyEnum::Value)
+              #   2. local_enums: enum declared in this code block
+              #   3. Heuristic: 3+ segment chain, immediate parent is uppercase type,
+              #      final is uppercase start, not a function call or template
+              immediate_parent = chain_names[0..-2].last
+              prefix_is_enum =
+                immediate_parent&.match?(/\A[E][A-Z][A-Za-z0-9_]+\z/) ||
+                local_enums.include?(immediate_parent) ||
+                (chain_names.size >= 3 &&
+                 immediate_parent&.match?(/\A[A-Z]/) &&
+                 final.match?(/\A[A-Z]/) &&
+                 !is_call && !is_tmpl)
+
+              # immediate prefix가 local namespace일 때 final 분류
+              prefix_is_local_ns = local_namespaces.include?(immediate_parent)
 
               final_token = if prefix_is_enum
                                T_NAME_NO
@@ -894,6 +937,9 @@ module Rouge
                                T_NAME_C
                              elsif is_call || is_tmpl
                                T_NAME_F
+                             elsif prefix_is_local_ns && !final.match?(/\A[A-Z]/)
+                               # namespace 내 소문자 시작 식별자 → 변수
+                               T_NAME_VI
                              else
                                T_NAME_C
                              end
