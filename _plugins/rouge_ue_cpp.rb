@@ -702,7 +702,7 @@ module Rouge
         throw try catch case default
       ]).freeze
 
-      NAME_TOKENS = [T_NAME, T_NAME_O, T_NAME_C, T_NAME_NS].freeze
+      NAME_TOKENS = [T_NAME, T_NAME_O, T_NAME_C, T_NAME_NS, T_NAME_VI].freeze
 
       # -----------------------------------------------------------------------
       # Override lex to post-process every token regardless of state.
