@@ -512,6 +512,155 @@
   }
 
   // ---------------------------------------------------------------------------
+  // terminal lexer — Linux / macOS 쉘 세션
+  // ---------------------------------------------------------------------------
+  //
+  // 팟레트 설계 (6종 역할 완전 분리)
+  //   프롬프트   #f1fa8c  밝은 노란   user@host:~$
+  //   명령어   #50fa7b  초록       cmake, ls, git
+  //   플래그    #8be9fd  연하늘색  -S, --build, -DCMAKE_
+  //   경로     #bd93f9  연보라    /usr/local, ./build
+  //   문자열   #ff9580  코랄/살구  "value", 'string'
+  //   변수     #ff79c6  핑크      $HOME, owner/group
+  //   숫자     #b5cea8  연두    4096, 12
+  //   키워드   #56b6c2  실납색  Building, [100%]
+  //   dim      #6272a4  회색파랑  cmake --메시지, 날짜
+  //   에러    #ff5555  빨강
+  //   경고     #e5c07b  황금
+  //   일반     #d4d4d4  밝은 회색  기본 출력
+  // ---------------------------------------------------------------------------
+  .language-terminal {
+    .highlight {
+      background-color: #0c0c0c !important;
+      border: 1px solid #1e1e1e;
+      border-radius: 4px;
+    }
+
+    pre.highlight { background-color: #0c0c0c !important; }
+    code          { color: #d4d4d4; }
+
+    // 프롬프트 — 밝은 노란 (bold)
+    .gp { color: #f1fa8c; font-weight: bold; }
+
+    // 명령어 — 초록
+    .nb { color: #50fa7b; }
+
+    // 플래그 — 연하늘색  (-S, --build, -DCMAKE_...)
+    .nd { color: #8be9fd; }
+
+    // 경로 — 연보라  (/usr/local, ./build)
+    .nn { color: #bd93f9; }
+
+    // 문자열 — 코랄/살구  ("value", 'string')
+    .s, .s1, .s2 { color: #ff9580; font-style: normal; }
+
+    // 변수 — 핑크  ($HOME, owner, group)
+    .nv { color: #ff79c6; }
+
+    // 수자
+    .m, .mi, .mf, .mh, .mo { color: #b5cea8; }
+
+    // cmake 키워드 — 실납색  (Building, Linking)
+    .k, .kd, .kn { color: #56b6c2; font-style: normal; }
+
+    // cmake [100%] 프로그레스 — 초록 bold
+    .gs { color: #50fa7b; font-weight: bold; }
+
+    // dim — cmake -- 메시지, ls 날짜
+    .c1, .c { color: #6272a4; font-style: normal; }
+
+    // 에러
+    .gr { color: #ff5555; }
+
+    // 경고
+    .ge { color: #e5c07b; font-style: normal; }
+
+    // 연산자 — |, &&, >
+    .o { color: #d4d4d4; }
+
+    // tree 트리 문자 — dim
+    .p { color: #6272a4; }
+
+    // 일반 출력
+    .go { color: #d4d4d4; }
+  }
+
+  // ---------------------------------------------------------------------------
+  // console lexer — Windows CMD / PowerShell
+  // ---------------------------------------------------------------------------
+  //
+  // 팟레트 설계 (terminal과 동일 역할 체계, 동일 색상)
+  //   프롬플트  #f1fa8c  C:\path>  PS C:\>
+  //   명령어  #50fa7b  cmake, dir, Get-ChildItem
+  //   플래그   #8be9fd  /S, -Force, -DCMAKE_
+  //   경로    #bd93f9  C:\path\to, .\build
+  //   문자열  #ff9580  "value"
+  //   변수    #ff79c6  %VAR%, $env:PATH
+  //   숫자    #b5cea8
+  //   키워드  #56b6c2  PS 프리픽스, <DIR>
+  //   dim     #6272a4  날짜, cmake -- 메시지
+  //   폴더명  #8be9fd bold
+  //   에러   #ff5555
+  //   경고    #e5c07b
+  //   일반    #d4d4d4
+  // ---------------------------------------------------------------------------
+  .language-console {
+    .highlight {
+      background-color: #0c0c0c !important;
+      border: 1px solid #1e1e1e;
+      border-radius: 4px;
+    }
+
+    pre.highlight { background-color: #0c0c0c !important; }
+    code          { color: #d4d4d4; }
+
+    // 프롬프트 — 밝은 노뜰 bold
+    .gp { color: #f1fa8c; font-weight: bold; }
+
+    // PS 프리픽스 / <DIR> — 실납색
+    .k, .kd { color: #56b6c2; font-style: normal; }
+
+    // 명령어 — 초록
+    .nb { color: #50fa7b; }
+
+    // 플래그 — 연하늘색  (/S, -Force, -DCMAKE_...)
+    .nd { color: #8be9fd; }
+
+    // 경로 — 연보라  (C:\path, .\build)
+    .nn { color: #bd93f9; }
+
+    // 폴더명 — 연하늘색 bold
+    .nc { color: #8be9fd; font-weight: bold; }
+
+    // 문자열 — 코랄/살구
+    .s, .s1, .s2 { color: #ff9580; font-style: normal; }
+
+    // 변수 — 핑크  (%VAR%, $env:PATH)
+    .nv { color: #ff79c6; }
+
+    // 수자
+    .m, .mi, .mf, .mh, .mo { color: #b5cea8; }
+
+    // cmake [100%] — 초록 bold
+    .gs { color: #50fa7b; font-weight: bold; }
+
+    // dim — 날짜, cmake -- 메시지
+    .c1, .c { color: #6272a4; font-style: normal; }
+
+    // 에러
+    .gr { color: #ff5555; }
+
+    // 경고
+    .ge { color: #e5c07b; font-style: normal; }
+
+    // 연산자 — &, |
+    .o { color: #d4d4d4; }
+
+    // 일반 출력
+    .go { color: #d4d4d4; }
+  }
+
+  // ---------------------------------------------------------------------------
   // output lexer — terminal style override
   // Applies only to code blocks using ```output
   // ---------------------------------------------------------------------------
