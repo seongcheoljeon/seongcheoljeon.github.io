@@ -171,9 +171,47 @@ module Rouge
       end
 
       # ------------------------------------------------------------------
+      # [[ ... ]] 어노테이션 state
+      # e.g. [[ T&로 추론됨 ]], [[ const T&로 추론됨 ]]
+      # ------------------------------------------------------------------
+      state :annotation do
+        # 닫는 ]] → pop
+        rule(/\]\]/) do
+          token Punctuation, ']]'
+          pop!
+        end
+
+        # const / volatile → 파란색
+        rule(/\b(?:const|volatile)\b/, Keyword::Type)
+
+        # UE 타입 (FString 등) → 금색
+        rule(UE_TYPE_RE, Name::Class)
+
+        # 템플릿 파라미터: 대문자 시작 식별자 (T, U, Args, Key, Value 등) → 금색
+        rule(/\b[A-Z][A-Za-z0-9_]*\b/, Name::Class)
+
+        # &&, &, * → 연회색
+        rule(/&&?|\*/, Operator)
+
+        # 그 외 (한국어 포함) → 일반 출력 색
+        rule(/./, Generic::Output)
+
+        rule(/\n/) do
+          token Text, "\n"
+          pop!
+        end
+      end
+
+      # ------------------------------------------------------------------
       # Root state
       # ------------------------------------------------------------------
       state :root do
+
+        # 0. [[ ... ]] 어노테이션 라인
+        rule(/\[\[/) do
+          token Punctuation, '[['
+          push :annotation
+        end
 
         # 1. 주석 / dim 라인
         rule(/^(?:#|\/\/).*$/, Comment::Single)

@@ -899,15 +899,15 @@ module Rouge
             end
           end
 
-          # Variable declarations: TypeName [*/&]* varName
-          # e.g. Foo foo;  float x = 0;  TArray<T>* ptr
+          # Variable declarations: TypeName [*/&]* varName [= val] [, varName [= val]]...
+          # e.g. float x = 0;  float _speedx = A, _speedy = B;  TArray<T>* ptr
           if is_type_token.call(tok, val)
             j = idx + 1
             j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
             # Skip pointer/ref operators
             while j < tokens.size && tokens[j][0] == T_OP &&
                   (tokens[j][1] == '*' || tokens[j][1] == '&' || tokens[j][1] == '&&' ||
-                   tokens[j][1].end_with?('>'))
+                   tokens[j][1].end_with?('>'))  
               j += 1
               j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
             end
@@ -916,6 +916,37 @@ module Rouge
                !UE_TYPE_RE.match?(tokens[j][1]) &&
                !UE_PRIM_RE.match?(tokens[j][1])
               local_vars.add(tokens[j][1])
+              # comma-separated: float a = 1, b = 2, c;
+              loop do
+                # skip past initializer: advance until ',' or ';' or '{' at depth 0
+                depth = 0
+                j += 1
+                while j < tokens.size
+                  tv, vv = tokens[j]
+                  if tv == T_PUNC
+                    vv.each_char { |ch|
+                      depth += 1 if ch == '(' || ch == '[' || ch == '{'
+                      depth -= 1 if ch == ')' || ch == ']' || ch == '}'
+                    }
+                    break if depth == 0 && (vv.include?(',') || vv.include?(';') || vv.include?('{'))
+                  end
+                  j += 1
+                end
+                break unless j < tokens.size && tokens[j][0] == T_PUNC && tokens[j][1].include?(',')
+                j += 1
+                j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+                while j < tokens.size && tokens[j][0] == T_OP &&
+                      (tokens[j][1] == '*' || tokens[j][1] == '&' || tokens[j][1] == '&&')
+                  j += 1
+                  j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+                end
+                break unless j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+                next_var = tokens[j][1]
+                break if local_types.include?(next_var) ||
+                         UE_TYPE_RE.match?(next_var) ||
+                         UE_PRIM_RE.match?(next_var)
+                local_vars.add(next_var)
+              end
             end
           end
         end
