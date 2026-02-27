@@ -9,23 +9,26 @@ module Rouge
       tag     "console"
       aliases "cmd", "powershell_session", "pwsh"
 
-      CMD_CMD_RE = /\b(?i:
-        dir|cd|md|mkdir|rd|rmdir|del|erase|
-        copy|move|ren|rename|type|more|find|findstr|
-        echo|set|path|cls|exit|pause|
-        where|attrib|
-        xcopy|robocopy|
-        netstat|ipconfig|ping|tracert|nslookup|
-        tasklist|taskkill|
-        reg|sc|net|runas|
-        assoc|ftype|
-        pushd|popd|call|goto|if|for|start|
-        cmake|make|ninja|ctest|cpack|
-        git|python|pip|node|npm|yarn|ruby|gem|bundle|
-        gcc|clang|cl|link|lib|
-        msbuild|devenv|nmake|
-        curl|wget|ssh|scp
-      )\b/x
+      # g++, clang++ 는 \b 가 + 뒤에서 동작하지 않으므로 (?=\s|-|$) lookahead 사용
+      CMD_CMD_RE = /(?:
+        \b(?i:
+          dir|cd|md|mkdir|rd|rmdir|del|erase|
+          copy|move|ren|rename|type|more|find|findstr|
+          echo|set|path|cls|exit|pause|
+          where|attrib|xcopy|robocopy|
+          netstat|ipconfig|ping|tracert|nslookup|
+          tasklist|taskkill|reg|sc|net|runas|
+          assoc|ftype|pushd|popd|call|goto|if|for|start|
+          cmake|make|ninja|ctest|cpack|
+          git|python|pip|node|npm|yarn|ruby|gem|bundle|
+          gcc|clang|cl|link|lib|msbuild|devenv|nmake|
+          curl|wget|ssh|scp
+        )\b
+        |
+        g\+\+(?=\s|-|$)
+        |
+        clang\+\+(?=\s|-|$)
+      )/x
 
       PS_CMD_RE = /\b(?:
         Get-[A-Za-z]+|Set-[A-Za-z]+|New-[A-Za-z]+|
@@ -42,22 +45,28 @@ module Rouge
         Enable-[A-Za-z]+|Disable-[A-Za-z]+
       )\b/x
 
-      # 프롬프트 없이 명령어로 시작하는 라인 감지 (CMD + cmake 등 공통)
-      CMD_START_RE = /^(?=(?i:
-        dir|cd|md|mkdir|rd|rmdir|del|erase|
-        copy|move|ren|rename|type|more|find|findstr|
-        echo|set|path|cls|exit|pause|
-        where|attrib|xcopy|robocopy|
-        netstat|ipconfig|ping|tracert|nslookup|
-        tasklist|taskkill|reg|sc|net|runas|
-        pushd|popd|call|start|
-        cmake|make|ninja|ctest|cpack|
-        git|python|pip|node|npm|yarn|ruby|gem|bundle|
-        gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-        curl|wget|ssh|scp
-      )\b)/x
+      CMD_START_RE = /^(?=
+        (?:
+          (?i:
+            dir|cd|md|mkdir|rd|rmdir|del|erase|
+            copy|move|ren|rename|type|more|find|findstr|
+            echo|set|path|cls|exit|pause|
+            where|attrib|xcopy|robocopy|
+            netstat|ipconfig|ping|tracert|nslookup|
+            tasklist|taskkill|reg|sc|net|runas|
+            pushd|popd|call|start|
+            cmake|make|ninja|ctest|cpack|
+            git|python|pip|node|npm|yarn|ruby|gem|bundle|
+            gcc|clang|cl|link|lib|msbuild|devenv|nmake|
+            curl|wget|ssh|scp
+          )\b
+          |
+          g\+\+(?=\s|-|$)
+          |
+          clang\+\+(?=\s|-|$)
+        )
+      )/x
 
-      # 프롬프트 없이 PowerShell Verb-Noun 으로 시작하는 라인 감지
       PS_START_RE = /^(?=(?:
         Get-|Set-|New-|Remove-|Invoke-|Start-|Stop-|
         Test-|Write-|Read-|Select-|Where-|ForEach-|
@@ -114,7 +123,7 @@ module Rouge
         rule(/^.*(?:ERROR:|error:).*$/, Generic::Error)
         rule(/^.*(?:WARNING:|warning:).*$/, Generic::Emph)
 
-        # 7. cmake 진행 라인: [  0%], [100%]
+        # 7. cmake 진행 라인
         rule(/^(\[\s*\d+%\])(\s+)(Building|Linking|Compiling|Scanning|Generating|Archiving|Installing|Built target)(.*)$/) do |m|
           token Generic::Strong,  m[1]
           token Text,             m[2]
@@ -135,14 +144,10 @@ module Rouge
         end
 
         # 9. 프롬프트 없이 PowerShell Verb-Noun 명령어로 시작
-        rule(PS_START_RE) do
-          push :ps_command
-        end
+        rule(PS_START_RE) { push :ps_command }
 
         # 10. 프롬프트 없이 CMD/공통 명령어로 시작
-        rule(CMD_START_RE) do
-          push :cmd_command
-        end
+        rule(CMD_START_RE) { push :cmd_command }
 
         # 11. inline fallback
         rule(/0[xX][0-9a-fA-F]+/, Literal::Number)
@@ -151,9 +156,6 @@ module Rouge
         rule(/\n/, Text)
       end
 
-      # ------------------------------------------------------------------
-      # CMD command state
-      # ------------------------------------------------------------------
       state :cmd_command do
         rule(/\n/) do
           token Text, "\n"
@@ -165,20 +167,24 @@ module Rouge
         # /S /Q /F:value 플래그
         rule(/\/[A-Za-z0-9:\.]+/, Name::Decorator)
 
-        # 짧은 플래그: -S, -B, -DCMAKE_TOOLCHAIN_FILE=...
+        # 짧은 플래그
         rule(/-[A-Za-z][A-Za-z0-9_]*(?:=[^"'\s]*)?/, Name::Decorator)
 
-        # 긴 플래그: --build
+        # 긴 플래그
         rule(/--[A-Za-z][A-Za-z0-9\-]*(?:=[^"'\s]*)?/, Name::Decorator)
 
-        # Windows 경로: C:\path\to\dir
+        # Windows 경로
         rule(/[A-Za-z]:\\[^\s"'|&;,)]*/, Name::Namespace)
-
-        # 상대 경로: .\build, ..\src
         rule(/\.\.?\\[^\s"'|&;,)]*/, Name::Namespace)
 
-        # Unix 스타일 상대 경로 (cmake 에서 사용): ./build, ../src
+        # Unix 스타일 상대 경로
         rule(/(?:\.\.?|~)\/[^\s;|&>]*/, Name::Namespace)
+
+        # bare 상대 경로: src/foo.cpp
+        rule(/[A-Za-z_][A-Za-z0-9_.+-]*(?:\/[^\s;|&>]+)+/, Name::Namespace)
+
+        # 파일명: main.out, foo.cpp
+        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*/, Name::Namespace)
 
         # 문자열
         rule(/"[^"\n]*"/, Literal::String)
@@ -187,20 +193,13 @@ module Rouge
         # %환경변수%
         rule(/%[A-Za-z_][A-Za-z0-9_]*%/, Name::Variable)
 
-        # 숫자
         rule(/\d+/, Literal::Number)
-
-        # 논리/파이프
         rule(/[&|]/, Operator)
-
         rule(/[ \t]+/, Text)
         rule(/[A-Za-z_\.][A-Za-z0-9_\-\.]*/, Generic::Output)
         rule(/./, Generic::Output)
       end
 
-      # ------------------------------------------------------------------
-      # PowerShell command state
-      # ------------------------------------------------------------------
       state :ps_command do
         rule(/\n/) do
           token Text, "\n"
@@ -210,30 +209,26 @@ module Rouge
         rule(PS_CMD_RE,  Name::Builtin)
         rule(CMD_CMD_RE, Name::Builtin)
 
-        # -Force, -Recurse, -Path 플래그
         rule(/-[A-Za-z][A-Za-z0-9]*/, Name::Decorator)
-
-        # 긴 플래그
         rule(/--[A-Za-z][A-Za-z0-9\-]*/, Name::Decorator)
 
-        # Windows 경로
         rule(/[A-Za-z]:\\[^\s"'|;,)]*/, Name::Namespace)
         rule(/\.\.?\\[^\s"'|;,)]*/, Name::Namespace)
         rule(/(?:\.\.?|~)\/[^\s;|&>]*/, Name::Namespace)
 
-        # 문자열
+        # bare 상대 경로: src/foo.cpp
+        rule(/[A-Za-z_][A-Za-z0-9_.+-]*(?:\/[^\s;|&>]+)+/, Name::Namespace)
+
+        # 파일명: main.out, foo.cpp
+        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*/, Name::Namespace)
+
         rule(/"[^"\n]*"/, Literal::String)
         rule(/'[^'\n]*'/, Literal::String)
 
-        # $변수: $env:PATH, $PSVersionTable
         rule(/\$(?:env:[A-Za-z_][A-Za-z0-9_]*|[A-Za-z_][A-Za-z0-9_]*)/, Name::Variable)
 
-        # 숫자
         rule(/\d+/, Literal::Number)
-
-        # 파이프
         rule(/[|;]/, Operator)
-
         rule(/[ \t]+/, Text)
         rule(/[A-Za-z_][A-Za-z0-9_\-\.]*/, Generic::Output)
         rule(/./, Generic::Output)

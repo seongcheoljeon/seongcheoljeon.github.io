@@ -9,48 +9,62 @@ module Rouge
       tag     "terminal"
       aliases "bash_session", "sh_session"
 
-      UNIX_CMD_RE = /\b(?:
-        ls|ll|la|dir|cd|pwd|pushd|popd|
-        mkdir|rmdir|rm|cp|mv|touch|ln|
-        cat|less|more|head|tail|tee|
-        grep|egrep|fgrep|rg|find|locate|which|whereis|
-        chmod|chown|chgrp|stat|file|ldd|nm|objdump|
-        ps|top|htop|kill|killall|pkill|bg|fg|jobs|
-        df|du|free|uname|uptime|
-        tar|gzip|gunzip|bzip2|zip|unzip|xz|
-        ssh|scp|rsync|curl|wget|
-        git|cmake|make|ninja|ctest|cpack|ccmake|
-        gcc|g\+\+|clang|clang\+\+|ld|ar|ranlib|strip|pkg-config|
-        python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
-        echo|printf|read|export|unset|source|alias|
-        sudo|su|env|
-        vi|vim|nvim|nano|emacs|code|
-        awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
-        tree|lsof|strace|ltrace|
-        apt|apt-get|dnf|yum|pacman|brew|snap
-      )\b/x
+      # g++, clang++ 는 \b 가 + 뒤에서 동작하지 않으므로 (?=\s|-|$) lookahead 사용
+      UNIX_CMD_RE = /(?:
+        \b(?:
+          ls|ll|la|dir|cd|pwd|pushd|popd|
+          mkdir|rmdir|rm|cp|mv|touch|ln|
+          cat|less|more|head|tail|tee|
+          grep|egrep|fgrep|rg|find|locate|which|whereis|
+          chmod|chown|chgrp|stat|file|ldd|nm|objdump|
+          ps|top|htop|kill|killall|pkill|bg|fg|jobs|
+          df|du|free|uname|uptime|
+          tar|gzip|gunzip|bzip2|zip|unzip|xz|
+          ssh|scp|rsync|curl|wget|
+          git|cmake|make|ninja|ctest|cpack|ccmake|
+          gcc|clang|ld|ar|ranlib|strip|pkg-config|
+          python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
+          echo|printf|read|export|unset|source|alias|
+          sudo|su|env|
+          vi|vim|nvim|nano|emacs|code|
+          awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
+          tree|lsof|strace|ltrace|
+          apt|apt-get|dnf|yum|pacman|brew|snap
+        )\b
+        |
+        g\+\+(?=\s|-|$)
+        |
+        clang\+\+(?=\s|-|$)
+      )/x
 
-      # 프롬프트 없이 명령어로 시작하는 라인 감지용 lookahead
-      CMD_START_RE = /^(?=(?:
-        ls|ll|la|cd|pwd|pushd|popd|
-        mkdir|rmdir|rm|cp|mv|touch|ln|
-        cat|less|more|head|tail|tee|
-        grep|egrep|fgrep|rg|find|locate|which|whereis|
-        chmod|chown|chgrp|stat|file|
-        ps|top|htop|kill|killall|pkill|
-        df|du|free|uname|uptime|
-        tar|gzip|gunzip|bzip2|zip|unzip|xz|
-        ssh|scp|rsync|curl|wget|
-        git|cmake|make|ninja|ctest|cpack|ccmake|
-        gcc|clang|
-        python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
-        echo|printf|export|unset|source|alias|
-        sudo|su|env|
-        vi|vim|nvim|nano|emacs|code|
-        awk|sed|tr|sort|uniq|wc|cut|xargs|
-        tree|lsof|
-        apt|apt-get|dnf|yum|pacman|brew|snap
-      )\b)/x
+      CMD_START_RE = /^(?=
+        (?:
+          (?:
+            ls|ll|la|cd|pwd|pushd|popd|
+            mkdir|rmdir|rm|cp|mv|touch|ln|
+            cat|less|more|head|tail|tee|
+            grep|egrep|fgrep|rg|find|locate|which|whereis|
+            chmod|chown|chgrp|stat|file|
+            ps|top|htop|kill|killall|pkill|
+            df|du|free|uname|uptime|
+            tar|gzip|gunzip|bzip2|zip|unzip|xz|
+            ssh|scp|rsync|curl|wget|
+            git|cmake|make|ninja|ctest|cpack|ccmake|
+            gcc|clang|
+            python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
+            echo|printf|export|unset|source|alias|
+            sudo|su|env|
+            vi|vim|nvim|nano|emacs|code|
+            awk|sed|tr|sort|uniq|wc|cut|xargs|
+            tree|lsof|
+            apt|apt-get|dnf|yum|pacman|brew|snap|objdump
+          )\b
+          |
+          g\+\+(?=\s|-|$)
+          |
+          clang\+\+(?=\s|-|$)
+        )
+      )/x
 
       state :root do
 
@@ -83,7 +97,7 @@ module Rouge
         rule(/^.*\b(?:error|Error|ERROR):\s+.*$/, Generic::Error)
         rule(/^.*\b(?:warning|Warning|WARNING):\s+.*$/, Generic::Emph)
 
-        # 5. ls -alF 권한 라인: drwxr-xr-x  2 user group 4096 Feb 27 12:00 name
+        # 5. ls -alF 권한 라인
         rule(/^([d\-lrwxstST]{10})(\s+\d+)(\s+)(\S+)(\s+)(\S+)(\s+)([\d,]+)(\s+)(\w{3}\s+\d+\s+[\d:]+)(\s+)(.+)$/) do |m|
           token Name::Decorator,  m[1]
           token Literal::Number,  m[2]
@@ -99,13 +113,13 @@ module Rouge
           token Generic::Output,  m[12]
         end
 
-        # 6. tree 출력 — box-drawing 문자로 시작하는 라인만
+        # 6. tree 출력
         rule(/^([│├└─][│├└─ \t]*)(\S.*)$/) do |m|
           token Punctuation,      m[1]
           token Generic::Output,  m[2]
         end
 
-        # 7. 프롬프트 있는 경우: user@host:~$ cmd  /  $ cmd
+        # 7. 프롬프트: user@host:~$ / $
         rule(/^([^\n$]*\$[ \t]+)/) do |m|
           token Generic::Prompt, m[1]
           push :command
@@ -135,27 +149,31 @@ module Rouge
           pop!
         end
 
-        # 명령어 (최우선)
         rule(UNIX_CMD_RE, Name::Builtin)
 
         # 긴 플래그: --output, --build-type
         rule(/--[A-Za-z][A-Za-z0-9\-]*(?:=[^"'\s]*)?/, Name::Decorator)
 
-        # 짧은 플래그: -a, -alF, -DCMAKE_TOOLCHAIN_FILE=...
-        # =[^"'\s]* — = 이후 따옴표/공백 앞에서 멈춰 다음 string rule이 처리
+        # 짧은 플래그: -a, -DCMAKE_TOOLCHAIN_FILE=...
         rule(/-[A-Za-z][A-Za-z0-9_]*(?:=[^"'\s]*)?/, Name::Decorator)
 
         # 절대 경로: /usr/local/bin
         rule(/(?:\/[^\s\/;|&>]+)+\/?/, Name::Namespace)
 
-        # 상대 경로: ./build, ../src, ~/project
+        # 상대 경로 (명시적): ./build, ../src, ~/project
         rule(/(?:\.\.?|~)\/[^\s;|&>]*/, Name::Namespace)
+
+        # bare 상대 경로: src/foo.cpp, include/bar.h
+        rule(/[A-Za-z_][A-Za-z0-9_.+-]*(?:\/[^\s;|&>]+)+/, Name::Namespace)
+
+        # 파일명 (확장자 있는 경우): main.out, foo.cpp, bar.h
+        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*/, Name::Namespace)
 
         # 문자열
         rule(/"[^"\n]*"/, Literal::String)
         rule(/'[^'\n]*'/, Literal::String)
 
-        # 셸 변수: $HOME, ${CMAKE_BUILD_TYPE}
+        # 셸 변수
         rule(/\$\{[A-Za-z_][A-Za-z0-9_]*\}/, Name::Variable)
         rule(/\$[A-Za-z_][A-Za-z0-9_]*/, Name::Variable)
 

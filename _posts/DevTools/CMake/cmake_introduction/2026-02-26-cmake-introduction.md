@@ -1,13 +1,13 @@
 ---
 title: "[DevTools/CMake] CMake"
 description: >-
-  cmake
+  CMake는 플랫폼과 컴파일러에 독립적인 빌드 시스템 생성 도구로, 다양한 환경에서 동일한 프로젝트를 안정적으로 빌드할 수 있도록 도와준다. 직접 Makefile을 작성하는 방식과 달리, CMake는 추상화된 설정 파일(CMakeLists.txt)을 기반으로 Visual Studio, Ninja, Make 등 다양한 빌드 시스템을 자동 생성한다.
 series: "CMake for Beginner"
 series_part: 2
 author: seongcheol
 date: 2026-02-26 18:20:00 +0900
 categories: [DevTools, CMake]
-tags: [CMake,]
+tags: [CMake, ]
 pin: true
 image:
   path: "/assets/img/common/title/cmake_title.jpg"
@@ -24,17 +24,17 @@ mermaid: true
 `CMake`는 `Makefile` 자동 생성 및 관리를 해준다. 지정한 운영체제에 맞는 `Makefile`을 생성해줘서 소스코드 빌드를 편리하게 할 수 있다. 또한 의존성 정보를 일일이 기술해주지 않아도 되므로 빌드 스크립트 관리가 효율적이다.
 
 `make`가 무엇인 궁금하다면 아래의 링크를 통해 확인할 수 있다.
-[Make & Makefile](https://velog.io/@seongcheoljeon/Make-Makefile)
+[Make & Makefile](https://seongcheoljeon.github.io/posts/cmake_makefile/)
 
 > `CMake`는 `Makefile`을 만들기 위한 툴이다. 즉, `CMake`는 빌드 프로그램이 아니라 빌드 파일을 생성하는 툴인셈이다.
 {: .prompt-tip}
 
 `CMake`의 실행 및 빌드 명령어는 다음과 같은 형식이다.
 
-```shell
-$ cmake -S<source_dir> -B<build_dir> -DCMAKE_BUILD_TYPE=[Debug|Release]
+```terminal
+cmake -S<source_dir> -B<build_dir> -DCMAKE_BUILD_TYPE=[Debug|Release]
 
-$ cmake --build <build_dir> --config [Debug|Release]
+cmake --build <build_dir> --config [Debug|Release]
 ```
 
 ## CMake 개요
@@ -100,7 +100,7 @@ cmake -S . -B ./build -G XCode
 
 다만 아래와 같이 명령어에서 `-G` 옵션으로 지정한 [빌드 시스템](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html)을 호출하도록 명령할 수는 있다.
 
-```shell
+```terminal
 # 지정된 툴을 사용해 빌드 진행
 cmake --build ./build
 
@@ -408,7 +408,7 @@ target_link_libraries(<target> <item1> <item2> ...)
 target_link_libraries(test.out my_library another_library)
 ```
 
-[Makefile로 작성했던 것](https://velog.io/@seongcheoljeon/Make-Makefile)을 `CMakeLists.txt` 파일로 다시 작성해보자. 파일 구조는 다음과 같다.
+[Makefile로 작성했던 것](https://seongcheoljeon.github.io/posts/cmake_makefile/)을 `CMakeLists.txt` 파일로 다시 작성해보자. 파일 구조는 다음과 같다.
 
 ![dir_structure](img/image3.png){: width="300" }
 
@@ -610,7 +610,7 @@ _directory 구조_
 다음은 Calculate 라이브러리의 파일 내용이다.
 
 ```cpp
-// Caculator.h
+// Calculator.h
 
 #ifndef __CALCULATOR_H__
 #define __CALCULATOR_H__
@@ -620,9 +620,10 @@ void PrintResult(double);
 
 #endif // __CALCULATOR_H__
 ```
+{: file='Calculator.h' }
 
 ```cpp
-// Caculator.cmake
+// Caculator.cpp
 
 #include "Calculator.h"
 
@@ -644,9 +645,10 @@ void PrintResult(double result)
     cout << "The result is: " << result << endl;
 }
 ```
+{: file='Calculator.cpp' }
 
 ```cpp
-// main.cmake
+// main.cpp
 
 #include "Base.h"
 #include "A_Module.h"
@@ -670,8 +672,9 @@ int main(){
     return 0;
 }
 ```
+{: file='main.cpp' }
 
-나머지 파일들의 내용은 [여기(click me)](https://velog.io/@seongcheoljeon/Make-Makefile)에 가면 볼 수 있다.
+나머지 파일들의 내용은 [여기](https://seongcheoljeon.github.io/posts/cmake_makefile/)에 가면 볼 수 있다.
 
 라이브러리 생성은 보통 다음과 같은 `CMakeLists.txt` 파일의 내용은 갖는다.
 
@@ -807,11 +810,12 @@ make
 
 이처럼 `cmake`를 이용하면 외부 라이브러리도 쉽게 적용하여 컴파일하고 링킹하여 실행 파일을 생성할 수 있다. 😃
 
-> ❗주의 사항
+> **주의 사항**
 >
 > 오래된 버전의 `CMake`에서는 앞에 `target_`이 빠진 `include_directories`, `link_directories`와 같은 명령들이 사용되었는데 이는 **최신의 `CMake`에서는 사용이 권장되지 않는 명령들이다.**
 >
 > 현재의 `CMake` 패러다임은 `타겟`들을 기준으로 돌아가기 때문에 꼭 ***`target_*` 형태의 명령을 사용하는 것이 좋다.***
+{: .prompt-danger }
 
 ---
 
@@ -843,7 +847,7 @@ cmake -S.. -B. -DCMAKE_GENERATOR=Ninja
 
 ---
 
-## 💥 주의 사항
+## ⚠️ 주의 사항
 
 `STATIC`, `SHARED`, `MODULE`, `PRIVATE`, `PUBLIC`, `INTERFACE` 등등은 `대문자`인 점에 주의하자.
 
@@ -853,7 +857,7 @@ cmake -S.. -B. -DCMAKE_GENERATOR=Ninja
 
 ---
 
-## 정리
+## 📒 정리
 
 `CMake`는 상당히 방대하다. 이를 테면 여타 다른 언어들처럼 변수를 정의할 수 있고, `if`, `else`, `for` 문 모두 사용 가능하다. 
 

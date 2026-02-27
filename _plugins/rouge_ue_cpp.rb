@@ -717,7 +717,7 @@ module Rouge
         static_pointer_cast dynamic_pointer_cast const_pointer_cast
         begin end rbegin rend cbegin cend crbegin crend
         find find_if find_if_not find_end find_first_of
-        count count_if
+        count_if
         sort stable_sort partial_sort nth_element
         reverse reverse_copy rotate rotate_copy
         copy copy_if copy_n copy_backward
@@ -996,6 +996,26 @@ module Rouge
           if NAME_TOKENS.include?(token)
 
             # ------------------------------------------------------------------
+            # Destructor: ClassName::~ClassName
+            # Rouge가 ::~ 를 단일 T_OP 토큰으로 발행함
+            # [i]   T_NAME  "B_Module"
+            # [i+1] T_OP    "::~"
+            # [i+2] T_NAME  "B_Module"
+            # ------------------------------------------------------------------
+            if i + 2 < tokens.size &&
+               tokens[i + 1][0] == T_OP && tokens[i + 1][1] == '::~' &&
+               NAME_TOKENS.include?(tokens[i + 2][0])
+              dtor_tok = local_types.include?(value) ? T_NAME_C : T_NAME_NS
+              block.call(dtor_tok, value)               # local_types에 있으면 금색, 없으면 연두
+              block.call(T_OP,     '::~')              # ::~
+              block.call(T_NAME_F, tokens[i + 2][1])  # ClassName (노란색)
+              last_emitted_token = T_NAME_F
+              last_emitted_value = tokens[i + 2][1]
+              i += 3
+              next
+            end
+
+            # ------------------------------------------------------------------
             # Namespace chain: ns1::ns2::...::final
             # Handles both single (std::vector) and nested (std::chrono::duration)
             # Also handles Name::Class tokens like T::value_type (issue 1)
@@ -1094,6 +1114,8 @@ module Rouge
             is_func_call = !CPP_KEYWORD_RE.match?(value) &&
                            !UE_TYPE_RE.match?(value) &&
                            !UE_PRIM_RE.match?(value) &&
+                           !UE_CORE_RE.match?(value) &&   # UPROPERTY(...) 등 UE 코어 매크로 제외
+                           !UE_UTIL_RE.match?(value) &&   # UE_LOG(...) 등 UE 유틸 매크로 제외
                            next_i < tokens.size &&
                            ((tokens[next_i][0] == T_PUNC && tokens[next_i][1].start_with?('(')) ||
                             (tokens[next_i][0] == T_OP   && tokens[next_i][1] == '<'))
@@ -1114,6 +1136,9 @@ module Rouge
             new_token = if is_after_namespace
                           # namespace name takes priority over UE_TYPE_RE
                           T_NAME_NS
+                        elsif is_func_call
+                          # Base(), ~Base() 등 생성자/함수 선언 — local_types보다 우선
+                          T_NAME_F
                         elsif local_types.include?(value)
                           T_NAME_C
                         elsif template_params.include?(value)
