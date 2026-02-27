@@ -1,5 +1,5 @@
 ---
-title: "[DevTools/CMake] CMake"
+title: "[DevTools/CMake] Introduction to CMake"
 description: >-
   CMake는 플랫폼과 컴파일러에 독립적인 빌드 시스템 생성 도구로, 다양한 환경에서 동일한 프로젝트를 안정적으로 빌드할 수 있도록 도와준다. 직접 Makefile을 작성하는 방식과 달리, CMake는 추상화된 설정 파일(CMakeLists.txt)을 기반으로 Visual Studio, Ninja, Make 등 다양한 빌드 시스템을 자동 생성한다.
 series: "CMake for Beginner"
