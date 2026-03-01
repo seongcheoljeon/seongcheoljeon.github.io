@@ -1,7 +1,7 @@
 ---
 title: "[Programming/C++] __declspec(dllexport), __declspec(dllimport)"
 description: >-
-  ;
+  __declspec(dllexport)는 Windows에서 DLL을 만들 때 외부로 공개할 심볼(함수·클래스)을 내보내는 지정자다. __declspec(dllimport)는 해당 DLL의 심볼을 외부 프로젝트에서 가져와 사용할 때 지정한다. 동적 라이브러리의 심볼 가시성과 링크 방식을 제어하는 키워드다.
 author: seongcheol
 date: 2026-03-02 03:06:00 +0900
 categories: [Programming, C++]
