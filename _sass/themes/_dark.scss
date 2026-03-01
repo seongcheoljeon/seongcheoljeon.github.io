@@ -514,7 +514,6 @@
   // ---------------------------------------------------------------------------
   // terminal lexer — Linux / macOS 쉘 세션
   // ---------------------------------------------------------------------------
-  //
   // 팟레트 설계 (6종 역할 완전 분리)
   //   프롬프트   #f1fa8c  밝은 노란   user@host:~$
   //   명령어   #50fa7b  초록       cmake, ls, git
@@ -537,7 +536,8 @@
     }
 
     pre.highlight { background-color: #0c0c0c !important; }
-    code          { color: #d4d4d4; }
+
+    code { color: #d4d4d4; }
 
     // 프롬프트 — 밝은 노란 (bold)
     .gp { color: #f1fa8c; font-weight: bold; }
@@ -588,7 +588,6 @@
   // ---------------------------------------------------------------------------
   // console lexer — Windows CMD / PowerShell
   // ---------------------------------------------------------------------------
-  //
   // 팟레트 설계 (terminal과 동일 역할 체계, 동일 색상)
   //   프롬플트  #f1fa8c  C:\path>  PS C:\>
   //   명령어  #50fa7b  cmake, dir, Get-ChildItem
@@ -612,7 +611,8 @@
     }
 
     pre.highlight { background-color: #0c0c0c !important; }
-    code          { color: #d4d4d4; }
+
+    code { color: #d4d4d4; }
 
     // 프롬프트 — 밝은 노뜰 bold
     .gp { color: #f1fa8c; font-weight: bold; }
