@@ -17,6 +17,7 @@
 
 require "rouge"
 require "set"
+require "strscan"
 
 module Rouge
   module Lexers
@@ -792,6 +793,10 @@ module Rouge
       T_KW       = Rouge::Token::Tokens::Keyword
       T_KW_DECL  = Rouge::Token::Tokens::Keyword::Declaration
       T_KW_TYPE  = Rouge::Token::Tokens::Keyword::Type
+      T_CP       = Rouge::Token::Tokens::Comment::Preproc
+      T_KP       = Rouge::Token::Tokens::Keyword::Pseudo
+      T_STR      = Rouge::Token::Tokens::Literal::String
+      T_NUM      = Rouge::Token::Tokens::Literal::Number
 
       CONTROL_KEYWORDS = Set.new(%w[
         if else for while do switch break continue return goto
@@ -805,6 +810,113 @@ module Rouge
       # stream_tokens output is overridden by Rouge's internal coalescing,
       # so we intercept at the lex level instead.
       # -----------------------------------------------------------------------
+      # -----------------------------------------------------------------------
+      # Preprocessor line sub-tokenizer
+      # Comment::Preproc 토큰은 라인 전체가 단일 토큰으로 옴.
+      # 여기서 의미 있는 서브 토큰으로 분리한다.
+      # -----------------------------------------------------------------------
+
+      # 컴파일러 확장 키워드: __declspec, __attribute__ 등
+      PREPROC_COMPILER_EXT_RE = /
+        __declspec      |
+        __attribute__   |
+        __cdecl         |
+        __stdcall       |
+        __fastcall      |
+        __thiscall      |
+        __forceinline   |
+        __inline        |
+        __volatile__    |
+        __restrict
+      /x
+
+      # __declspec / __attribute__ 인자: dllexport, dllimport, visibility 등
+      PREPROC_ATTR_ARG_RE = /
+        dllexport | dllimport |
+        visibility | hidden   |
+        cdecl     | stdcall
+      /x
+
+      # 시스템 / 플랫폼 매크로: _WIN32, __linux__, __APPLE__, __cplusplus 등
+      PREPROC_SYS_MACRO_RE = /__?_?[A-Za-z][A-Za-z0-9_]*(?:__)?/
+
+      # 전처리기 지시어
+      PREPROC_DIRECTIVE_RE = /\#(?:pragma|if|ifdef|ifndef|elif|else|endif|define|undef|include|error|warning|line)\b/
+
+      def tokenize_preproc_line(line, &blk)
+        sc = StringScanner.new(line)
+        until sc.eos?
+          if sc.scan(/[ \t]+/)
+            blk.call(T_TEXT, sc.matched)
+
+          # 전처리기 지시어: #if, #define, #pragma 등
+          elsif sc.scan(PREPROC_DIRECTIVE_RE)
+            blk.call(T_KW, sc.matched)
+
+          # 컴파일러 확장: __declspec, __attribute__ 등
+          elsif sc.scan(PREPROC_COMPILER_EXT_RE)
+            blk.call(T_NAME_B, sc.matched)
+
+          # defined 함수
+          elsif sc.scan(/\bdefined\b/)
+            blk.call(T_NAME_B, sc.matched)
+
+          # pragma 인자: once, error, warning, message, push, pop, pack
+          elsif sc.scan(/\b(?:once|message|pack|push|pop|region|endregion)\b/)
+            blk.call(T_NAME_B, sc.matched)
+
+          # __declspec / __attribute__ 인자: dllexport, dllimport, visibility 등
+          elsif sc.scan(PREPROC_ATTR_ARG_RE)
+            blk.call(T_NAME_A, sc.matched)
+
+          # 문자열: "default", <header.h>
+          elsif sc.scan(/"[^"]*"/)
+            blk.call(T_STR, sc.matched)
+          elsif sc.scan(/<[^>\n]+>/)
+            blk.call(T_STR, sc.matched)
+
+          # 논리 연산자
+          elsif sc.scan(/\|\||&&|!(?!=)/)
+            blk.call(T_OP, sc.matched)
+
+          # 시스템 매크로: _WIN32, __linux__, __APPLE__ (언더스코어 시작)
+          elsif sc.scan(/_[A-Za-z_][A-Za-z0-9_]*/)
+            blk.call(T_NAME_NO, sc.matched)
+
+          # 유저 ALL_CAPS 매크로: MYLIB_API, MYLIB_EXPORTS
+          elsif sc.scan(/[A-Z][A-Z0-9_]{1,}(?![a-z])/)
+            blk.call(T_NAME_D, sc.matched)
+
+          # 숫자
+          elsif sc.scan(/0[xX][0-9a-fA-F]+|\d+/)
+            blk.call(T_NUM, sc.matched)
+
+          # 구두점
+          elsif sc.scan(/[(),]/)
+            blk.call(T_PUNC, sc.matched)
+
+          # 기타 식별자 (소문자 시작 등)
+          elsif sc.scan(/[A-Za-z_][A-Za-z0-9_]*/)
+            blk.call(T_TEXT, sc.matched)
+
+          # 나머지 문자
+          else
+            blk.call(T_TEXT, sc.getch)
+          end
+        end
+      end
+
+      def split_preproc(value, &blk)
+        # 단일 T_CP 토큰이 여러 줄을 포함할 수 있음 (e.g. "#endif\n#elif ...\n")
+        value.split(/(\n)/).each do |part|
+          if part == "\n"
+            blk.call(T_TEXT, "\n")
+          elsif !part.empty?
+            tokenize_preproc_line(part, &blk)
+          end
+        end
+      end
+
       def lex(code, opts = {})
         return enum_for(:lex, code, opts) unless block_given?
         tokens = []
@@ -982,6 +1094,15 @@ module Rouge
                 end
               end
             end
+          end
+
+          # ------------------------------------------------------------------
+          # Preprocessor: Comment::Preproc 토큰을 서브 토크나이저로 분리
+          # ------------------------------------------------------------------
+          if token == T_CP
+            split_preproc(value, &block)
+            i += 1
+            next
           end
 
           if ALL_CPP_KEYWORDS.include?(value)
