@@ -22,7 +22,7 @@ module Rouge
           cmake|make|ninja|ctest|cpack|
           git|python|pip|node|npm|yarn|ruby|gem|bundle|
           gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-          curl|wget|ssh|scp
+          curl|wget|ssh|scp|poetry
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -58,7 +58,7 @@ module Rouge
             cmake|make|ninja|ctest|cpack|
             git|python|pip|node|npm|yarn|ruby|gem|bundle|
             gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-            curl|wget|ssh|scp
+            curl|wget|ssh|scp|poetry
           )\b
           |
           g\+\+(?=\s|-|$)
@@ -173,6 +173,10 @@ module Rouge
         # 긴 플래그
         rule(/--[A-Za-z][A-Za-z0-9\-]*(?:=[^"'\s]*)?/, Name::Decorator)
 
+        # URL: https://..., git+https://...
+        rule(/(?:[a-z][a-z0-9+\-.]*\+)?https?:\/\/[^\s;|&>]+/, Name::Namespace)
+        rule(/(?:[a-z][a-z0-9+\-.]*\+)?git:\/\/[^\s;|&>]+/, Name::Namespace)
+
         # Windows 경로
         rule(/[A-Za-z]:\\[^\s"'|&;,)]*/, Name::Namespace)
         rule(/\.\.?\\[^\s"'|&;,)]*/, Name::Namespace)
@@ -183,8 +187,14 @@ module Rouge
         # bare 상대 경로: src/foo.cpp
         rule(/[A-Za-z_][A-Za-z0-9_.+-]*(?:\/[^\s;|&>]+)+/, Name::Namespace)
 
-        # 파일명: main.out, foo.cpp
-        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*/, Name::Namespace)
+        # dotted config key: virtualenvs.in-project, http.sslverify
+        rule(/[A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+)+/, Name::Namespace)
+
+        # 파일명: main.out, foo.cpp — 단, foo.bar-baz 는 제외
+        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*(?![A-Za-z0-9_-])/, Name::Namespace)
+
+        # boolean 값: true, false, yes, no, on, off
+        rule(/\b(?:true|false|yes|no|on|off)\b/, Keyword::Constant)
 
         # 문자열
         rule(/"[^"\n]*"/, Literal::String)
@@ -212,6 +222,10 @@ module Rouge
         rule(/-[A-Za-z][A-Za-z0-9]*/, Name::Decorator)
         rule(/--[A-Za-z][A-Za-z0-9\-]*/, Name::Decorator)
 
+        # URL: https://..., git+https://...
+        rule(/(?:[a-z][a-z0-9+\-.]*\+)?https?:\/\/[^\s;|&>]+/, Name::Namespace)
+        rule(/(?:[a-z][a-z0-9+\-.]*\+)?git:\/\/[^\s;|&>]+/, Name::Namespace)
+
         rule(/[A-Za-z]:\\[^\s"'|;,)]*/, Name::Namespace)
         rule(/\.\.?\\[^\s"'|;,)]*/, Name::Namespace)
         rule(/(?:\.\.?|~)\/[^\s;|&>]*/, Name::Namespace)
@@ -219,8 +233,14 @@ module Rouge
         # bare 상대 경로: src/foo.cpp
         rule(/[A-Za-z_][A-Za-z0-9_.+-]*(?:\/[^\s;|&>]+)+/, Name::Namespace)
 
-        # 파일명: main.out, foo.cpp
-        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*/, Name::Namespace)
+        # dotted config key: virtualenvs.in-project, http.sslverify
+        rule(/[A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+)+/, Name::Namespace)
+
+        # 파일명: main.out, foo.cpp — 단, foo.bar-baz 는 제외
+        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*(?![A-Za-z0-9_-])/, Name::Namespace)
+
+        # boolean 값: true, false, yes, no, on, off
+        rule(/\b(?:true|false|yes|no|on|off)\b/, Keyword::Constant)
 
         rule(/"[^"\n]*"/, Literal::String)
         rule(/'[^'\n]*'/, Literal::String)

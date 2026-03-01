@@ -29,7 +29,7 @@ module Rouge
           vi|vim|nvim|nano|emacs|code|
           awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
           tree|lsof|strace|ltrace|
-          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin
+          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -57,7 +57,7 @@ module Rouge
             vi|vim|nvim|nano|emacs|code|
             awk|sed|tr|sort|uniq|wc|cut|xargs|
             tree|lsof|
-            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump
+            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry
           )\b
           |
           g\+\+(?=\s|-|$)
@@ -157,6 +157,10 @@ module Rouge
         # 짧은 플래그: -a, -DCMAKE_TOOLCHAIN_FILE=...
         rule(/-[A-Za-z][A-Za-z0-9_]*(?:=[^"'\s]*)?/, Name::Decorator)
 
+        # URL: https://..., git+https://..., ssh+git://...
+        rule(/(?:[a-z][a-z0-9+\-.]*\+)?https?:\/\/[^\s;|&>]+/, Name::Namespace)
+        rule(/(?:[a-z][a-z0-9+\-.]*\+)?git:\/\/[^\s;|&>]+/, Name::Namespace)
+
         # 절대 경로: /usr/local/bin
         rule(/(?:\/[^\s\/;|&>]+)+\/?/, Name::Namespace)
 
@@ -166,8 +170,14 @@ module Rouge
         # bare 상대 경로: src/foo.cpp, include/bar.h
         rule(/[A-Za-z_][A-Za-z0-9_.+-]*(?:\/[^\s;|&>]+)+/, Name::Namespace)
 
-        # 파일명 (확장자 있는 경우): main.out, foo.cpp, bar.h
-        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*/, Name::Namespace)
+        # dotted config key: virtualenvs.in-project, http.sslverify, core.autocrlf
+        rule(/[A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+)+/, Name::Namespace)
+
+        # 파일명 (확장자 있는 경우): main.out, foo.cpp — 단, foo.bar-baz 는 제외
+        rule(/[A-Za-z_][A-Za-z0-9_+-]*\.[A-Za-z][A-Za-z0-9]*(?![A-Za-z0-9_-])/, Name::Namespace)
+
+        # boolean 값: true, false, yes, no, on, off
+        rule(/\b(?:true|false|yes|no|on|off)\b/, Keyword::Constant)
 
         # 문자열
         rule(/"[^"\n]*"/, Literal::String)
