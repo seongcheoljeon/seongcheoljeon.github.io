@@ -1,7 +1,7 @@
 ---
 title: "[DevTools/CMake] Find Module"
 description: >-
-  ;
+  CMake의 Find Module은 find_package() 호출 시 외부 라이브러리의 경로와 설정을 탐색하기 위한 스크립트다. FindXXX.cmake 형식으로 작성되며, 라이브러리 위치, 헤더 경로, 링크 대상 등을 찾아 변수 또는 Imported Target 형태로 제공한다.
 series: "CMake for Beginner"
 series_part: 8
 author: seongcheol
