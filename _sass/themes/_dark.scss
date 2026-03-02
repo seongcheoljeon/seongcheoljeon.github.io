@@ -664,7 +664,6 @@
   // output lexer — terminal style override
   // Applies only to code blocks using ```output
   // ---------------------------------------------------------------------------
-  //
   // 색상 팔레트
   //   일반 출력    #c8c8c8  밝은 회색    — 기본 텍스트
   //   error        #f44747  빨강 bold    — ModuleNotFoundError, error:
@@ -774,9 +773,6 @@
 
     // 함수 호출 — 노란색
     .nf { color: #dcdcaa; }
-
-    // 변수 — 하늘색
-    .vi { color: #9cdcfe; }
 
     // FString, TArray 등 타입 — 금색
     .nc { color: #ffd700; }
