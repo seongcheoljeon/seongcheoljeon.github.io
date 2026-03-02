@@ -29,7 +29,7 @@ module Rouge
           vi|vim|nvim|nano|emacs|code|
           awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
           tree|lsof|strace|ltrace|
-          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry
+          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry|pyenv
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -57,7 +57,7 @@ module Rouge
             vi|vim|nvim|nano|emacs|code|
             awk|sed|tr|sort|uniq|wc|cut|xargs|
             tree|lsof|
-            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry
+            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry|pyenv
           )\b
           |
           g\+\+(?=\s|-|$)

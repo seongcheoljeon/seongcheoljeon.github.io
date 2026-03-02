@@ -59,8 +59,7 @@ module Rouge
           pop!
         end
 
-        # 작은따옴표 안 타입 표현 e.g. 'int&&', 'FString'
-        # inner tokenization: push :quoted_type 으로 처리
+        # 작은따옴표 안 타입 표현 e.g. 'int&&', '_lzma', 'FString'
         rule(/'/) do
           token Punctuation, "'"
           push :quoted_type
@@ -68,6 +67,10 @@ module Rouge
 
         # rvalue / lvalue 키워드
         rule(/\b(?:rvalue|lvalue|prvalue|xvalue|glvalue)\b/, Keyword)
+
+        # 시스템/모듈 키워드: module, lib, library, named, package, extension 등
+        rule(/\b(?:module|lib|library|named|package|extension|compiled|missing|import|require)\b/i,
+             Name::Builtin)
 
         # UE / STL 타입
         rule(UE_TYPE_RE,  Name::Class)
@@ -82,6 +85,12 @@ module Rouge
         # 숫자
         rule(/0[xX][0-9a-fA-F]+/, Literal::Number)
         rule(/-?\d+(?:\.\d+)?/, Literal::Number)
+
+        # Python/C 모듈명: lzma, ssl, zlib, sqlite3, ctypes 등
+        rule(/\b(?:lzma|ssl|zlib|bz2|sqlite3|ctypes|readline|tkinter|curses|
+                   openssl|gdbm|dbm|nis|expat|ffi|uuid|
+                   numpy|scipy|pandas|matplotlib|PIL|cv2|torch|tensorflow)
+             \b/x, Name::Variable::Instance)
 
         # 나머지 텍스트 — 메시지 본문
         rule(/./, Literal::String)
@@ -163,6 +172,12 @@ module Rouge
         # C++ primitive 타입
         rule(CPP_PRIM_RE, Keyword::Type)
 
+        # '_lzma', '_internal' 등 언더스코어 시작 식별자 → amber
+        rule(/_[A-Za-z_][A-Za-z0-9_]*/, Name::Constant)
+
+        # 소문자 모듈명: lzma, ssl, zlib 등
+        rule(/[a-z][a-z0-9_]+/, Name::Variable::Instance)
+
         # 참조/포인터 한정자
         rule(/&&?|\*|&/, Operator)
 
@@ -220,15 +235,15 @@ module Rouge
         rule(/^[-=~]{2,}[^\n]*[-=~]{2,}$/, Generic::Strong)
         rule(/^[-=~]{4,}$/, Generic::Strong)
 
-        # 3. "error:" / "fatal error:" 라벨 → message 상태로 진입
-        rule(/^((?:fatal )?error)(:)/) do |m|
+        # 3. "error:" / "fatal error:" / Python 예외 (ModuleNotFoundError: 등)
+        rule(/^((?:[A-Za-z]*(?:Error|Exception)|(?:fatal )?error))(:)/i) do |m|
           token Generic::Error, m[1]
           token Punctuation,    m[2]
           push :message
         end
 
-        # 4. "warning:" 라벨
-        rule(/^(warning)(:)/) do |m|
+        # 4. "warning:" / "WARNING:" (대소문자 무관)
+        rule(/^(warning)(:)/i) do |m|
           token Generic::Emph, m[1]
           token Punctuation,   m[2]
           push :message
