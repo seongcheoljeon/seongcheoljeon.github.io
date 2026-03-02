@@ -1,11 +1,11 @@
 ---
-title: "[Article] C++ 개발자를 위한 최고의 라이브러리 11가지"
+title: "[Programming/C++] C++ 개발자를 위한 최고의 라이브러리 11가지"
 description: >-
   C++ 개발 생산성을 높여주는 대표 라이브러리 11가지를 간단히 소개한다.
 author: seongcheol
 date: 2026-03-02 16:57:00 +0900
-categories: [Article]
-tags: [Article]
+categories: [Programming, C++]
+tags: [Programming, C++, Article]
 pin: true
 image:
   path: /assets/img/common/title/article_title.jpg
