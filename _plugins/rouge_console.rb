@@ -20,9 +20,9 @@ module Rouge
           tasklist|taskkill|reg|sc|net|runas|
           assoc|ftype|pushd|popd|call|goto|if|for|start|
           cmake|make|ninja|ctest|cpack|
-          git|python|pip|node|npm|yarn|ruby|gem|bundle|
+          git|python3-config|python-config|python3?|pip3?|node|npm|yarn|ruby|gem|bundle|
           gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-          curl|wget|ssh|scp|poetry|pyenv
+          curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -56,9 +56,9 @@ module Rouge
             tasklist|taskkill|reg|sc|net|runas|
             pushd|popd|call|start|
             cmake|make|ninja|ctest|cpack|
-            git|python|pip|node|npm|yarn|ruby|gem|bundle|
+            git|python3-config|python-config|python3?|pip3?|node|npm|yarn|ruby|gem|bundle|
             gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-            curl|wget|ssh|scp|poetry|pyenv
+            curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg
           )\b
           |
           g\+\+(?=\s|-|$)
@@ -149,6 +149,12 @@ module Rouge
         # 10. 프롬프트 없이 CMD/공통 명령어로 시작
         rule(CMD_START_RE) { push :cmd_command }
 
+        # 10-1. ./script, ~/script, /usr/bin/script 로 시작하는 실행
+        rule(/^(?:(?:\.{1,2}|~)?\/[^\s;|&>]+)(?=\s|$)/) do |m|
+          token Name::Namespace, m[0]
+          push :cmd_command
+        end
+
         # 11. inline fallback
         rule(/0[xX][0-9a-fA-F]+/, Literal::Number)
         rule(/-?\d+/, Literal::Number)
@@ -167,11 +173,31 @@ module Rouge
         # /S /Q /F:value 플래그
         rule(/\/[A-Za-z0-9:\.]+/, Name::Decorator)
 
-        # 짧은 플래그
-        rule(/-[A-Za-z][A-Za-z0-9_]*(?:=[^"'\s]*)?/, Name::Decorator)
+        # 긴 플래그: --flag=VALUE (값 분리)
+        rule(/(--[A-Za-z][A-Za-z0-9\-]*)(=)(\/[^\s;|&>]*)/) do |m|
+          token Name::Decorator,  m[1]
+          token Punctuation,      m[2]
+          token Name::Namespace,  m[3]
+        end
+        rule(/(--[A-Za-z][A-Za-z0-9\-]*)(=)([^"'\s]+)/) do |m|
+          token Name::Decorator,   m[1]
+          token Punctuation,       m[2]
+          token Literal::String,   m[3]
+        end
+        rule(/--[A-Za-z][A-Za-z0-9\-]*/, Name::Decorator)
 
-        # 긴 플래그
-        rule(/--[A-Za-z][A-Za-z0-9\-]*(?:=[^"'\s]*)?/, Name::Decorator)
+        # 짧은 플래그: -flag=VALUE (값 분리)
+        rule(/(-[A-Za-z][A-Za-z0-9_]*)(=)(\/[^\s;|&>]*)/) do |m|
+          token Name::Decorator,  m[1]
+          token Punctuation,      m[2]
+          token Name::Namespace,  m[3]
+        end
+        rule(/(-[A-Za-z][A-Za-z0-9_]*)(=)([^"'\s]+)/) do |m|
+          token Name::Decorator,   m[1]
+          token Punctuation,       m[2]
+          token Literal::String,   m[3]
+        end
+        rule(/-[A-Za-z][A-Za-z0-9_]*/, Name::Decorator)
 
         # URL: https://..., git+https://...
         rule(/(?:[a-z][a-z0-9+\-.]*\+)?https?:\/\/[^\s;|&>]+/, Name::Namespace)
@@ -219,8 +245,31 @@ module Rouge
         rule(PS_CMD_RE,  Name::Builtin)
         rule(CMD_CMD_RE, Name::Builtin)
 
-        rule(/-[A-Za-z][A-Za-z0-9]*/, Name::Decorator)
+        # 긴 플래그: --flag=VALUE (값 분리)
+        rule(/(--[A-Za-z][A-Za-z0-9\-]*)(=)(\/[^\s;|&>]*)/) do |m|
+          token Name::Decorator,  m[1]
+          token Punctuation,      m[2]
+          token Name::Namespace,  m[3]
+        end
+        rule(/(--[A-Za-z][A-Za-z0-9\-]*)(=)([^"'\s]+)/) do |m|
+          token Name::Decorator,   m[1]
+          token Punctuation,       m[2]
+          token Literal::String,   m[3]
+        end
         rule(/--[A-Za-z][A-Za-z0-9\-]*/, Name::Decorator)
+
+        # 짧은 플래그: -flag=VALUE (값 분리)
+        rule(/(-[A-Za-z][A-Za-z0-9]*)(=)(\/[^\s;|&>]*)/) do |m|
+          token Name::Decorator,  m[1]
+          token Punctuation,      m[2]
+          token Name::Namespace,  m[3]
+        end
+        rule(/(-[A-Za-z][A-Za-z0-9]*)(=)([^"'\s]+)/) do |m|
+          token Name::Decorator,   m[1]
+          token Punctuation,       m[2]
+          token Literal::String,   m[3]
+        end
+        rule(/-[A-Za-z][A-Za-z0-9]*/, Name::Decorator)
 
         # URL: https://..., git+https://...
         rule(/(?:[a-z][a-z0-9+\-.]*\+)?https?:\/\/[^\s;|&>]+/, Name::Namespace)

@@ -692,6 +692,13 @@
     // 기본 출력 — 밝은 회색 (초록 단색 탈피)
     .go { color: #c8c8c8; }
 
+    // NETSDK1064, MSB3491 등 에러 코드 — 오렌지
+    .gt {
+      color: #e09060;
+      font-weight: bold;
+      font-style: normal;
+    }
+
     // error: / ModuleNotFoundError: — 빨강 bold
     .gr {
       color: #f44747;

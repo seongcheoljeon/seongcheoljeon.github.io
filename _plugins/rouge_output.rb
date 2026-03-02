@@ -218,6 +218,34 @@ module Rouge
       end
 
       # ------------------------------------------------------------------
+      # MSBuild / MSVC 메시지 state
+      # e.g. " Package System.Data.DataSetExtensions, version 4.5.0 was not found."
+      # ------------------------------------------------------------------
+      state :msbuild_message do
+        rule(/\n/) { token Text, "\n"; pop! }
+
+        # Windows 경로 in 단따옴표: 'C:\path\...'
+        rule(/(')([A-Za-z]:\\[^'\n]+)(')/) do |m|
+          token Punctuation,     m[1]
+          token Generic::Prompt, m[2]
+          token Punctuation,     m[3]
+        end
+
+        # Dotted PascalCase 패키지명: System.Data.DataSetExtensions
+        rule(/[A-Z][A-Za-z0-9]*(?:\.[A-Z][A-Za-z0-9]*)+/, Name::Class)
+
+        # version 키워드
+        rule(/\bversion\b/i, Name::Builtin)
+
+        # 버전 문자열 또는 숫자: 4.5.0, 9.0.100
+        rule(/\d+(?:\.\d+)+/, Literal::Number)
+        rule(/\d+/, Literal::Number)
+
+        # 나머지 본문
+        rule(/./, Literal::String)
+      end
+
+      # ------------------------------------------------------------------
       # Root state
       # ------------------------------------------------------------------
       state :root do
@@ -234,6 +262,18 @@ module Rouge
         # 2. 구분선 (---- / ==== / ~~~~ 또는 ---- text ---- 형태)
         rule(/^[-=~]{2,}[^\n]*[-=~]{2,}$/, Generic::Strong)
         rule(/^[-=~]{4,}$/, Generic::Strong)
+
+        # 3-a. MSBuild / MSVC 오류: path(line,col): error CODE: message
+        rule(/^([^\n(]+)(\(\d+,\d+\))(:\s*)(error|warning)(\s+)([A-Z][A-Z0-9]*\d+)(:)/i) do |m|
+          token Generic::Prompt,    m[1]  # 파일 경로
+          token Literal::Number,    m[2]  # (266,5)
+          token Punctuation,        m[3]  # ":"
+          token(m[4].downcase == 'error' ? Generic::Error : Generic::Emph, m[4])
+          token Text,               m[5]
+          token Generic::Traceback, m[6]  # NETSDK1064, MSB3491
+          token Punctuation,        m[7]  # ":"
+          push :msbuild_message
+        end
 
         # 3. "error:" / "fatal error:" / Python 예외 (ModuleNotFoundError: 등)
         rule(/^((?:[A-Za-z]*(?:Error|Exception)|(?:fatal )?error))(:)/i) do |m|

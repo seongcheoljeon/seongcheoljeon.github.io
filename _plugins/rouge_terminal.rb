@@ -23,13 +23,14 @@ module Rouge
           ssh|scp|rsync|curl|wget|
           git|cmake|make|ninja|ctest|cpack|ccmake|
           gcc|clang|ld|ar|ranlib|strip|pkg-config|
-          python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
+          python3-config|python-config|python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
           echo|printf|read|export|unset|source|alias|
           sudo|su|env|
           vi|vim|nvim|nano|emacs|code|
           awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
           tree|lsof|strace|ltrace|
-          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry|pyenv
+          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry|pyenv|
+          em++|emrun|vcpkg
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -51,13 +52,14 @@ module Rouge
             ssh|scp|rsync|curl|wget|
             git|cmake|make|ninja|ctest|cpack|ccmake|
             gcc|clang|
-            python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
+            python3-config|python-config|python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
             echo|printf|export|unset|source|alias|
             sudo|su|env|
             vi|vim|nvim|nano|emacs|code|
             awk|sed|tr|sort|uniq|wc|cut|xargs|
             tree|lsof|
-            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry|pyenv
+            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry|pyenv|
+            em++|emrun|vcpkg
           )\b
           |
           g\+\+(?=\s|-|$)
@@ -136,6 +138,12 @@ module Rouge
           push :command
         end
 
+        # 9-1. ./script, ~/script, /usr/bin/script 로 시작하는 실행
+        rule(/^(?:(?:\.{1,2}|~)?\/[^\s;|&>]+)(?=\s|$)/) do |m|
+          token Name::Namespace, m[0]
+          push :command
+        end
+
         # 10. inline fallback
         rule(/0[xX][0-9a-fA-F]+/, Literal::Number)
         rule(/-?\d+(?:\.\d+)?/, Literal::Number)
@@ -151,11 +159,31 @@ module Rouge
 
         rule(UNIX_CMD_RE, Name::Builtin)
 
-        # 긴 플래그: --output, --build-type
-        rule(/--[A-Za-z][A-Za-z0-9\-]*(?:=[^"'\s]*)?/, Name::Decorator)
+        # 긴 플래그: --output, --build-type=VALUE (값 분리)
+        rule(/(--[A-Za-z][A-Za-z0-9\-]*)(=)(\/[^\s;|&>]*)/) do |m|
+          token Name::Decorator,  m[1]  # --prefix
+          token Punctuation,      m[2]  # =
+          token Name::Namespace,  m[3]  # /home/sources/...
+        end
+        rule(/(--[A-Za-z][A-Za-z0-9\-]*)(=)([^"'\s]+)/) do |m|
+          token Name::Decorator,   m[1]  # --with-python
+          token Punctuation,       m[2]  # =
+          token Literal::String,   m[3]  # python3.10
+        end
+        rule(/--[A-Za-z][A-Za-z0-9\-]*/, Name::Decorator)
 
-        # 짧은 플래그: -a, -DCMAKE_TOOLCHAIN_FILE=...
-        rule(/-[A-Za-z][A-Za-z0-9_]*(?:=[^"'\s]*)?/, Name::Decorator)
+        # 짧은 플래그: -a, -DCMAKE_=VALUE (값 분리)
+        rule(/(-[A-Za-z][A-Za-z0-9_]*)(=)(\/[^\s;|&>]*)/) do |m|
+          token Name::Decorator,  m[1]
+          token Punctuation,      m[2]
+          token Name::Namespace,  m[3]
+        end
+        rule(/(-[A-Za-z][A-Za-z0-9_]*)(=)([^"'\s]+)/) do |m|
+          token Name::Decorator,   m[1]
+          token Punctuation,       m[2]
+          token Literal::String,   m[3]
+        end
+        rule(/-[A-Za-z][A-Za-z0-9_]*/, Name::Decorator)
 
         # URL: https://..., git+https://..., ssh+git://...
         rule(/(?:[a-z][a-z0-9+\-.]*\+)?https?:\/\/[^\s;|&>]+/, Name::Namespace)
