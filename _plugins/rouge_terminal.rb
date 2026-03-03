@@ -30,7 +30,7 @@ module Rouge
           awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
           tree|lsof|strace|ltrace|
           apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry|pyenv|
-          em++|emrun|vcpkg
+          em++|emrun|vcpkg|gh
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -59,7 +59,7 @@ module Rouge
             awk|sed|tr|sort|uniq|wc|cut|xargs|
             tree|lsof|
             apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry|pyenv|
-            em++|emrun|vcpkg
+            em++|emrun|vcpkg|gh
           )\b
           |
           g\+\+(?=\s|-|$)

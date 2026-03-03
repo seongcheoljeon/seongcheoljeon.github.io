@@ -22,7 +22,8 @@ module Rouge
           cmake|make|ninja|ctest|cpack|
           git|python3-config|python-config|python3?|pip3?|node|npm|yarn|ruby|gem|bundle|
           gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-          curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg
+          curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg|
+          winget|choco|scoop|gh
         )\b
         |
         g\+\+(?=\s|-|$)
@@ -58,7 +59,8 @@ module Rouge
             cmake|make|ninja|ctest|cpack|
             git|python3-config|python-config|python3?|pip3?|node|npm|yarn|ruby|gem|bundle|
             gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-            curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg
+            curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg|
+            winget|choco|scoop|gh
           )\b
           |
           g\+\+(?=\s|-|$)
