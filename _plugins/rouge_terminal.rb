@@ -127,8 +127,11 @@ module Rouge
           push :command
         end
 
-        # 8. root 프롬프트: #
-        rule(/^([^\n#]*#[ \t]+)/) do |m|
+        # 8-a. shell 주석: 라인 시작이 # (root 프롬프트보다 먼저 매칭)
+        rule(/^#[^\n]*$/, Comment::Single)
+
+        # 8-b. root 프롬프트: user@host:~# (# 앞에 내용이 있는 경우)
+        rule(/^([^\n#]+#[ \t]+)/) do |m|
           token Generic::Prompt, m[1]
           push :command
         end

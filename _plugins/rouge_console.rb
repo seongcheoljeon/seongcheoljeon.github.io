@@ -80,6 +80,9 @@ module Rouge
 
       state :root do
 
+        # 0. shell 주석: 라인 시작이 #
+        rule(/^#[^\n]*$/, Comment::Single)
+
         # 1. PowerShell 프롬프트: PS C:\Users\...>
         rule(/^(PS\s+)([A-Za-z]:[^\n>]*>)([ \t]*)/) do |m|
           token Keyword,          m[1]
