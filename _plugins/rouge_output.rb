@@ -92,8 +92,8 @@ module Rouge
                    numpy|scipy|pandas|matplotlib|PIL|cv2|torch|tensorflow)
              \b/x, Name::Variable::Instance)
 
-        # 나머지 텍스트 — 메시지 본문
-        rule(/./, Literal::String)
+        # 나머지 텍스트 — 메시지 본문 (일반 출력색)
+        rule(/./, Generic::Output)
       end
 
       # ------------------------------------------------------------------
@@ -165,6 +165,12 @@ module Rouge
           pop!  # message 도 pop
         end
 
+        # URL → 통째로 문자열 처리 (UE_TYPE_RE 보다 먼저)
+        rule(%r{https?://[^\s']+}, Literal::String)
+
+        # C++ 한정자
+        rule(/\b(?:const|volatile|mutable|constexpr)\b/, Keyword::Type)
+
         # UE / STL 타입
         rule(UE_TYPE_RE,  Name::Class)
         rule(STD_TYPE_RE, Name::Class)
@@ -172,16 +178,10 @@ module Rouge
         # C++ primitive 타입
         rule(CPP_PRIM_RE, Keyword::Type)
 
-        # '_lzma', '_internal' 등 언더스코어 시작 식별자 → amber
-        rule(/_[A-Za-z_][A-Za-z0-9_]*/, Name::Constant)
-
-        # 소문자 모듈명: lzma, ssl, zlib 등
-        rule(/[a-z][a-z0-9_]+/, Name::Variable::Instance)
-
         # 참조/포인터 한정자
         rule(/&&?|\*|&/, Operator)
 
-        # 그 외 (const, volatile, ...)
+        # 그 외 (일반 텍스트 포함) → 문자열
         rule(/./, Literal::String)
       end
 
@@ -262,6 +262,16 @@ module Rouge
         # 2. 구분선 (---- / ==== / ~~~~ 또는 ---- text ---- 형태)
         rule(/^[-=~]{2,}[^\n]*[-=~]{2,}$/, Generic::Strong)
         rule(/^[-=~]{4,}$/, Generic::Strong)
+
+        # 2-a. git ! [rejected] / ! [remote rejected] 라인
+        rule(/^![ \t]+.*$/, Generic::Emph)
+
+        # 2-b. hint: 라벨
+        rule(/^(hint)(:)/) do |m|
+          token Comment::Single, m[1]
+          token Punctuation,     m[2]
+          push :message
+        end
 
         # 3-a. MSBuild / MSVC 오류: path(line,col): error CODE: message
         rule(/^([^\n(]+)(\(\d+,\d+\))(:\s*)(error|warning)(\s+)([A-Z][A-Z0-9]*\d+)(:)/i) do |m|

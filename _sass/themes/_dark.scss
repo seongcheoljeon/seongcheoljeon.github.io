@@ -728,11 +728,11 @@
     // 소스 파일 경로 — 하늘색
     .gp { color: #9cdcfe; }
 
-    // 에러 메시지 본문 — 밝은 흰색
+    // 문자열 — 연한 코코넛 초록 (cpp .s #ce9178과 구분, 팔레트 미사용색)
     .s,
     .s1,
     .s2 {
-      color: #d4d4d4;
+      color: #98c379;
       font-style: normal;
     }
 
