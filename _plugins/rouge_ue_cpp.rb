@@ -841,17 +841,55 @@ module Rouge
       PREPROC_SYS_MACRO_RE = /__?_?[A-Za-z][A-Za-z0-9_]*(?:__)?/
 
       # 전처리기 지시어
-      PREPROC_DIRECTIVE_RE = /\#(?:pragma|if|ifdef|ifndef|elif|else|endif|define|undef|include|error|warning|line)\b/
+      PREPROC_DIRECTIVE_RE = /\#\s*(?:pragma|if|ifdef|ifndef|elif|else|endif|define|undef|include|error|warning|line)\b/
+
+      # C++ primitive types (define body 안에서 인식)
+      PREPROC_CPP_TYPE_RE = /\b(?:void|int|char|float|double|long|short|unsigned|signed|bool|size_t|ptrdiff_t)\b/
 
       def tokenize_preproc_line(line, &blk)
         sc = StringScanner.new(line)
+        define_params   = Set.new
+        in_define_body  = false
+
         until sc.eos?
           if sc.scan(/[ \t]+/)
             blk.call(T_TEXT, sc.matched)
 
           # 전처리기 지시어: #if, #define, #pragma 등
           elsif sc.scan(PREPROC_DIRECTIVE_RE)
-            blk.call(T_KW, sc.matched)
+            directive = sc.matched
+            blk.call(T_KW, directive)
+
+            # #define 특별 처리 — 이름 + 파라미터를 여기서 바로 파싱
+            if directive.gsub(/[# \t]/, '') == 'define'
+              blk.call(T_TEXT, sc.matched) if sc.scan(/[ \t]+/)
+              # 매크로 이름
+              if sc.scan(/[A-Za-z_][A-Za-z0-9_]*/)
+                blk.call(T_NAME_D, sc.matched)
+              end
+              # 파라미터 리스트 (공백 없이 바로 붙어있는 경우)
+              if sc.scan(/\(/)
+                blk.call(T_PUNC, '(')
+                loop do
+                  sc.scan(/[ \t]*/)
+                  break if sc.eos?
+                  if sc.scan(/\)/)
+                    blk.call(T_PUNC, ')')
+                    break
+                  elsif sc.scan(/,/)
+                    blk.call(T_PUNC, ',')
+                  elsif sc.scan(/\.\.\./)
+                    blk.call(T_OP, '...')
+                  elsif sc.scan(/[A-Za-z_][A-Za-z0-9_]*/)
+                    define_params.add(sc.matched)
+                    blk.call(T_NAME_VI, sc.matched)
+                  else
+                    blk.call(T_TEXT, sc.getch)
+                  end
+                end
+              end
+              in_define_body = true
+            end
 
           # 컴파일러 확장: __declspec, __attribute__ 등
           elsif sc.scan(PREPROC_COMPILER_EXT_RE)
@@ -875,7 +913,7 @@ module Rouge
           elsif sc.scan(/<[^>\n]+>/)
             blk.call(T_STR, sc.matched)
 
-          # 논리 연산자
+          # 논리/비트 연산자 (||, &&, ! 먼저)
           elsif sc.scan(/\|\||&&|!(?!=)/)
             blk.call(T_OP, sc.matched)
 
@@ -883,23 +921,47 @@ module Rouge
           elsif sc.scan(/_[A-Za-z_][A-Za-z0-9_]*/)
             blk.call(T_NAME_NO, sc.matched)
 
-          # 유저 ALL_CAPS 매크로: MYLIB_API, MYLIB_EXPORTS
+          # define body 전용 규칙
+          elsif in_define_body
+            if sc.scan(/[A-Za-z_][A-Za-z0-9_]*(?=[ \t]*\()/)
+              # 함수 호출: LoadLibraryA(, GetProcAddress(, dlopen( 등
+              blk.call(T_NAME_F, sc.matched)
+            elsif sc.scan(PREPROC_CPP_TYPE_RE)
+              # C++ primitive type: void, int 등 (캐스트 표현식 내)
+              blk.call(T_KW_TYPE, sc.matched)
+            elsif sc.scan(/[A-Z][A-Z0-9_]{1,}(?![a-z])/)
+              # ALL_CAPS 상수: RTLD_NOW, RTLD_LOCAL 등
+              blk.call(T_NAME_D, sc.matched)
+            elsif sc.scan(/[A-Za-z_][A-Za-z0-9_]*/)
+              name = sc.matched
+              if define_params.include?(name)
+                blk.call(T_NAME_VI, name)  # 파라미터 변수
+              else
+                blk.call(T_TEXT, name)
+              end
+            elsif sc.scan(/[|&*+\-]/)
+              blk.call(T_OP, sc.matched)
+            elsif sc.scan(/0[xX][0-9a-fA-F]+|\d+/)
+              blk.call(T_NUM, sc.matched)
+            elsif sc.scan(/[()\[\]{},]/)
+              blk.call(T_PUNC, sc.matched)
+            else
+              blk.call(T_TEXT, sc.getch)
+            end
+
+          # 비 define 라인 — 기존 규칙
           elsif sc.scan(/[A-Z][A-Z0-9_]{1,}(?![a-z])/)
             blk.call(T_NAME_D, sc.matched)
 
-          # 숫자
           elsif sc.scan(/0[xX][0-9a-fA-F]+|\d+/)
             blk.call(T_NUM, sc.matched)
 
-          # 구두점
           elsif sc.scan(/[(),]/)
             blk.call(T_PUNC, sc.matched)
 
-          # 기타 식별자 (소문자 시작 등)
           elsif sc.scan(/[A-Za-z_][A-Za-z0-9_]*/)
             blk.call(T_TEXT, sc.matched)
 
-          # 나머지 문자
           else
             blk.call(T_TEXT, sc.getch)
           end

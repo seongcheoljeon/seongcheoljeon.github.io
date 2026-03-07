@@ -298,9 +298,10 @@
     color: #d4a574;
   }
 
-  /* String escape: \n, \t */
+  /* String escape: \n, \t — 문자열 본문과 동일색으로 통일
+     (Windows 경로 \l, \w 등 비표준 이스케이프 혼란 방지) */
   .highlight .se {
-    color: #d7ba7d;
+    color: #ce9178;
   }
 
   /* String interpolation: #{var} */

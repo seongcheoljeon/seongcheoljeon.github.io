@@ -9,28 +9,52 @@ module Rouge
       tag     "console"
       aliases "cmd", "powershell_session", "pwsh"
 
-      # g++, clang++ 는 \b 가 + 뒤에서 동작하지 않으므로 (?=\s|-|$) lookahead 사용
-      CMD_CMD_RE = /(?:
-        \b(?i:
-          dir|cd|md|mkdir|rd|rmdir|del|erase|
-          copy|move|ren|rename|type|more|find|findstr|
-          echo|set|path|cls|exit|pause|
-          where|attrib|xcopy|robocopy|
-          netstat|ipconfig|ping|tracert|nslookup|
-          tasklist|taskkill|reg|sc|net|runas|
-          assoc|ftype|pushd|popd|call|goto|if|for|start|
-          cmake|make|ninja|ctest|cpack|
-          git|python3-config|python-config|python3?|pip3?|node|npm|yarn|ruby|gem|bundle|
-          gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-          curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg|
-          winget|choco|scoop|gh
-        )\b
-        |
-        g\+\+(?=\s|-|$)
-        |
-        clang\+\+(?=\s|-|$)
-      )/x
+      # 공통 CMD 명령어 목록 — CMD_CMD_RE / CMD_START_RE 양쪽에서 공유
+      # Windows CMD는 대소문자 무관하므로 소문자로 통일 후 (?i:) 적용
+      CONSOLE_CMDS = %w[
+        dir cd md mkdir rd rmdir del erase
+        copy move ren rename type more find findstr
+        echo set path cls exit pause
+        where attrib xcopy robocopy
+        netstat ipconfig ping tracert nslookup
+        netsh route arp
+        tasklist taskkill reg sc net runas
+        assoc ftype pushd popd call goto if for start
+        timeout choice setx
+        systeminfo ver vol
+        mklink icacls cacls
+        wmic wsl
+        msiexec certutil cipher
+        sfc dism bcdedit
+        cmake make ninja ctest cpack ccmake meson
+        git python3-config python-config
+        python python2 python3 pip pip2 pip3
+        node npm yarn pnpm ruby gem bundle
+        gcc clang cl link lib msbuild devenv nmake
+        cargo rustc rustup
+        go
+        java javac mvn gradle
+        dotnet nuget
+        docker docker-compose podman
+        kubectl helm
+        curl wget ssh scp
+        conan vcpkg
+        poetry pyenv pipenv
+        em++ emrun gh
+        winget choco scoop
+        7z
+        protoc flatc
+      ].freeze
 
+      # :cmd_command / :ps_command 안에서 명령어 이름을 실제 소비·색칠
+      # (?i:) — Windows CMD 대소문자 무관
+      _cmd_alt = CONSOLE_CMDS.map { |c| Regexp.escape(c) }.join('|')
+      CMD_CMD_RE  = /(?:\b(?i:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+
+      # :root 에서 라인이 CMD 명령어로 시작하는지 감지 (zero-width lookahead)
+      CMD_START_RE = /^(?=(?i:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+
+      # PowerShell Verb-Noun 패턴 — CMD와 구조가 달라 별도 유지
       PS_CMD_RE = /\b(?:
         Get-[A-Za-z]+|Set-[A-Za-z]+|New-[A-Za-z]+|
         Remove-[A-Za-z]+|Invoke-[A-Za-z]+|
@@ -46,29 +70,7 @@ module Rouge
         Enable-[A-Za-z]+|Disable-[A-Za-z]+
       )\b/x
 
-      CMD_START_RE = /^(?=
-        (?:
-          (?i:
-            dir|cd|md|mkdir|rd|rmdir|del|erase|
-            copy|move|ren|rename|type|more|find|findstr|
-            echo|set|path|cls|exit|pause|
-            where|attrib|xcopy|robocopy|
-            netstat|ipconfig|ping|tracert|nslookup|
-            tasklist|taskkill|reg|sc|net|runas|
-            pushd|popd|call|start|
-            cmake|make|ninja|ctest|cpack|
-            git|python3-config|python-config|python3?|pip3?|node|npm|yarn|ruby|gem|bundle|
-            gcc|clang|cl|link|lib|msbuild|devenv|nmake|
-            curl|wget|ssh|scp|poetry|pyenv|em++|emrun|vcpkg|
-            winget|choco|scoop|gh
-          )\b
-          |
-          g\+\+(?=\s|-|$)
-          |
-          clang\+\+(?=\s|-|$)
-        )
-      )/x
-
+      # :root 에서 라인이 PS Verb- 로 시작하는지 감지 (zero-width lookahead)
       PS_START_RE = /^(?=(?:
         Get-|Set-|New-|Remove-|Invoke-|Start-|Stop-|
         Test-|Write-|Read-|Select-|Where-|ForEach-|
@@ -168,6 +170,12 @@ module Rouge
       end
 
       state :cmd_command do
+        # 라인 연속: \ + \n → pop 없이 다음 줄도 유지
+        rule(/\\\n/) { token Text, "\\\n" }
+
+        # 인라인 주석: cmd arg # comment
+        rule(/#[^\n]*/) { |m| token Comment::Single, m[0] }
+
         rule(/\n/) do
           token Text, "\n"
           pop!
@@ -242,6 +250,12 @@ module Rouge
       end
 
       state :ps_command do
+        # 라인 연속: \ + \n → pop 없이 다음 줄도 유지
+        rule(/\\\n/) { token Text, "\\\n" }
+
+        # 인라인 주석: cmd arg # comment
+        rule(/#[^\n]*/) { |m| token Comment::Single, m[0] }
+
         rule(/\n/) do
           token Text, "\n"
           pop!

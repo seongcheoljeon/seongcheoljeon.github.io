@@ -9,64 +9,65 @@ module Rouge
       tag     "terminal"
       aliases "bash_session", "sh_session"
 
-      # g++, clang++ 는 \b 가 + 뒤에서 동작하지 않으므로 (?=\s|-|$) lookahead 사용
-      UNIX_CMD_RE = /(?:
-        \b(?:
-          ls|ll|la|dir|cd|pwd|pushd|popd|
-          mkdir|rmdir|rm|cp|mv|touch|ln|
-          cat|less|more|head|tail|tee|
-          grep|egrep|fgrep|rg|find|locate|which|whereis|
-          chmod|chown|chgrp|stat|file|ldd|nm|objdump|
-          ps|top|htop|kill|killall|pkill|bg|fg|jobs|
-          df|du|free|uname|uptime|
-          tar|gzip|gunzip|bzip2|zip|unzip|xz|
-          ssh|scp|rsync|curl|wget|
-          git|cmake|make|ninja|ctest|cpack|ccmake|
-          gcc|clang|ld|ar|ranlib|strip|pkg-config|
-          python3-config|python-config|python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
-          echo|printf|read|export|unset|source|alias|
-          sudo|su|env|
-          vi|vim|nvim|nano|emacs|code|
-          awk|sed|tr|sort|uniq|wc|cut|paste|xargs|
-          tree|lsof|strace|ltrace|
-          apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|poetry|pyenv|
-          em++|emrun|vcpkg|gh
-        )\b
-        |
-        g\+\+(?=\s|-|$)
-        |
-        clang\+\+(?=\s|-|$)
-      )/x
+      # 공통 명령어 목록 — UNIX_CMD_RE / CMD_START_RE 양쪽에서 공유
+      UNIX_CMDS = %w[
+        ls ll la cd pwd pushd popd
+        mkdir rmdir rm cp mv touch ln
+        cat less more head tail tee
+        grep egrep fgrep rg fd find locate which whereis
+        chmod chown chgrp stat file
+        ps top htop btop kill killall pkill bg fg jobs nohup
+        df du free uname uptime
+        tar gzip gunzip bzip2 zip unzip xz zstd
+        ssh scp rsync curl wget
+        ssh-keygen ssh-copy-id ssh-agent
+        git cmake make ninja ctest cpack ccmake meson bazel
+        gcc clang ld ar ranlib strip pkg-config
+        ldd nm objdump readelf objcopy otool
+        addr2line size patchelf install
+        python python2 python3 pip pip2 pip3
+        python3-config python-config
+        ruby gem bundle jekyll
+        node npm yarn pnpm
+        cargo rustc rustup
+        go
+        java javac mvn gradle
+        dotnet
+        swift swiftc
+        docker docker-compose podman
+        kubectl helm
+        conan vcpkg
+        echo printf read export unset source alias
+        sudo su env
+        date time sleep watch
+        vi vim nvim nano emacs code
+        awk sed tr sort uniq wc cut paste xargs
+        diff patch comm
+        hexdump xxd
+        md5sum sha1sum sha256sum sha512sum
+        base64
+        jq yq
+        tree lsof strace ltrace
+        tmux screen
+        systemctl service journalctl
+        sysctl
+        apt apt-get apt-cache
+        dnf yum pacman brew snap port
+        ldconfig
+        poetry pyenv pipenv
+        em++ emrun gh
+        xcodebuild xcrun
+        dumpbin
+        protoc flatc
+      ].freeze
 
-      CMD_START_RE = /^(?=
-        (?:
-          (?:
-            ls|ll|la|cd|pwd|pushd|popd|
-            mkdir|rmdir|rm|cp|mv|touch|ln|
-            cat|less|more|head|tail|tee|
-            grep|egrep|fgrep|rg|find|locate|which|whereis|
-            chmod|chown|chgrp|stat|file|
-            ps|top|htop|kill|killall|pkill|
-            df|du|free|uname|uptime|
-            tar|gzip|gunzip|bzip2|zip|unzip|xz|
-            ssh|scp|rsync|curl|wget|
-            git|cmake|make|ninja|ctest|cpack|ccmake|
-            gcc|clang|
-            python3-config|python-config|python3?|pip3?|ruby|gem|bundle|jekyll|node|npm|yarn|
-            echo|printf|export|unset|source|alias|
-            sudo|su|env|
-            vi|vim|nvim|nano|emacs|code|
-            awk|sed|tr|sort|uniq|wc|cut|xargs|
-            tree|lsof|
-            apt|apt-get|dnf|yum|pacman|brew|snap|dumpbin|objdump|poetry|pyenv|
-            em++|emrun|vcpkg|gh
-          )\b
-          |
-          g\+\+(?=\s|-|$)
-          |
-          clang\+\+(?=\s|-|$)
-        )
-      )/x
+      # :command 상태 안에서 명령어 이름을 실제 소비·색칠 (\b 워드 바운더리 사용)
+      # g++/clang++ 는 \b 가 + 뒤에서 동작하지 않으므로 lookahead 별도 처리
+      _cmd_alt = UNIX_CMDS.map { |c| Regexp.escape(c) }.join('|')
+      UNIX_CMD_RE = /(?:\b(?:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+
+      # :root 상태에서 라인이 명령어로 시작하는지 감지 (zero-width lookahead, 텍스트 소비 없음)
+      CMD_START_RE = /^(?=(?:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
 
       state :root do
 
@@ -130,9 +131,11 @@ module Rouge
         # 8-a. shell 주석: 라인 시작이 # (root 프롬프트보다 먼저 매칭)
         rule(/^#[^\n]*$/, Comment::Single)
 
-        # 8-b. root 프롬프트: user@host:~# (# 앞에 내용이 있는 경우)
-        rule(/^([^\n#]+#[ \t]+)/) do |m|
-          token Generic::Prompt, m[1]
+        # 8-b. root 프롬프트: user@host:/path# 또는 [user@host dir]#
+        # [^\n#]+ 는 인라인 주석(ln ... # comment)도 매칭해버리므로
+        # 반드시 @ 또는 [] 가 있는 실제 프롬프트 형태만 허용
+        rule(/^(?:[A-Za-z0-9._-]+@[A-Za-z0-9._-]+:[^\n]*?#|\[[^\]]+\]#)[ \t]+/) do |m|
+          token Generic::Prompt, m[0]
           push :command
         end
 
@@ -155,6 +158,12 @@ module Rouge
       end
 
       state :command do
+        # 라인 연속: \ + \n → pop 없이 다음 줄도 :command 유지
+        rule(/\\\n/) { token Text, "\\\n" }
+
+        # 인라인 주석: cmd arg # comment
+        rule(/#[^\n]*/) { |m| token Comment::Single, m[0] }
+
         rule(/\n/) do
           token Text, "\n"
           pop!

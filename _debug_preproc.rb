@@ -1,30 +1,62 @@
-require "rouge"
-require "strscan"
+#!/usr/bin/env ruby
+# _debug_preproc.rb — dynlib.h #define 토큰 확인
+# 실행: ruby _debug_preproc.rb
 
-load File.expand_path("_plugins/rouge_ue_cpp.rb")
+$LOAD_PATH.unshift File.join(__dir__, '_plugins')
+require 'rouge'
+require 'rouge_ue_cpp'
 
-code = <<~'CODE'
-#pragma once
+CODE = <<~'CPP'
+  // dynlib.h — 크로스 플랫폼 동적 로딩 래퍼
+  #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
-  #ifdef MYLIB_EXPORTS
-    #define MYLIB_API __declspec(dllexport)
+  #ifdef _WIN32
+  #  include <windows.h>
+     typedef HMODULE DynLib;
+  #  define dynlib_open(path)        LoadLibraryA(path)
+  #  define dynlib_sym(lib, name)    ((void*)GetProcAddress(lib, name))
+  #  define dynlib_close(lib)        FreeLibrary(lib)
   #else
-    #define MYLIB_API __declspec(dllimport)
+  #  include <dlfcn.h>
+     typedef void*  DynLib;
+  #  define dynlib_open(path)        dlopen(path, RTLD_NOW | RTLD_LOCAL)
+  #  define dynlib_sym(lib, name)    dlsym(lib, name)
+  #  define dynlib_close(lib)        dlclose(lib)
   #endif
-#elif defined(__linux__) || defined(__APPLE__)
-  #ifdef MYLIB_EXPORTS
-    #define MYLIB_API __attribute__((visibility("default")))
-  #else
-    #define MYLIB_API
-  #endif
-#else
-  #define MYLIB_API
-#endif
-CODE
+CPP
 
 lexer = Rouge::Lexers::UECpp.new
-lexer.lex(code).each do |token, value|
-  next if token == Rouge::Token::Tokens::Text && value =~ /\A\s*\z/
-  puts "#{token.to_s.ljust(45)} #{value.inspect}"
+
+# ── 1. RAW tokens (before post-processing) ──────────────────────────────────
+puts "=" * 70
+puts "RAW tokens (from base Cpp lexer, before UECpp post-processing):"
+puts "=" * 70
+base_lexer = Rouge::Lexers::Cpp.new
+base_lexer.lex(CODE).each do |tok, val|
+  next if tok == Rouge::Token::Tokens::Text && val =~ /\A\s*\z/
+  printf "  %-55s %s\n", tok, val.inspect
+end
+
+# ── 2. POST-PROCESSED tokens (UECpp output) ──────────────────────────────────
+puts
+puts "=" * 70
+puts "POST-PROCESSED tokens (UECpp lexer output):"
+puts "=" * 70
+lexer.lex(CODE).each do |tok, val|
+  next if tok == Rouge::Token::Tokens::Text && val =~ /\A\s*\z/
+  printf "  %-55s %s\n", tok, val.inspect
+end
+
+# ── 3. Focus: only preproc-related tokens ─────────────────────────────────
+puts
+puts "=" * 70
+puts "PREPROC tokens only (any token on #define lines):"
+puts "=" * 70
+in_define = false
+lexer.lex(CODE).each do |tok, val|
+  in_define = true  if val.include?('#') && val.include?('define')
+  in_define = false if val == "\n" && in_define
+  if in_define || tok.to_s.include?('Preproc') || tok.to_s.include?('Keyword')
+    printf "  %-55s %s\n", tok, val.inspect
+  end
 end
