@@ -20,37 +20,50 @@ image:
 {: .prompt-info }
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1c2b3a", "primaryTextColor": "#e6edf3", "primaryBorderColor": "#58a6ff", "lineColor": "#58a6ff", "secondaryColor": "#162232", "background": "#0d1117"}}}%%
-mindmap
-  root((asyncio))
-    코루틴
-      async def
-      await
-      네이티브 코루틴
-    이벤트 루프
-      asyncio.run
-      asyncio.Runner
-      get_running_loop
-    Future / Task
-      asyncio.Future
-      asyncio.Task
-      asyncio.TaskGroup
-      asyncio.gather
-    비동기 I/O
-      asyncio.to_thread
-      run_in_executor
-      블로킹 I/O 분리
-    async with / for
-      __aenter__ / __aexit__
-      __aiter__ / __anext__
-      asyncio.timeout
-    비동기 표현식
-      async for in comprehension
-      await in comprehension
-    디버깅 3.14+
-      print_call_graph
-      capture_call_graph
-      CLI ps / pstree
+%%{init: {"theme": "base", "themeVariables": {"background": "#0d1117", "lineColor": "#4a5568"}}}%%
+flowchart LR
+    root(["asyncio"])
+
+    subgraph top[ ]
+        cor["코루틴\nasync def / await"]
+        evl["이벤트 루프\nasyncio.run / Runner"]
+        fut["Future / Task\nTaskGroup / gather"]
+        aio["비동기 I/O\nto_thread / run_in_executor"]
+    end
+
+    subgraph bot[ ]
+        awf["async with / for\ntimeout / __aenter__"]
+        aex["비동기 표현식\nasync for / await in comprehension"]
+        dbg["디버깅 3.14+\nprint_call_graph / CLI"]
+    end
+
+    root --> cor
+    root --> evl
+    root --> fut
+    root --> aio
+    root --> awf
+    root --> aex
+    root --> dbg
+
+    classDef rootStyle fill:#3b82f6,stroke:#1d4ed8,color:#fff,stroke-width:3px
+    classDef corStyle  fill:#10b981,stroke:#047857,color:#fff,stroke-width:2px
+    classDef evlStyle  fill:#f59e0b,stroke:#b45309,color:#fff,stroke-width:2px
+    classDef futStyle  fill:#8b5cf6,stroke:#6d28d9,color:#fff,stroke-width:2px
+    classDef aioStyle  fill:#ef4444,stroke:#b91c1c,color:#fff,stroke-width:2px
+    classDef awfStyle  fill:#06b6d4,stroke:#0e7490,color:#fff,stroke-width:2px
+    classDef aexStyle  fill:#ec4899,stroke:#be185d,color:#fff,stroke-width:2px
+    classDef dbgStyle  fill:#f97316,stroke:#c2410c,color:#fff,stroke-width:2px
+    classDef groupStyle fill:none,stroke:none
+
+    class root rootStyle
+    class cor corStyle
+    class evl evlStyle
+    class fut futStyle
+    class aio aioStyle
+    class awf awfStyle
+    class aex aexStyle
+    class dbg dbgStyle
+    class top,bot groupStyle
 ```
 
 > **Python 버전 기준**  
@@ -106,9 +119,9 @@ asyncio의 핵심은 **이벤트 루프**다. 이벤트 루프는 코루틴들�
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": { "background": "#0d1117", "primaryColor": "#1c2b3a", "primaryTextColor": "#e6edf3", "primaryBorderColor": "#58a6ff", "lineColor": "#58a6ff", "secondaryColor": "#162232", "tertiaryColor": "#1a2d1a", "actorBkg": "#1c2b3a", "actorBorder": "#58a6ff", "actorTextColor": "#e6edf3", "actorLineColor": "#30363d", "signalColor": "#58a6ff", "signalTextColor": "#e6edf3", "labelBoxBkgColor": "#21262d", "labelBoxBorderColor": "#58a6ff", "labelTextColor": "#e6edf3", "loopTextColor": "#e6edf3", "noteBkgColor": "#2d2a00", "noteBorderColor": "#e3b341", "noteTextColor": "#e3b341", "activationBkgColor": "#21262d", "activationBorderColor": "#3fb950" }}}%%
 sequenceDiagram
-    participant A as "애플리케이션"
-    participant L as "이벤트 루프"
-    participant O as "OS epoll/kqueue"
+    participant A as 애플리케이션
+    participant L as 이벤트루프
+    participant O as OS epoll kqueue
 
     A->>L: asyncio.run(main())
     activate L
@@ -282,24 +295,23 @@ sequenceDiagram
 일반적으로 직접 생성하기보다 라이브러리 내부에서 사용된다.
 
 ```mermaid
-%%{init: {"theme": "base", "stateDiagram": {"nodeSpacing": 70, "rankSpacing": 80}, "themeVariables": {"fontFamily": "Apple SD Gothic Neo, Noto Sans KR, sans-serif", "background": "#0d1117", "primaryTextColor": "#e6edf3", "labelColor": "#e6edf3", "edgeLabelBackground": "#21262d", "fontSize": "16px"}}}%%
+%%{init: {"theme": "base", "stateDiagram": {"nodeSpacing": 50, "rankSpacing": 80}, "themeVariables": {"background": "#0d1117", "primaryTextColor": "#e6edf3", "labelColor": "#e6edf3", "edgeLabelBackground": "#161b22", "fontSize": "15px"}}}%%
 stateDiagram-v2
-    direction TB
+    direction LR
 
-    %% <br/>을 앞뒤로 붙여서 박스 높이와 여백을 확보합니다.
-    state "<br/>PENDING<br/>(대기/실행중)<br/>" as PENDING
-    state "<br/>FINISHED<br/>(완료)<br/>" as FINISHED
-    state "<br/>CANCELLED<br/>(취소)<br/>" as CANCELLED
+    state "PENDING (미완료)" as PENDING
+    state "FINISHED (정상/예외 완료)" as FINISHED
+    state "CANCELLED (취소)" as CANCELLED
 
     [*] --> PENDING : Future/Task 생성
 
-    PENDING --> FINISHED : set_result()<br/>set_exception()<br/>(코루틴 return)
+    PENDING --> FINISHED : set_result() 호출
+    PENDING --> FINISHED : set_exception() 호출
     PENDING --> CANCELLED : cancel() 호출
 
     FINISHED --> [*]
     CANCELLED --> [*]
 
-    %% 색상 스타일
     classDef pendingStyle fill:#161b22,stroke:#8b949e,color:#e6edf3,stroke-width:2px
     classDef finishedStyle fill:#1c2b3a,stroke:#58a6ff,color:#e6edf3,stroke-width:2px
     classDef cancelStyle fill:#3a1c1c,stroke:#f85149,color:#e6edf3,stroke-width:2px
@@ -509,7 +521,7 @@ async def main():
 
 | 항목 | `asyncio.gather` | `asyncio.TaskGroup` (3.11+) |
 |------|------------------|-----------------------------|
-| 예외 발생 시 | 다른 태스크 계속 실행 (`return_exceptions=False`면 즉시 전파) | 나머지 태스크 **자동 취소** |
+| 예외 발생 시 | 예외 즉시 전파, 나머지 태스크는 **취소되지 않고 백그라운드에서 계속 실행** | 나머지 태스크 **자동 취소** |
 | 취소 안전성 | 수동 처리 필요 | 자동 보장 |
 | 결과 수집 | 반환 리스트 | 각 `task.result()` 호출 |
 | 예외 타입 | 첫 번째 예외 그대로 | `ExceptionGroup` (except* 사용) |
@@ -585,7 +597,7 @@ async def main():
 `asyncio.timeout_at()`을 사용하면 절대 시각(deadline)으로 지정할 수 있다:
 
 ```python
-deadline = asyncio.get_event_loop().time() + 5.0
+deadline = asyncio.get_running_loop().time() + 5.0
 async with asyncio.timeout_at(deadline):
     result = await long_running_task()
 ```
