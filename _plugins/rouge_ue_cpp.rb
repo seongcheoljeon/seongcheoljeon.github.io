@@ -1073,6 +1073,26 @@ module Rouge
             end
           end
 
+          # typedef void (*FnTypeName)(args) → FnTypeName (local_types)
+          # typedef RetType (*FnTypeName)(args);
+          if tok == T_KW && val == 'typedef'
+            j = idx + 1
+            # skip return type tokens until we hit '('
+            j += 1 while j < tokens.size && !(tokens[j][0] == T_PUNC && tokens[j][1].include?('('))
+            # expect '(' then '*'
+            if j < tokens.size
+              j += 1  # skip '('
+              j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+              if j < tokens.size && tokens[j][0] == T_OP && tokens[j][1] == '*'
+                j += 1
+                j += 1 while j < tokens.size && tokens[j][0] == T_TEXT
+                if j < tokens.size && NAME_TOKENS.include?(tokens[j][0])
+                  local_types.add(tokens[j][1])
+                end
+              end
+            end
+          end
+
           # Variable declarations: TypeName [*/&]* varName [= val] [, varName [= val]]...
           # e.g. float x = 0;  float _speedx = A, _speedy = B;  TArray<T>* ptr
           if is_type_token.call(tok, val)
