@@ -31,10 +31,12 @@ HDK 플러그인은 모두 **DSO (Dynamic Shared Object)** 패턴을 따른다.
 | SIM | `initializeSIM(void*)` + `IMPLEMENT_DATAFACTORY` | 시뮬레이션 데이터/솔버 |
 | RAY | `registerProcedural(RAY_ProceduralFactory*)` | Mantra 프로시저럴 |
 | RAY (PixelFilter) | `allocPixelFilter(const char*)` | Mantra 픽셀 필터 |
-| VEX | 별도 VEX function 등록 | VEX 함수 |
-| COP2 | `newSopOperator(OP_OperatorTable*)` | 컴포짓 노드 |
+| VEX | `newVEXOp(void*)` | VEX 커스텀 함수 |
+| COP2 | `newCop2Operator(OP_OperatorTable*)` | 컴포짓 노드 |
+| CHOP | `newChopOperator(OP_OperatorTable*)` | 채널 노드 |
 | OBJ | `newSopOperator(OP_OperatorTable*)` | 오브젝트 노드 |
 | ROP | `newDriverOperator(OP_OperatorTable*)` | 렌더 출력 노드 |
+| Custom Prim | `newGeometryPrim(GA_PrimitiveFactory*)` | 커스텀 프리미티브 (tetprim, packedsphere) |
 | DM (Mouse) | `DMnewEventHook(DM_EventTable*)` | 마우스 이벤트 훅 |
 | LOP | CMakeLists + `newLopOperator` | USD/Solaris 노드 |
 | BRAY (Karma) | `BRAY_HdProcedural` 팩토리 | Karma 프로시저럴 |
@@ -99,6 +101,27 @@ void SOPPATH(UT_String &str, int i, fpreal t) {
 }
 ```
 
+**SOP_HDKObject의 지오메트리 복사 전략:**
+
+```cpp
+// PRM_MULTITYPE_LIST + PRM_TYPE_DYNAMIC_PATH + PRM_SpareData::sopPath 조합
+
+// GEO_COPY 전략: 여러 소스를 하나의 디테일에 합칠 때
+GEO_CopyMethod copymethod;
+if (!copiedfirst)      copymethod = GEO_COPY_START;  // 첫 소스: 초기화
+else if (last)         copymethod = GEO_COPY_END;    // 마지막: 마무리
+else                   copymethod = GEO_COPY_ADD;    // 중간: 추가
+// 소스가 1개뿐이면: GEO_COPY_ONCE (가장 효율적)
+
+// 새로 생성된 요소 추적
+GA_IndexMap::Marker pointmarker(gdp->getPointMap());
+GA_IndexMap::Marker primmarker(gdp->getPrimitiveMap());
+gdp->copy(*cookedgdp, copymethod, true, false, GA_DATA_ID_CLONE);
+
+// 추적된 범위에만 트랜스폼 적용
+gdp->transform(xform, primmarker.getRange(), pointmarker.getRange(), false);
+```
+
 **SOP_SParticle의 파티클 시스템 패턴:**
 
 ```cpp
@@ -110,9 +133,43 @@ GU_RayIntersect  *myCollision; // 충돌 검출
 void birthParticle();
 int  moveParticle(GA_Offset, const UT_Vector3&);
 void timeStep(fpreal now);
+
+// 시간 의존 SOP 선언
+OP_Node::flags().setTimeDep(true);
+
+// 입력 잠금 패턴 (RAII)
+OP_AutoLockInputs inputs(this);
+if (inputs.lock(context) >= UT_ERROR_ABORT) return error();
 ```
 
 #### 최신 패턴 (SOP_NodeVerb 기반, CMakeLists.txt 포함)
+
+**SOP_NodeVerb 아키텍처 (`SOP_CopyToPointsHDK` 기준):**
+
+```cpp
+// .proto.h 자동생성 → SOP_CopyToPointsHDKParms 타입 안전 파라미터 접근
+#include "SOP_CopyToPointsHDK.proto.h"
+
+class SOP_CopyToPointsHDKCache : public SOP_NodeCache, public GU_CopyToPointsCache {};
+
+class SOP_CopyToPointsHDKVerb : public SOP_NodeVerb {
+    SOP_NodeParms *allocParms() const override { return new SOP_CopyToPointsHDKParms(); }
+    SOP_NodeCache *allocCache() const override { return new SOP_CopyToPointsHDKCache(); }
+    UT_StringHolder name() const override { return theSOPTypeName; }
+    CookMode cookMode(const SOP_NodeParms*) const override { return COOK_GENERIC; }
+    void cook(const CookParms &cookparms) const override;
+
+    static const SOP_NodeVerb::Register<SOP_CopyToPointsHDKVerb> theVerb; // 자동 등록
+};
+
+// 파라미터 인터페이스: raw string literal DSFile
+const char *const theDsFile = R"THEDSFILE(
+{
+    name parameters
+    parm { name "sourcegroup" ... }
+}
+)THEDSFILE";
+```
 
 | 샘플 | 핵심 교훈 |
 |------|----------|
@@ -275,9 +332,46 @@ DM_HOOK_UNLIT      → 비조명 패스
 - 모션 블러 (velocity attribute)
 
 #### RAY_DemoFile, RAY_DemoGT, RAY_DemoStamp
-- File: 외부 파일 로드
+- File: 외부 파일 로드 + **벨로시티/멀티세그먼트 모션 블러**
 - GT: Mantra에서 **GT 프리미티브를 직접 렌더링**. GU_Detail 기반이 아닌 GT 레벨 프로시저럴
 - Stamp: 스탬핑/인스턴싱
+
+**RAY_DemoFile의 모션 블러 패턴:**
+
+```cpp
+void RAY_DemoFile::render() {
+    RAY_ProceduralGeo g0 = createGeometry();
+    g0->load(myFile, 0);
+
+    if (myVelocityBlur) {
+        // 벨로시티 블러: v 어트리뷰트 기반
+        g0.addVelocityBlur(myPreBlur, myPostBlur);
+    } else if (myBlurFile.isstring()) {
+        // 멀티세그먼트: 별도 파일에서 두 번째 지오메트리 로드
+        auto g1 = g0.appendSegmentGeometry(myShutter);
+        wlock.getGdp()->load(myBlurFile, 0);
+    }
+    // camera:shutter import → preBlur/postBlur 계산
+    // import("camera:shutter", shutter, 2);
+    // myPreBlur = -(myShutter * shutter[0]) / fps;
+}
+```
+
+**RAY_DemoGT의 GT 레벨 렌더링:**
+
+```cpp
+void RAY_DemoGT::render() {
+    // GT_PrimCurveMesh를 프로시저럴하게 생성
+    GT_PrimitiveHandle prim = makeCurveMesh(myBox, myCurveCount, myMaxRadius, mySegments);
+
+    // GT_Real16Array: FP16 컬러/width 데이터
+    // GT_AttributeMap + GT_AttributeList: 모션 세그먼트별 어트리뷰트
+    // GT_PrimCurveMesh(GT_BASIS_LINEAR, counts, vertex, uniform, detail, false)
+
+    RAY_ProceduralChildPtr obj = createChild();
+    obj->addProcedural(new RAY_ProcGT(prim));  // GT → Mantra 렌더링 브릿지
+}
+```
 
 ---
 
@@ -404,6 +498,88 @@ static const GA_PrimitiveTypeId &theTypeId() { return theDefinition->getId(); }
 
 `registerMyself()`에서 `GA_PrimitiveFactory`에 프리미티브를 등록하고, GT Collector와 GR Hook도 함께 등록한다.
 
+**등록 + GT/GR 분기 (`registerMyself`):**
+
+```cpp
+void GEO_PrimTetra::registerMyself(GA_PrimitiveFactory *factory) {
+    theDefinition = factory->registerDefinition(
+        "HDK_Tetrahedron", geoNewPrimTetraBlock, GA_FAMILY_NONE, "hdk_tetrahedron");
+    theDefinition->setHasLocalTransform(false);
+    registerIntrinsics(*theDefinition);
+
+#ifndef TETRA_GR_PRIMITIVE
+    GT_PrimTetraCollect::registerPrimitive(theDefinition->getId()); // GT 경로
+#else
+    DM_RenderTable::getTable()->registerGEOHook(                    // GR 경로
+        new GR_PrimTetraHook, theDefinition->getId(), 0, GUI_HOOK_FLAG_NONE);
+#endif
+}
+
+// DSO 진입점
+extern "C" { void newGeometryPrim(GA_PrimitiveFactory *factory) {
+    GEO_PrimTetra::registerMyself(factory);
+}}
+```
+
+**JSON 직렬화 (`GA_PrimitiveJSON`):**
+
+```cpp
+class geo_PrimTetraJSON : public GA_PrimitiveJSON {
+    enum { geo_TBJ_VERTEX, geo_TBJ_ENTRIES };
+    int getEntries() const override { return geo_TBJ_ENTRIES; }
+    const UT_StringHolder &getKeyword(int i) const override;
+    bool saveField(const GA_Primitive*, int, UT_JSONWriter&, const GA_SaveMap&) const override;
+    bool loadField(GA_Primitive*, int, UT_JSONParser&, const GA_LoadMap&) const override;
+};
+```
+
+**Intrinsic 어트리뷰트:**
+
+```cpp
+GA_START_INTRINSIC_DEF(GEO_PrimTetra, geo_NUM_INTRINSICS)
+    GA_INTRINSIC_I(GEO_PrimTetra, geo_INTRINSIC_ADDRESS, "address", intrinsicAddress)
+    GA_INTRINSIC_S(GEO_PrimTetra, geo_INTRINSIC_AUTHOR,  "author",  intrinsicAuthor)
+GA_END_INTRINSIC_DEF(GEO_PrimTetra, GEO_Primitive)
+```
+
+**볼륨 계산 공식:**
+
+```cpp
+fpreal GEO_PrimTetra::calcVolume(const UT_Vector3 &) const {
+    return -(v3-v0).dot(cross(v1-v0, v2-v0)) / 6;  // signed volume
+}
+```
+
+**병렬 프리미티브 할당 콜백 (C++11 lambda):**
+
+```cpp
+static void geoNewPrimTetraBlock(GA_Primitive **new_prims, GA_Size n,
+                                  GA_Detail &gdp, GA_Offset start, ...) {
+    if (n >= 4*GA_PAGE_SIZE) {
+        UTparallelForLightItems(range, [&](const UT_BlockedRange<GA_Offset> &r){
+            for (auto off = r.begin(); off != r.end(); ++off)
+                *pprims++ = new GEO_PrimTetra(gdp, off);
+        });
+    } else { /* serial */ }
+}
+```
+
+**생성자 스레드 안전성 규칙:** 생성자에서 디테일에 vertex를 추가하면 안 된다. 여러 스레드에서 동시에 호출될 수 있기 때문. vertex 추가는 `build()` 또는 `buildBlock()`에서 수행.
+
+**폴리곤 변환 (`convert`):**
+
+```cpp
+GEO_Primitive* GEO_PrimTetra::convertNew(GEO_ConvertParms &parms) {
+    if (parms.toType() == GEO_PrimTypeCompat::GEOPRIMPOLY) {
+        geo_buildPoly(this, gdp, 0, 1, 2, parms);  // 4개 삼각형 생성
+        geo_buildPoly(this, gdp, 1, 3, 2, parms);
+        geo_buildPoly(this, gdp, 1, 0, 3, parms);
+        return geo_buildPoly(this, gdp, 0, 2, 3, parms);
+    }
+}
+// GA_VertexWrangler로 vertex 어트리뷰트 복사
+```
+
 **병렬 빌드 (`buildBlock`):**
 
 ```cpp
@@ -502,6 +678,65 @@ class GU_PackedSphere : public GU_PackedImpl {
 - **JSON 로드 지원**: `supportsJSONLoad()` + `loadFromJSON()`
 - **GT 리파인먼트** (`GT_GEOPackedSphere`): 기본 Packed 프리미티브 렌더링과 동일. 제거해도 변화 없음
 
+**GU_PackedFactory 서브클래스 + Intrinsic 등록:**
+
+```cpp
+class SphereFactory : public GU_PackedFactory {
+    SphereFactory() : GU_PackedFactory("PackedSphere", "Packed Sphere") {
+        registerIntrinsic(theLodStr,
+            IntGetterCast(&GU_PackedSphere::intrinsicLod),
+            IntSetterCast(&GU_PackedSphere::setLOD));
+    }
+    GU_PackedImpl *create() const override { return new GU_PackedSphere(); }
+};
+```
+
+**LOD별 공유 지오메트리 캐싱:**
+
+```cpp
+class CacheEntry {
+    CacheEntry(int lod) {
+        GU_Detail *gdp = new GU_Detail();
+        GU_PrimSphereParms parms(gdp);
+        parms.freq = lod;
+        GU_PrimSphere::build(parms, GEO_PRIMPOLYSOUP);
+        myGdp.allocateAndSet(gdp);
+    }
+};
+static CacheEntry *theCache[MAX_LOD+1]; // 1~32 LOD 캐시
+static UT_Lock theLock;                  // 스레드 안전
+
+static GU_ConstDetailHandle getSphere(int lod) {
+    UT_AutoLock lock(theLock);
+    if (!theCache[lod]) theCache[lod] = new CacheEntry(lod);
+    return theCache[lod]->detail();
+}
+```
+
+**DSO 진입점 + 등록:**
+
+```cpp
+void GU_PackedSphere::install(GA_PrimitiveFactory *gafactory) {
+    theFactory = new SphereFactory();
+    GU_PrimPacked::registerPacked(gafactory, theFactory);
+    theTypeId = theFactory->typeDef().getId();
+    GT_GEOPackedSphere::registerPrimitive(theTypeId);
+}
+
+void newGeometryPrim(GA_PrimitiveFactory *f) { GU_PackedSphere::install(f); }
+```
+
+**LOD 변경 시 노티피케이션:**
+
+```cpp
+void GU_PackedSphere::setLOD(GU_PrimPacked *prim, exint l) {
+    clearSphere();
+    myLOD = l;
+    clearBoxCache();
+    if (prim) prim->topologyDirty(); // 뷰포트에 변경 알림
+}
+```
+
 | 관련 파일 | 역할 |
 |----------|------|
 | `GU_PackedSphere` | `GU_PackedImpl` 구현 (LOD, 공유 지오메트리) |
@@ -519,6 +754,57 @@ class GU_PackedSphere : public GU_PackedImpl {
 - `COP2_PixelAdd`: 픽셀 단위 연산. 가장 간단
 - `COP2_SampleGenerator`: 이미지 생성기 (노이즈)
 - `COP2_MultiInputWipe`: 멀티 인풋 와이프 전환
+
+**COP2_PixelAdd — 픽셀 연산 패턴:**
+
+```cpp
+// RU_PixelFunction 서브클래스
+class cop2_AddFunc : public RU_PixelFunction {
+    bool eachComponentDifferent() const override { return true; }
+    bool needAllComponents() const override { return false; }
+
+    // 스칼라 함수: 컴포넌트별 호출
+    static float add(RU_PixelFunction *pf, float val, int comp) {
+        return val + ((cop2_AddFunc*)pf)->myAddend[comp];
+    }
+    RUPixelFunc getPixelFunction() const override { return add; }
+
+    // 벡터 함수: 모든 컴포넌트 한번에
+    static void addvec(RU_PixelFunction *f, float **vals, const bool *scope);
+    RUVectorFunc getVectorFunction() const override { return addvec; }
+};
+
+// COP2_PixelOp 서브클래스에서 함수 생성
+RU_PixelFunction* addPixelFunction(const TIL_Plane*, int, float t, ...) {
+    return new cop2_AddFunc(ADD(0,t), ADD(1,t), ADD(2,t), ADD(3,t));
+}
+
+// 진입점
+void newCop2Operator(OP_OperatorTable *table) {
+    table->addOperator(new OP_Operator("hdk_samplepixadd", ...));
+}
+```
+
+**COP2_SampleGenerator — 타일 생성 패턴:**
+
+```cpp
+class COP2_SampleGenerator : public COP2_Generator {
+    TIL_Sequence* cookSequenceInfo(OP_ERROR &error) override;     // 해상도, 프레임, 플레인 설정
+    COP2_ContextData* newContextData(const TIL_Plane*, ...) override; // 파라미터 스태시
+    OP_ERROR generateTile(COP2_Context &context, TIL_TileList *tiles) override;
+};
+
+// 타일 생성 (멀티스레드 호출 — 스레드 안전 필수!)
+OP_ERROR generateTile(COP2_Context &context, TIL_TileList *tiles) {
+    TIL_Tile *itr;
+    int ti;
+    FOR_EACH_UNCOOKED_TILE(tiles, itr, ti) {  // 아직 안 쿡된 타일만
+        for(int i = 0; i < tiles->mySize; i++)
+            dest[i] = SYSrandom(seed) * amp[ti];
+        writeFPtoTile(tiles, dest, ti);
+    }
+}
+```
 
 ---
 
@@ -585,11 +871,78 @@ cmd->sendInput("source -q 123.cmd");
 
 #### CHOP — Channel Operators (3 노드)
 - `CHOP_Blend`: 채널 블렌딩
-- `CHOP_Spring`: 스프링 다이나믹스 채널
+- `CHOP_Spring`: 스프링 다이나믹스 채널 (**가장 복잡한 CHOP 샘플**)
 - `CHOP_Stair`: 계단 함수 채널
 
+**CHOP_Spring 핵심 패턴:**
+
+```cpp
+// 이중 쿡: 일반 + 타임슬라이스
+class CHOP_Spring : public CHOP_Realtime {
+    OP_ERROR cookMyChop(OP_Context &context) override;    // 전체 범위 쿡
+    OP_ERROR cookMySlice(OP_Context &context, int start, int end) override; // 실시간 슬라이스
+    int      isSteady() const override;                    // 정상상태 검출
+    ut_RealtimeData *newRealtimeDataBlock(...) override;   // 중간값 스태싱
+};
+
+// 타임슬라이스용 중간값 저장
+class ut_SpringData : public ut_RealtimeData {
+    fpreal myDn1, myDn2;  // 이전 2 프레임 변위
+    bool loadStates(UT_IStream &is, int version) override;
+    bool saveStates(UT_OStream &os) override;
+};
+
+// 로컬 변수: C(현재 트랙), NC(전체 트랙 수)
+CH_LocalVariable myVariableList[] = {
+    { "C",  VAR_C,  0 },
+    { "NC", VAR_NC, 0 },
+};
+
+// 진입점
+void newChopOperator(OP_OperatorTable *table) {
+    table->addOperator(new OP_Operator("hdk_spring", "HDK Spring", ...));
+}
+```
+
 #### VEX — VEX 커스텀 함수 (3 파일)
-- `VEX_Example`, `VEX_Sort`, `VEX_Ops`
+- `VEX_Example`: 기본 VEX 함수 등록 (drand, time, gamma, myprint)
+- `VEX_Sort`: 정렬 함수
+- `VEX_Ops`: VEX 연산자
+
+**VEX_Example의 핵심 패턴:**
+
+```cpp
+// DSO 진입점
+void newVEXOp(void *) {
+    // 시그니처 문법: "함수명@리턴타입인자타입들"
+    // &: output, F: float, I: int, +: 가변인자
+    new VEX_VexOp("drand@&FI"_sh,         // float drand(int seed)
+        drand_Evaluate<VEX_32>,             // 32bit evaluator
+        drand_Evaluate<VEX_64>,             // 64bit evaluator
+        VEX_ALL_CONTEXT,                    // 모든 VEX 컨텍스트
+        nullptr, nullptr,                   // init (32, 64)
+        nullptr, nullptr);                  // cleanup (32, 64)
+
+    // 비결정적 함수: 최적화 레벨 낮춤
+    new VEX_VexOp("time@&I"_sh, ..., VEX_OPTIMIZE_1);
+
+    // 공유 데이터 (gamma table): init/cleanup 제공
+    new VEX_VexOp("gamma@&FF"_sh, ...,
+        gamma_Init<VEX_32>, gamma_Init<VEX_64>,       // 공유 테이블 초기화
+        gamma_Cleanup<VEX_32>, gamma_Cleanup<VEX_64>); // 정리
+
+    // 가변인자 함수
+    new VEX_VexOp("myprint@+"_sh, myprint_Evaluate<VEX_32>, ...);
+}
+
+// Evaluator: VEXfloat<PREC>/VEXint<PREC> 정밀도 템플릿
+template <VEX_Precision PREC>
+static void drand_Evaluate(int, void *argv[], void *) {
+    VEXfloat<PREC> *result = (VEXfloat<PREC>*)argv[0];
+    const VEXint<PREC> *seed = (const VEXint<PREC>*)argv[1];
+    *result = SYSdrand48();
+}
+```
 
 #### VOP — VOP 노드 (2 파일)
 - `VOP_Switch`, `VOP_CustomContext`
@@ -686,6 +1039,42 @@ gdp->findAttribute(GA_ATTRIB_POINT, "Cd")->bumpDataId();  // 특정 어트리뷰
 
 // 전체 bump (비효율적, 피해야 함)
 // → setManagesDataIDs(false)가 기본이며, 이 경우 cook 후 전체 bump
+```
+
+### 📖 SOP 쿠킹 필수 패턴
+
+```cpp
+// 입력 잠금 (RAII 패턴, 필수!)
+OP_AutoLockInputs inputs(this);
+if (inputs.lock(context) >= UT_ERROR_ABORT)
+    return error();
+
+// 시간 의존 SOP 선언 (파티클 등 매 프레임 쿡 필요시)
+OP_Node::flags().setTimeDep(true);
+
+// 시간 변환
+CH_Manager *chman = OPgetDirector()->getChannelManager();
+fpreal currframe = chman->getSample(context.getTime());
+fpreal time = chman->getTime(frame);
+
+// 지오메트리 복사 전략 (여러 소스 합칠 때)
+GEO_CopyMethod method;
+// GEO_COPY_ONCE  — 소스 1개일 때 (가장 효율적)
+// GEO_COPY_START — 첫 소스 (초기화)
+// GEO_COPY_ADD   — 중간 소스 (추가)
+// GEO_COPY_END   — 마지막 소스 (마무리)
+gdp->copy(*src, method, true, false, GA_DATA_ID_CLONE);
+
+// 새 요소 추적 (트랜스폼 등에 사용)
+GA_IndexMap::Marker pointmarker(gdp->getPointMap());
+GA_IndexMap::Marker primmarker(gdp->getPrimitiveMap());
+gdp->copy(*src, GEO_COPY_ADD, ...);
+gdp->transform(xform, primmarker.getRange(), pointmarker.getRange(), false);
+
+// 다른 SOP 쿠킹 (Object Merge 패턴)
+SOP_Node *sopptr = getSOPNode(sopname, 1);  // 1 = extra input 등록
+const GU_Detail *cookedgdp = sopptr->getCookedGeo(context);
+addExtraInput(objptr, OP_INTEREST_DATA);
 ```
 
 ### 📖 SIM_Data 매크로 패턴
