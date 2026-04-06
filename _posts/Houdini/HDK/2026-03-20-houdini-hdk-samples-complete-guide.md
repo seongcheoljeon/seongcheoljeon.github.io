@@ -1,7 +1,7 @@
 ---
-title: "[Houdini/HDK] Houdini 21.0 HDK 샘플 완전 분석 — 그래픽스 프로그래머 관점"
+title: "[Houdini/HDK] Houdini 21.0 HDK 샘플 분석"
 description: >-
-  Houdini 21.0 HDK 샘플 35개 카테고리, 200+ 파일을 전수 분석한다. 뷰포트 렌더 훅(DM), 커스텀 프리미티브 파이프라인(tetprim), Mantra 프로시저럴(RAY), 시뮬레이션 솔버(SIM) 등 그래픽스 프로그래머 관점에서의 우선순위와 핵심 패턴을 정리한다.
+  Houdini 21.0 HDK 샘플 35개 카테고리, 200+ 파일을 전수 분석한다. 뷰포트 렌더 훅(DM), 커스텀 프리미티브 파이프라인(tetprim), Mantra 프로시저럴(RAY), 시뮬레이션 솔버(SIM) 등 우선순위와 핵심 패턴을 정리한다.
 author: seongcheol
 date: 2026-03-20 00:00:00 +0900
 categories: [Houdini, HDK]

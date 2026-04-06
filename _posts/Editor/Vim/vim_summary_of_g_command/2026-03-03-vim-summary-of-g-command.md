@@ -1,5 +1,5 @@
 ---
-title: "[Editor/Vim] Vim g 명령어 완전 정리"
+title: "[Editor/Vim] Vim g 명령어"
 description: >-
   Vim의 g 명령어 활용법과 주요 패턴을 핵심 위주로 정리한다.
 author: seongcheol
