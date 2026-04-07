@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-02-21 15:29:00 +0900
 categories: [Graphics, SFML]
 tags: [C++, Game Development, SFML]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/sfml_title.jpg"
 ---

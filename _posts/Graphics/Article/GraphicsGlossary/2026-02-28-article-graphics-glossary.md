@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-02-28 17:59:00 +0900
 categories: [Graphics]
 tags: [Graphics, Article]
-pin: true
+pin: false
 math: true
 image:
   path: /assets/img/common/title/article_title.jpg

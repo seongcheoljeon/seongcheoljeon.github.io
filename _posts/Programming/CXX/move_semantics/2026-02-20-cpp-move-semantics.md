@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-02-20 12:05:00 +0900
 categories: [Programming, C++]
 tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization, Reference Collapsing Rule]
-pin: true
+pin: false
 image:
   path: /assets/img/common/title/cpp_title.jpg
 ---

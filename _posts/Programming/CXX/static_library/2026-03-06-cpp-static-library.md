@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-06 11:38:00 +0900
 categories: [Programming, C++]
 tags: [C++, Static Library]
-pin: true
+pin: false
 mermaid: true
 image:
   path: /assets/img/common/title/cpp_title.jpg

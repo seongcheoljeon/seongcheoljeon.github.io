@@ -8,7 +8,7 @@ author: seongcheol
 date: 2026-03-01 00:55:00 +0900
 categories: [DevTools, CMake]
 tags: [CMake, ]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/cmake_title.jpg"
 mermaid: true

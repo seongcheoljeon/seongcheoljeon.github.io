@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-02 18:49:00 +0900
 categories: [Programming, C++]
 tags: [C++, Class Template]
-pin: true
+pin: false
 image:
   path: /assets/img/common/title/cpp_title.jpg
 ---

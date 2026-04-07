@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-02 16:57:00 +0900
 categories: [Programming, C++]
 tags: [Programming, C++, Article]
-pin: true
+pin: false
 image:
   path: /assets/img/common/title/article_title.jpg
 ---

@@ -7,7 +7,7 @@ author: seongcheol
 date: 2026-03-08 00:15:00 +0900
 categories: [Programming, Python]
 tags: [Python, asyncio, 비동기, coroutine, event-loop, TaskGroup]
-pin: true
+pin: false
 mermaid: true
 image:
   path: /assets/img/common/title/python_title.jpg

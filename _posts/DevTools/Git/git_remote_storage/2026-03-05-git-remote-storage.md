@@ -8,7 +8,7 @@ author: seongcheol
 date: 2026-03-05 10:58:00 +0900
 categories: [DevTools, Git]
 tags: [Git, Remote Repository]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/git_title.jpg"
 mermaid: true

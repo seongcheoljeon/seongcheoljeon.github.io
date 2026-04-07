@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-04-05 00:00:00 +0900
 categories: [Editor, Vim]
 tags: [Vim, neovim, text-object]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/vim_title.jpg"
 ---

@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-02 15:46:00 +0900
 categories: [Article]
 tags: [Article]
-pin: true
+pin: false
 image:
   path: /assets/img/common/title/article_title.jpg
 ---

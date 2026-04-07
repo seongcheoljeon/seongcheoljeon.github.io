@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-05 01:08:00 +0900
 categories: [Editor, Vim]
 tags: [Editor, Vim]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/vim_title.jpg"
 ---

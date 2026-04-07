@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-02 16:30:00 +0900
 categories: [Programming, Qt]
 tags: [Qt, CLion]
-pin: true
+pin: false
 image:
   path: /assets/img/common/title/qt_title.jpg
 ---

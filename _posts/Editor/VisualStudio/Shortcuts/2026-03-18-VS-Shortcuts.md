@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-18 13:00:00 +0900
 categories: [Editor, VisualStudio]
 tags: [Editor, VisualStudio]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/vs_title.jpg"
 ---

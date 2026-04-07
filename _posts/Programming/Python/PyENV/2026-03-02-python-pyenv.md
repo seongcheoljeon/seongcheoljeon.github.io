@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-02 14:00:00 +0900
 categories: [Programming, Python]
 tags: [Python, pyenv]
-pin: true
+pin: false
 image:
   path: /assets/img/common/title/python_title.jpg
 ---

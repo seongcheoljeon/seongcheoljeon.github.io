@@ -8,7 +8,7 @@ author: seongcheol
 date: 2026-03-03 18:01:00 +0900
 categories: [DevTools, Git]
 tags: [Git, ]
-pin: true
+pin: false
 image:
   path: "/assets/img/common/title/git_title.jpg"
 mermaid: true

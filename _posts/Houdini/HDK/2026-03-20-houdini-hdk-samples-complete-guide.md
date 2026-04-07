@@ -6,7 +6,7 @@ author: seongcheol
 date: 2026-03-20 00:00:00 +0900
 categories: [Houdini, HDK]
 tags: [Houdini, HDK, Graphics Programming, OpenGL, Viewport Rendering, Simulation, Mantra]
-pin: true
+pin: false
 math: true
 image:
   path: /assets/img/common/title/houdini_title.jpg
