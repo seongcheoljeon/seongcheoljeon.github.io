@@ -41,16 +41,25 @@
         overlay.className = 'code-line-overlay';
         pre.appendChild(overlay);
 
-        pre.addEventListener('mousemove', function (e) {
-          var lineH   = remToPx(pre);
-          var rect    = pre.getBoundingClientRect();
-          var offsetY = e.clientY - rect.top + pre.scrollTop;
-          var lineIdx = Math.max(0, Math.floor(offsetY / lineH));
-          overlay.style.top     = (lineIdx * lineH) + 'px';
-          overlay.style.opacity = '1';
+        /* mouseenter 시 한 번만 측정, mousemove 내 강제 레이아웃 제거 */
+        var cachedLineH = 0;
+        var cachedRect  = null;
+
+        pre.addEventListener('mouseenter', function () {
+          cachedLineH = remToPx(pre);
+          cachedRect  = pre.getBoundingClientRect();
         });
 
+        pre.addEventListener('mousemove', function (e) {
+          if (!cachedRect || !cachedLineH) return;
+          var offsetY = e.clientY - cachedRect.top + pre.scrollTop;
+          var lineIdx = Math.max(0, Math.floor(offsetY / cachedLineH));
+          overlay.style.top     = (lineIdx * cachedLineH) + 'px';
+          overlay.style.opacity = '1';
+        }, { passive: true });
+
         pre.addEventListener('mouseleave', function () {
+          cachedRect = null;
           overlay.style.opacity = '0';
         });
       });

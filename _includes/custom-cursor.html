@@ -8,8 +8,9 @@
     position: fixed;
     pointer-events: none;
     z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.08s ease;
+    top: 0;
+    left: 0;
+    will-change: transform;
   }
 
   #crosshair .ch-ring {
@@ -93,10 +94,11 @@
 
     let mouseX = -100, mouseY = -100;
     let rafId;
+    let isHovering = false;
+    let isClicking = false;
 
     function moveCrosshair() {
-      crosshair.style.left = mouseX + 'px';
-      crosshair.style.top  = mouseY + 'px';
+      crosshair.style.transform = 'translate(calc(' + mouseX + 'px - 50%), calc(' + mouseY + 'px - 50%))';
     }
 
     window.addEventListener('mousemove', function (e) {
@@ -104,27 +106,35 @@
       mouseY = e.clientY;
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(moveCrosshair);
-    });
+    }, { passive: true });
 
     window.addEventListener('mousedown', function () {
+      if (isClicking) return;
+      isClicking = true;
       crosshair.classList.add('clicking');
     });
 
     window.addEventListener('mouseup', function () {
+      if (!isClicking) return;
+      isClicking = false;
       crosshair.classList.remove('clicking');
     });
 
-    /* 링크/버튼 호버 감지 */
+    /* 링크/버튼 호버 감지 - 상태 변경 시에만 classList 조작 */
+    const HOVER_SELECTOR = 'a, button, [role="button"], input, textarea, select, label';
+
     document.addEventListener('mouseover', function (e) {
-      const target = e.target.closest('a, button, [role="button"], input, textarea, select, label');
-      if (target) {
+      if (isHovering) return;
+      if (e.target.closest(HOVER_SELECTOR)) {
+        isHovering = true;
         crosshair.classList.add('hovering');
       }
     });
 
     document.addEventListener('mouseout', function (e) {
-      const target = e.target.closest('a, button, [role="button"], input, textarea, select, label');
-      if (target) {
+      if (!isHovering) return;
+      if (e.target.closest(HOVER_SELECTOR)) {
+        isHovering = false;
         crosshair.classList.remove('hovering');
       }
     });

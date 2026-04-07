@@ -33,6 +33,7 @@
       mouseY = -999;
     let isMoving = false;
     let moveTimer;
+    let animId = null;
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -82,42 +83,46 @@
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!particles.length) return;
+
+      /* shadowBlur로 글로우 효과 - 프레임당 gradient 객체 생성 없음 */
+      ctx.shadowColor = 'rgba(138, 180, 248, 0.8)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = 'rgba(200, 220, 255, 1)';
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const ratio = p.life / p.maxLife;
-
-        /* 글로우 효과 */
-        const grad = ctx.createRadialGradient(
-          p.x,
-          p.y,
-          0,
-          p.x,
-          p.y,
-          p.radius * 2.5
-        );
-        grad.addColorStop(0, "rgba(138, 180, 248, " + ratio * 0.9 + ")");
-        grad.addColorStop(0.5, "rgba(100, 160, 255, " + ratio * 0.4 + ")");
-        grad.addColorStop(1.0, "rgba(100, 140, 255, 0)");
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        /* 코어 */
+        ctx.globalAlpha = ratio * 0.85;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(200, 220, 255, " + ratio * 0.95 + ")";
         ctx.fill();
       }
+
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
     }
 
     function animate() {
       update();
       draw();
-      requestAnimationFrame(animate);
+      if (particles.length > 0 || isMoving) {
+        animId = requestAnimationFrame(animate);
+      } else {
+        animId = null;
+      }
     }
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+      } else if (particles.length > 0 || isMoving) {
+        animId = requestAnimationFrame(animate);
+      }
+    });
 
     window.addEventListener("mousemove", function (e) {
       mouseX = e.clientX;
@@ -127,10 +132,12 @@
       moveTimer = setTimeout(function () {
         isMoving = false;
       }, 80);
-    });
+      if (!animId) {
+        animId = requestAnimationFrame(animate);
+      }
+    }, { passive: true });
 
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", resize, { passive: true });
     resize();
-    animate();
   })();
 </script>

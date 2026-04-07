@@ -46,7 +46,7 @@
     }
 
     const CONFIG = {
-      particleCount: 80,
+      particleCount: 60,
       particleAlpha: 0.6,
       lineAlpha: 0.15,
       minRadius: .33,
@@ -61,6 +61,10 @@
 
     let particles = [];
     let mouse = { x: null, y: null };
+    let cachedColors = getColors();
+    let animId;
+    let lastFrame = 0;
+    const FRAME_INTERVAL = 1000 / 30; /* 30fps */
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -116,7 +120,7 @@
     }
 
     function drawParticle(p) {
-      const colors = getColors();
+      const colors = cachedColors;
       const [r, g, b] = colors.particle;
 
       if (p.isGlow) {
@@ -146,52 +150,86 @@
     }
 
     function drawConnections() {
-      const colors = getColors();
+      const colors = cachedColors;
       const [r, g, b] = colors.line;
+      const distSq = CONFIG.connectionDistance * CONFIG.connectionDistance;
+
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+
+      /* alpha 버킷별로 그룹화해서 stroke 호출 최소화 */
+      const BUCKETS = 5;
+      const buckets = Array.from({ length: BUCKETS }, () => []);
 
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const d2 = dx * dx + dy * dy;
 
-          if (dist < CONFIG.connectionDistance) {
-            const alpha = CONFIG.lineAlpha * (1 - dist / CONFIG.connectionDistance);
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
+          if (d2 < distSq) {
+            const ratio = 1 - Math.sqrt(d2) / CONFIG.connectionDistance;
+            const bi = Math.min(BUCKETS - 1, Math.floor(ratio * BUCKETS));
+            buckets[bi].push(particles[i].x, particles[i].y, particles[j].x, particles[j].y);
           }
         }
       }
+
+      for (let bi = 0; bi < BUCKETS; bi++) {
+        const lines = buckets[bi];
+        if (!lines.length) continue;
+        const alpha = CONFIG.lineAlpha * ((bi + 0.5) / BUCKETS);
+        ctx.strokeStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+        ctx.beginPath();
+        for (let k = 0; k < lines.length; k += 4) {
+          ctx.moveTo(lines[k],     lines[k + 1]);
+          ctx.lineTo(lines[k + 2], lines[k + 3]);
+        }
+        ctx.stroke();
+      }
     }
 
-    function animate() {
+    function animate(timestamp) {
+      animId = requestAnimationFrame(animate);
+      if (timestamp - lastFrame < FRAME_INTERVAL) return;
+      lastFrame = timestamp;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(function(p) {
         updateParticle(p);
         drawParticle(p);
       });
       drawConnections();
-      requestAnimationFrame(animate);
     }
+
+    const themeObserver = new MutationObserver(function() {
+      cachedColors = getColors();
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      } else if (!animId) {
+        animId = requestAnimationFrame(animate);
+      }
+    });
 
     window.addEventListener('resize', function() {
       resize();
       initParticles();
-    });
+    }, { passive: true });
 
     window.addEventListener('mousemove', function(e) {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-    });
+    }, { passive: true });
 
     window.addEventListener('mouseleave', function() {
       mouse.x = null;
       mouse.y = null;
-    });
+    }, { passive: true });
 
     resize();
     initParticles();

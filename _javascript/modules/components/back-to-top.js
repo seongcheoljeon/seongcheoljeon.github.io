@@ -11,7 +11,7 @@ export function back2top() {
     } else {
       btn.classList.remove('show');
     }
-  });
+  }, { passive: true });
 
   btn.addEventListener('click', () => {
     window.scrollTo({ top: 0 });

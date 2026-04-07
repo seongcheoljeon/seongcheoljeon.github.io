@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(du:*)",
+      "Bash(find /mnt/c/Users/admin/source/repos/seongcheoljeon.github.io/assets/img/ -type f -exec ls -lh {} \\\\;)",
+      "Bash(xargs ls:*)",
+      "Bash(wc:*)",
+      "Bash(find /mnt/c/Users/admin/source/repos/seongcheoljeon.github.io/assets -type f \\\\\\( -name \"*.js\" -o -name \"*.css\" \\\\\\) -exec ls -lh {} \\\\;)",
+      "Bash(find /mnt/c/Users/admin/source/repos/seongcheoljeon.github.io/assets/img -type f -exec ls -lh {} \\\\;)",
+      "Bash(find /mnt/c/Users/admin/source/repos/seongcheoljeon.github.io/_posts -name \"*.md\" -exec grep -l \"mermaid\\\\|math\\\\|mathjax\" {} \\\\;)",
+      "Bash(grep -r \"script src\\\\|link rel\\\\|@import\\\\|fetch\\\\|XMLHttpRequest\" /mnt/c/Users/admin/source/repos/seongcheoljeon.github.io/_includes/*.html)"
+    ]
+  }
+}
