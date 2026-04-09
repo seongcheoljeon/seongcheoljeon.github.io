@@ -26,6 +26,61 @@ image:
 
 ---
 
+## Neovim
+
+`LazyVim`을 사용하기 위해서는 먼저 `Neovim`을 설치해야 한다.
+
+### Linux
+
+리눅스 패키지 매니저로 설치하면 최신의 `Neovim`이 아닌 구버전이 설치되므로 아래와 같이 최신으로 설치한다.
+
+```terminal
+# Neovim Install
+
+# 기존 apt neovim 제거 (있다면)
+sudo apt remove neovim -y
+
+# 최신 stable tarball 다운로드
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+
+# /opt에 설치
+sudo rm -rf /opt/nvim-linux-x86_64
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+
+# 정리
+rm nvim-linux-x86_64.tar.gz
+```
+
+```terminal
+echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+```terminal
+nvim --version
+```
+
+```terminal
+sudo apt install git gcc unzip curl ripgrep fzf fd-find pipx
+pipx install cmakelint
+```
+
+> `fd`는 `Ubuntu`에서 `fdfind`로 설치됨. `LazyVim`이 `fd`를 찾으므로 심볼릭 링크 필요:
+
+```terminal
+mkdir -p ~/.local/bin
+ln -sf $(which fdfind) ~/.local/bin/fd
+# ~/.zshrc에 ~/.local/bin이 PATH에 있는지 확인
+```
+
+### Windows
+
+```console
+choco install neovim
+```
+
+---
+
 ## 🚀 LazyVim Install
 
 내가 미리 어느 정도 설정한 것이 있다. 이것을 이용하면 `C++`, `Python`, `Rust`, `TypeScript`, `CMake` 등의 플러그인들을 따로 설치할 필요 없다.
