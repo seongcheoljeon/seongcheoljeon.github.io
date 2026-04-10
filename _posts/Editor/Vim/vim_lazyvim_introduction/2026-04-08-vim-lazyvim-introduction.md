@@ -61,11 +61,15 @@ winget install --id=BrechtSanders.WinLibs.POSIX.UCRT -e
 
 각 OS에 맞게 Prerequisites를 설치한 후 다음과 같이 git clone 받으면 끝이다.
 
-```bash
-# Linux / macOS
-git clone https://github.com/seongcheoljeon/LazyVimSettings ~/.config/nvim
+#### Linux / macOS
 
-# Windows (PowerShell)
+```terminal
+git clone https://github.com/seongcheoljeon/LazyVimSettings ~/.config/nvim
+```
+
+#### Windows (PowerShell)
+
+```console
 git clone https://github.com/seongcheoljeon/LazyVimSettings $env:LOCALAPPDATA\nvim
 ```
 

@@ -144,6 +144,16 @@ module Rouge
         UE_DEFINE_GAMEPLAY_TAG
         UE_DEFINE_GAMEPLAY_TAG_COMMENT
 
+        UE_INLINE_GENERATED_CPP_BY_NAME
+
+        ATTRIBUTE_ACCESSORS
+        GAMEPLAYATTRIBUTE_REPNOTIFY
+        GAMEPLAYATTRIBUTE_VALUE_GETTER
+        GAMEPLAYATTRIBUTE_VALUE_SETTER
+        GAMEPLAYATTRIBUTE_VALUE_INITTER
+        DECLARE_ATTRIBUTE_CAPTUREDEF
+        DEFINE_ATTRIBUTE_CAPTUREDEF
+
         DECLARE_GLOBAL_SHADER
         IMPLEMENT_GLOBAL_SHADER
         IMPLEMENT_GLOBAL_SHADER_PUBLIC_INTERFACE
@@ -689,6 +699,14 @@ module Rouge
         ratio ratio_add ratio_subtract ratio_multiply ratio_divide
         complex valarray
         reference_wrapper
+        span
+        jthread
+        source_location
+        expected unexpected
+        coroutine_handle coroutine_traits suspend_always suspend_never
+        counting_semaphore binary_semaphore
+        latch barrier
+        stop_token stop_source stop_callback
       ].freeze
 
       # UE primitive/alias types → Name::Class (gold)
@@ -742,6 +760,13 @@ module Rouge
         async
         format print println
         hash
+        erase_if
+        bit_cast
+        midpoint lerp
+        to_array
+        ssize
+        to_underlying
+        construct_at destroy_at
       ]).freeze
 
       STD_TYPES_SET  = Set.new(STD_TYPES).freeze
@@ -1001,6 +1026,7 @@ module Rouge
 
         is_type_token = ->(tok, val) {
           tok == T_KW_TYPE ||
+          (tok == T_KW && val == 'auto') ||
           (NAME_TOKENS.include?(tok) && (
             local_types.include?(val)     ||
             template_params.include?(val) ||
@@ -1354,20 +1380,18 @@ module Rouge
                               !UE_CORE_RE.match?(value) && !UE_UTIL_RE.match?(value) &&
                               !UE_TYPE_RE.match?(value) && !UE_PRIM_RE.match?(value) &&
                               !template_params.include?(value)
-                          # Inside UE macro args: followed by '=' → key (.nn green)
-                          #                       otherwise      → enum value (.no amber)
-                          # key=value  only when followed by ="string"
-                          # meta=(...)  → enum value (amber)
-                          # Category="..." → key (green)
-                          eq_idx = i + 1
-                          eq_idx += 1 while eq_idx < tokens.size && tokens[eq_idx][0] == T_TEXT
-                          after_eq_idx = eq_idx + 1
-                          after_eq_idx += 1 while after_eq_idx < tokens.size && tokens[after_eq_idx][0] == T_TEXT
-                          is_key = eq_idx < tokens.size &&
-                                   tokens[eq_idx][0] == T_OP && tokens[eq_idx][1] == '=' &&
-                                   after_eq_idx < tokens.size &&
-                                   tokens[after_eq_idx][1].start_with?('"')
-                          is_key ? T_NAME_NS : T_NAME_NO
+                          # Inside UE macro args: specifier 리스트 우선, 없으면 '=' 유무로 판단
+                          if UE_KEY_SPEC_RE.match?(value)
+                            T_NAME_NS   # key specifier (green)
+                          elsif UE_ENUM_SPEC_RE.match?(value) || UE_SPEC_RE.match?(value)
+                            T_NAME_NO   # enum specifier (amber)
+                          else
+                            eq_idx = i + 1
+                            eq_idx += 1 while eq_idx < tokens.size && tokens[eq_idx][0] == T_TEXT
+                            is_key = eq_idx < tokens.size &&
+                                     tokens[eq_idx][0] == T_OP && tokens[eq_idx][1] == '='
+                            is_key ? T_NAME_NS : T_NAME_NO
+                          end
                         elsif UE_TYPE_RE.match?(value)
                           T_NAME_C
                         elsif UE_PRIM_RE.match?(value)
@@ -1377,8 +1401,6 @@ module Rouge
                         elsif STL_OBJECTS_RE.match?(value)
                           T_NAME_VG
                         elsif STL_FUNCS_RE.match?(value)
-                          T_NAME_F
-                        elsif is_func_call
                           T_NAME_F
                         elsif is_member_access || is_after_type
                           T_NAME_VI

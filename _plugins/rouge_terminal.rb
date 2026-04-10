@@ -25,10 +25,11 @@ module Rouge
         gcc clang ld ar ranlib strip pkg-config
         ldd nm objdump readelf objcopy otool
         addr2line size patchelf install
+        gdb lldb valgrind cppcheck
         python python2 python3 pip pip2 pip3
         python3-config python-config
-        ruby gem bundle jekyll
-        node npm yarn pnpm
+        ruby gem bundle jekyll luarocks
+        node npm yarn pnpm bun deno
         cargo rustc rustup
         go
         java javac mvn gradle
@@ -46,7 +47,7 @@ module Rouge
         hexdump xxd
         md5sum sha1sum sha256sum sha512sum
         base64
-        jq yq
+        jq yq fzf bat
         tree lsof strace ltrace
         tmux screen
         systemctl service journalctl
@@ -54,8 +55,8 @@ module Rouge
         apt apt-get apt-cache
         dnf yum pacman brew snap port
         ldconfig
-        poetry pyenv pipenv
-        em++ emrun gh
+        poetry pyenv pipenv pipx uv conda mamba
+        emrun gh
         xcodebuild xcrun
         dumpbin
         protoc flatc
@@ -63,11 +64,11 @@ module Rouge
 
       # :command 상태 안에서 명령어 이름을 실제 소비·색칠 (\b 워드 바운더리 사용)
       # g++/clang++ 는 \b 가 + 뒤에서 동작하지 않으므로 lookahead 별도 처리
-      _cmd_alt = UNIX_CMDS.map { |c| Regexp.escape(c) }.join('|')
-      UNIX_CMD_RE = /(?:\b(?:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+      _cmd_alt = UNIX_CMDS.sort_by { |c| -c.length }.map { |c| Regexp.escape(c) }.join('|')
+      UNIX_CMD_RE = /(?:\b(?:#{_cmd_alt})\b|(?:g|clang|em)\+\+(?=\s|-|$))/
 
       # :root 상태에서 라인이 명령어로 시작하는지 감지 (zero-width lookahead, 텍스트 소비 없음)
-      CMD_START_RE = /^(?=(?:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+      CMD_START_RE = /^(?=(?:#{_cmd_alt})\b|(?:g|clang|em)\+\+(?=\s|-|$))/
 
       state :root do
 
@@ -139,6 +140,11 @@ module Rouge
           push :command
         end
 
+        # 8-c. 환경변수 할당으로 시작하는 라인: VAR=value command
+        rule(/^(?=[A-Z_][A-Z0-9_]*=)/) do
+          push :command
+        end
+
         # 9. 프롬프트 없이 명령어로 시작하는 라인
         rule(CMD_START_RE) do
           push :command
@@ -167,6 +173,12 @@ module Rouge
         rule(/\n/) do
           token Text, "\n"
           pop!
+        end
+
+        # 환경변수 할당: VAR=value (명령어 앞)
+        rule(/([A-Z_][A-Z0-9_]*)(=)/) do |m|
+          token Name::Variable, m[1]
+          token Operator,       m[2]
         end
 
         rule(UNIX_CMD_RE, Name::Builtin)
@@ -222,6 +234,9 @@ module Rouge
         # 문자열
         rule(/"[^"\n]*"/, Literal::String)
         rule(/'[^'\n]*'/, Literal::String)
+
+        # 명령어 치환: $(...)
+        rule(/\$\([^)]*\)/, Name::Variable)
 
         # 셸 변수
         rule(/\$\{[A-Za-z_][A-Za-z0-9_]*\}/, Name::Variable)

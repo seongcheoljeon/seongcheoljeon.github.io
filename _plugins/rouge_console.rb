@@ -29,18 +29,18 @@ module Rouge
         cmake make ninja ctest cpack ccmake meson
         git python3-config python-config
         python python2 python3 pip pip2 pip3
-        node npm yarn pnpm ruby gem bundle
-        gcc clang cl link lib msbuild devenv nmake
+        node npm yarn pnpm bun deno ruby gem bundle
+        gcc clang cl link lib msbuild devenv nmake cppcheck
         cargo rustc rustup
         go
         java javac mvn gradle
         dotnet nuget
         docker docker-compose podman
         kubectl helm
-        curl wget ssh scp
+        curl wget ssh scp gdb fzf bat
         conan vcpkg
-        poetry pyenv pipenv
-        em++ emrun gh
+        poetry pyenv pipenv pipx uv conda mamba
+        emrun gh
         winget choco scoop
         7z
         protoc flatc
@@ -48,11 +48,11 @@ module Rouge
 
       # :cmd_command / :ps_command 안에서 명령어 이름을 실제 소비·색칠
       # (?i:) — Windows CMD 대소문자 무관
-      _cmd_alt = CONSOLE_CMDS.map { |c| Regexp.escape(c) }.join('|')
-      CMD_CMD_RE  = /(?:\b(?i:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+      _cmd_alt = CONSOLE_CMDS.sort_by { |c| -c.length }.map { |c| Regexp.escape(c) }.join('|')
+      CMD_CMD_RE  = /(?:\b(?i:#{_cmd_alt})\b|(?:g|clang|em)\+\+(?=\s|-|$))/
 
       # :root 에서 라인이 CMD 명령어로 시작하는지 감지 (zero-width lookahead)
-      CMD_START_RE = /^(?=(?i:#{_cmd_alt})\b|g\+\+(?=\s|-|$)|clang\+\+(?=\s|-|$))/
+      CMD_START_RE = /^(?=(?i:#{_cmd_alt})\b|(?:g|clang|em)\+\+(?=\s|-|$))/
 
       # PowerShell Verb-Noun 패턴 — CMD와 구조가 달라 별도 유지
       PS_CMD_RE = /\b(?:
@@ -85,12 +85,21 @@ module Rouge
         # 0. shell 주석: 라인 시작이 #
         rule(/^#[^\n]*$/, Comment::Single)
 
+        # 0-a. CMD 주석: REM 또는 :: 로 시작
+        rule(/^(?:::|\bREM\b).*$/i, Comment::Single)
+
         # 1. PowerShell 프롬프트: PS C:\Users\...>
         rule(/^(PS\s+)([A-Za-z]:[^\n>]*>)([ \t]*)/) do |m|
           token Keyword,          m[1]
           token Generic::Prompt,  m[2]
           token Text,             m[3]
           push :ps_command
+        end
+
+        # 1-a. @ echo 억제 접두어
+        rule(/^(@)/) do |m|
+          token Operator, m[1]
+          push :cmd_command
         end
 
         # 2. CMD 프롬프트: C:\path>
@@ -243,7 +252,7 @@ module Rouge
         rule(/%[A-Za-z_][A-Za-z0-9_]*%/, Name::Variable)
 
         rule(/\d+/, Literal::Number)
-        rule(/[&|]/, Operator)
+        rule(/2>>?|>>?|<|[&|]/, Operator)
         rule(/[ \t]+/, Text)
         rule(/[A-Za-z_\.][A-Za-z0-9_\-\.]*/, Generic::Output)
         rule(/./, Generic::Output)
@@ -316,7 +325,7 @@ module Rouge
         rule(/\$(?:env:[A-Za-z_][A-Za-z0-9_]*|[A-Za-z_][A-Za-z0-9_]*)/, Name::Variable)
 
         rule(/\d+/, Literal::Number)
-        rule(/[|;]/, Operator)
+        rule(/2>>?|>>?|<|[|;]/, Operator)
         rule(/[ \t]+/, Text)
         rule(/[A-Za-z_][A-Za-z0-9_\-\.]*/, Generic::Output)
         rule(/./, Generic::Output)
