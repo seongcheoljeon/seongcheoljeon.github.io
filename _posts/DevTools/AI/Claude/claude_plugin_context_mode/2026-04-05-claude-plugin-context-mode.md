@@ -8,8 +8,8 @@ categories: [DevTools, AI, Claude]
 tags: [Claude, ]
 pin: false
 image:
-  path: "/assets/img/common/title/cmake_title.jpg"
+  path: "/assets/img/common/title/claude_title.jpg"
 mermaid: true
 ---
 
-https://github.com/mksglu/context-mode
+<https://github.com/mksglu/context-mode>

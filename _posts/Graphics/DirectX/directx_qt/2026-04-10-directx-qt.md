@@ -13,6 +13,6 @@ image:
 
 
 
-https://qt-dev.com/board.php?board=qtappboard&command=body&no=27&
+<https://qt-dev.com/board.php?board=qtappboard&command=body&no=27&>
 
-https://github.com/giladreich/QtDirect3D
+<https://github.com/giladreich/QtDirect3D>
