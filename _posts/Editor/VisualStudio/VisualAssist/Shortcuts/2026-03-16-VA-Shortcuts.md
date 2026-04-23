@@ -54,6 +54,10 @@ image:
 .va-feat-name { font-size:15px; font-weight:600; color:#e2e4ec; }
 .va-feat-desc { font-size:14px; color:#9ca3b4; line-height:1.65; }
 .va-feat-kbd { margin-top:6px; }
+
+/* ── 링크 스타일 ── */
+.va a { color:inherit; text-decoration:underline dotted #3b82f6; text-underline-offset:3px; text-decoration-thickness:1px; }
+.va a:hover { color:#93c5fd; text-decoration-style:solid; }
 </style>
 
 <!-- ===== 카드 1 : 단축키 ===== -->
@@ -65,28 +69,28 @@ image:
   <div class="va-grid">
 
     <p class="va-section">탐색 · NAVIGATION</p>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>G</kbd></span><span class="va-divider"></span><span class="va-desc">선언부 ↔ 구현부 이동</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>G</kbd></span><span class="va-divider"></span><span class="va-desc">관련 심볼로 이동</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>O</kbd></span><span class="va-divider"></span><span class="va-desc">대응 파일 열기 (.h ↔ .cpp)</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>O</kbd></span><span class="va-divider"></span><span class="va-desc">솔루션 내 파일 빠른 열기</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>←</kbd></span><span class="va-divider"></span><span class="va-desc">이전 위치로 뒤로 가기</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>→</kbd></span><span class="va-divider"></span><span class="va-desc">다음 위치로 앞으로 가기</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>↓</kbd></span><span class="va-divider"></span><span class="va-desc">다음 범위로 이동</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>↑</kbd></span><span class="va-divider"></span><span class="va-desc">이전 범위로 이동</span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>G</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/goto-implementation" target="_blank" rel="noopener">선언부 ↔ 구현부 이동</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>G</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/goto-related" target="_blank" rel="noopener">관련 심볼로 이동</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>O</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/open-corresponding-file" target="_blank" rel="noopener">대응 파일 열기 (.h ↔ .cpp)</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>O</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/open-file-in-solution" target="_blank" rel="noopener">솔루션 내 파일 빠른 열기</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>←</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/navigate-back-and-forward" target="_blank" rel="noopener">이전 위치로 뒤로 가기</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>→</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/navigate-back-and-forward" target="_blank" rel="noopener">다음 위치로 앞으로 가기</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>↓</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/move-scope" target="_blank" rel="noopener">다음 범위로 이동</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>↑</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/move-scope" target="_blank" rel="noopener">이전 범위로 이동</a></span></div>
 
     <p class="va-section">검색 · SEARCH</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>F</kbd></span><span class="va-divider"></span><span class="va-desc">현재 심볼 참조 찾기</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>S</kbd></span><span class="va-divider"></span><span class="va-desc">솔루션 내 심볼 검색</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>K</kbd></span><span class="va-divider"></span><span class="va-desc">커서 단어 인스턴스 강조</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>M</kbd></span><span class="va-divider"></span><span class="va-desc">파일 내 클래스·메소드 목록</span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>F</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/find-references" target="_blank" rel="noopener">현재 심볼 참조 찾기</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>S</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/find-symbol-in-solution" target="_blank" rel="noopener">솔루션 내 심볼 검색</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>K</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/code-understanding/highlight-find-results#findSelected" target="_blank" rel="noopener">커서 단어 인스턴스 강조</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>M</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/list-methods-in-file" target="_blank" rel="noopener">파일 내 클래스·메소드 목록</a></span></div>
 
     <p class="va-section">편집 · EDIT</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>C</kbd></span><span class="va-divider"></span><span class="va-desc">심볼 생성 (작업 중)</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>R</kbd></span><span class="va-divider"></span><span class="va-desc">심볼 이름 바꾸기 (전체 반영)</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>Q</kbd></span><span class="va-divider"></span><span class="va-desc">퀵 액션 · 리팩토링 메뉴</span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>C</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/code-generation/create-from-usage" target="_blank" rel="noopener">심볼 생성 (작업 중)</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>R</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/refactoring/rename" target="_blank" rel="noopener">심볼 이름 바꾸기 (전체 반영)</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>Q</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/refactoring/access-to-refactoring-and-code-generation" target="_blank" rel="noopener">퀵 액션 · 리팩토링 메뉴</a></span></div>
     <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>A</kbd></span><span class="va-divider"></span><span class="va-desc">코드 주석 자동 생성 (Doxygen / XML)</span></div>
     <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>J</kbd></span><span class="va-divider"></span><span class="va-desc">코드 스니펫 삽입</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Ctrl</kbd><span class="sep">+</span><kbd>Shift</kbd><span class="sep">+</span><kbd>V</kbd></span><span class="va-divider"></span><span class="va-desc">클립보드 히스토리 붙여넣기</span></div>
+    <div class="va-row"><span class="va-key"><kbd>Ctrl</kbd><span class="sep">+</span><kbd>Shift</kbd><span class="sep">+</span><kbd>V</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/coding-assistance/multiple-clipboards" target="_blank" rel="noopener">클립보드 히스토리 붙여넣기</a></span></div>
 
     <p class="va-section">선택 · SELECTION</p>
     <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>]</kbd></span><span class="va-divider"></span><span class="va-desc">선택 영역 조금씩 확장</span></div>
@@ -95,8 +99,8 @@ image:
     <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>[</kbd></span><span class="va-divider"></span><span class="va-desc">선택 영역 크게 축소</span></div>
 
     <p class="va-section">기타 · MISC</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>H</kbd></span><span class="va-divider"></span><span class="va-desc">VA 해쉬태그 창 열기</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Ctrl</kbd><span class="sep">+</span><kbd>0</kbd></span><span class="va-divider"></span><span class="va-desc">에디터 확대 100% 리셋</span></div>
+    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>H</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/va-hashtags" target="_blank" rel="noopener">VA 해쉬태그 창 열기</a></span></div>
+    <div class="va-row"><span class="va-key"><kbd>Ctrl</kbd><span class="sep">+</span><kbd>0</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/coding-assistance/reset-editor-zoom" target="_blank" rel="noopener">에디터 확대 100% 리셋</a></span></div>
 
   </div>
 </div>
@@ -132,7 +136,7 @@ image:
     <div class="va-feat-row">
       <div class="va-feat-icon" style="background:#1e1a2e"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6" cy="6" r="4" stroke="#8b5cf6" stroke-width="1.4"/><path d="M9.5 9.5L13 13" stroke="#8b5cf6" stroke-width="1.4" stroke-linecap="round"/></svg></div>
       <div class="va-feat-body">
-        <span class="va-feat-name">Find References 패널</span>
+        <span class="va-feat-name"><a href="https://www.wholetomato.com/documentation/navigation/find-references" target="_blank" rel="noopener">Find References 패널</a></span>
         <span class="va-feat-desc">심볼 참조 검색 결과를 인터랙티브 패널로 표시한다. 파일·범위별로 그룹화되며, 클릭 시 즉시 해당 위치로 이동한다. 대규모 리팩토링 전 영향 범위 파악에 유용하다.</span>
         <span class="va-feat-kbd"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>F</kbd></span></span>
       </div>
@@ -141,7 +145,7 @@ image:
     <div class="va-feat-row">
       <div class="va-feat-icon" style="background:#1a2236"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="2" width="4" height="4" rx="1" fill="#3b82f6"/><rect x="2" y="9" width="4" height="4" rx="1" fill="#3b82f6" opacity=".5"/><path d="M8 4h5M8 11h5" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg></div>
       <div class="va-feat-body">
-        <span class="va-feat-name">VA Outline</span>
+        <span class="va-feat-name"><a href="https://www.wholetomato.com/documentation/navigation/list-methods-in-file" target="_blank" rel="noopener">VA Outline</a></span>
         <span class="va-feat-desc">현재 파일의 클래스·함수·멤버를 트리 구조로 탐색한다. 대형 헤더 파일에서 원하는 심볼로 즉시 점프할 수 있다.</span>
         <span class="va-feat-kbd"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>M</kbd></span></span>
       </div>
@@ -152,7 +156,7 @@ image:
     <div class="va-feat-row">
       <div class="va-feat-icon" style="background:#2a1e1e"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11M5 4V2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5V4M4 4v8.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V4" stroke="#ef4444" stroke-width="1.3" stroke-linecap="round"/></svg></div>
       <div class="va-feat-body">
-        <span class="va-feat-name">VA Hashtags</span>
+        <span class="va-feat-name"><a href="https://www.wholetomato.com/documentation/navigation/va-hashtags" target="_blank" rel="noopener">VA Hashtags</a></span>
         <span class="va-feat-desc">코드 내 <code style="background:#1e2028;padding:1px 5px;border-radius:4px;font-size:11px;color:#c8ccd8">//TODO</code> <code style="background:#1e2028;padding:1px 5px;border-radius:4px;font-size:11px;color:#c8ccd8">//FIXME</code> 또는 커스텀 태그(<code style="background:#1e2028;padding:1px 5px;border-radius:4px;font-size:11px;color:#c8ccd8">#my-tag</code>)를 북마크로 수집해 한곳에서 관리한다. VA Options에서 커스텀 태그를 자유롭게 정의할 수 있다.</span>
         <span class="va-feat-kbd"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>H</kbd></span></span>
       </div>
