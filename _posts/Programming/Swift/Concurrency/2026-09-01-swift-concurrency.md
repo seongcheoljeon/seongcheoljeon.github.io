@@ -8,7 +8,7 @@ categories: [Programming, Swift]
 tags: [Swift, Concurrency]
 pin: false
 image:
-  path: /assets/img/common/title/swift_title.jpg
+  path: /assets/img/common/title/swift_title.png
 ---
 
 

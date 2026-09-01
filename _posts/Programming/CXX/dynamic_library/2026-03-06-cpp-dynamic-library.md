@@ -9,7 +9,7 @@ tags: [C++, Dynamic Library]
 pin: false
 mermaid: true
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## 📌 정적 라이브러리 vs 동적 라이브러리

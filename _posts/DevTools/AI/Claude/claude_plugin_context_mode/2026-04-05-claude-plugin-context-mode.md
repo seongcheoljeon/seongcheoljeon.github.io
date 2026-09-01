@@ -8,7 +8,7 @@ categories: [DevTools, AI, Claude]
 tags: [Claude, Context-Mode]
 pin: false
 image:
-  path: "/assets/img/common/title/claude_title.jpg"
+  path: "/assets/img/common/title/claude_title.png"
 mermaid: true
 ---
 

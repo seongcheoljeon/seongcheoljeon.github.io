@@ -8,7 +8,7 @@ categories: [Editor, Vim]
 tags: [Vim, neovim, text-object]
 pin: false
 image:
-  path: "/assets/img/common/title/vim_title.jpg"
+  path: "/assets/img/common/title/vim_title.png"
 ---
 
 `ciw`, `di"`, `ci(` 같은 명령을 쓰면서도 왜 이렇게 동작하는지 정확히 알고 쓰는 사람은 생각보다 적다.  

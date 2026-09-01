@@ -8,7 +8,7 @@ categories: [Graphics, SFML]
 tags: [C++, Game Development, SFML]
 pin: false
 image:
-  path: "/assets/img/common/title/sfml_title.jpg"
+  path: "/assets/img/common/title/sfml_title.png"
 ---
 
 ## SFML이란?

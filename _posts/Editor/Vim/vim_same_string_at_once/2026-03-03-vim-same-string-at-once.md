@@ -8,7 +8,7 @@ categories: [Editor, Vim]
 tags: [Editor, Vim]
 pin: false
 image:
-  path: "/assets/img/common/title/vim_title.jpg"
+  path: "/assets/img/common/title/vim_title.png"
 ---
 
 ## 여러 줄에 동일한 문자열 한번에 삽입하기 ⌨️

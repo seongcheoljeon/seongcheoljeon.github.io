@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, Rvalue Reference, Perfect Forwarding, Performance Optimization, Reference Collapsing Rule]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## std::move

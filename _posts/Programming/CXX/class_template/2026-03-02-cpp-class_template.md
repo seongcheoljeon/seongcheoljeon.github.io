@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, Class Template]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## 템플릿으로 범용 클래스 만들기

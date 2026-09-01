@@ -9,7 +9,7 @@ tags: [Graphics, Article]
 pin: false
 math: true
 image:
-  path: /assets/img/common/title/article_title.jpg
+  path: /assets/img/common/title/article_title.png
 ---
 
 ## ACES(Academy Color Encoding System)

@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [Programming, C++, Article]
 pin: false
 image:
-  path: /assets/img/common/title/article_title.jpg
+  path: /assets/img/common/title/article_title.png
 ---
 
 C++ 개발자가 선호하는 11가지 라이브러리를 소개한다.

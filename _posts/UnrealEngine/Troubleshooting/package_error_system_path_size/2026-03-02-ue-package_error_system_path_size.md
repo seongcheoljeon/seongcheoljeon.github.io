@@ -8,7 +8,7 @@ categories: [Unreal Engine, Troubleshooting]
 tags: [Unreal Engine, Troubleshooting]
 pin: false
 image: 
-  path: /assets/img/common/title/ue_title.jpg
+  path: /assets/img/common/title/ue_title.png
 ---
 
 * UNREAL ENGINE: 5.5

@@ -8,7 +8,7 @@ categories: [Editor, Vim]
 tags: [Editor, Vim, LazyVim]
 pin: false
 image:
-  path: "/assets/img/common/title/vim_title.jpg"
+  path: "/assets/img/common/title/vim_title.png"
 ---
 
 ## 🧱 [LazyVim](https://www.lazyvim.org/) 이란?

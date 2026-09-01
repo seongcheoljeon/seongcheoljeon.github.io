@@ -8,7 +8,7 @@ categories: [Unreal Engine, Architecture, Subsystem]
 tags: [Unreal Engine, Architecture, Subsystem]
 pin: false
 image: 
-  path: /assets/img/common/title/ue_title.jpg
+  path: /assets/img/common/title/ue_title.png
 ---
 
 ## Unreal Engine Subsystem

@@ -8,7 +8,7 @@ categories: [Article]
 tags: [Article, Psychology]
 pin: false
 image:
-  path: /assets/img/common/title/article_title.jpg
+  path: /assets/img/common/title/article_title.png
 ---
 
 ## 취미의 중요성

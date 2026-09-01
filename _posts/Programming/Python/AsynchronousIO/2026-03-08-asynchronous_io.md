@@ -10,7 +10,7 @@ tags: [Python, asyncio, 비동기, coroutine, event-loop, TaskGroup]
 pin: false
 mermaid: true
 image:
-  path: /assets/img/common/title/python_title.jpg
+  path: /assets/img/common/title/python_title.png
 ---
 
 `asyncio`는 **단일 스레드** 위에서 이벤트 루프(Event Loop)를 통해 I/O 작업을 *협력적(cooperative)*으로

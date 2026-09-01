@@ -8,7 +8,7 @@ categories: [Article]
 tags: [Article, Psychology]
 pin: false
 image:
-  path: /assets/img/common/title/article_title.jpg
+  path: /assets/img/common/title/article_title.png
 ---
 
 ## 일기 한 번 써 볼까요?

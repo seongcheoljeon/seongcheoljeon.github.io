@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, constexpr]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 `모던 C++`에서는 변수나 함수를 `상수 표현식(constant express)`으로 만들어 주는 `constexpr` 키워드를 제공한다. `모던 C++`이전에도 변수를 변경할 수 없도록 상수로 지정하는 `const`가 있었지만, ***`constexpr`은 변수나 함수를 컴파일 타임에 상수 표현식으로 만들어 준다.***

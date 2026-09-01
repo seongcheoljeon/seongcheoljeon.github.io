@@ -9,7 +9,7 @@ tags: [Houdini, HDK, Graphics Programming, OpenGL, Viewport Rendering, Simulatio
 pin: false
 math: true
 image:
-  path: /assets/img/common/title/houdini_title.jpg
+  path: /assets/img/common/title/houdini_title.png
 ---
 
 > 📁 경로: `C:\Program Files\Side Effects Software\Houdini 21.0.559\toolkit\samples`

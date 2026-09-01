@@ -8,7 +8,7 @@ categories: [Graphics, Debug, RenderDoc]
 tags: [Graphics, GPU Debugging, Profiling, Frame Analysis, RenderDoc, MCP, Claude]
 pin: false
 image:
-  path: "/assets/img/common/title/renderdoc_title.jpg"
+  path: "/assets/img/common/title/renderdoc_title.png"
 ---
 
 ## 들어가며

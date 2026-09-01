@@ -9,7 +9,7 @@ tags: [C++, Dynamic Library, dlopen, dlsym, Plugin]
 pin: false
 mermaid: true
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## 📌 묵시적 링킹 vs 명시적 링킹

@@ -8,7 +8,7 @@ categories: [Editor, Vim]
 tags: [Editor, Vim]
 pin: false
 image:
-  path: "/assets/img/common/title/vim_title.jpg"
+  path: "/assets/img/common/title/vim_title.png"
 ---
 
 ## Vim `g` 명령어 완전 정리 ⌨️

@@ -10,7 +10,7 @@ categories: [DevTools, CMake]
 tags: [CMake, ]
 pin: false
 image:
-  path: "/assets/img/common/title/cmake_title.jpg"
+  path: "/assets/img/common/title/cmake_title.png"
 mermaid: true
 ---
 

@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, Boost Python Library]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## Summary

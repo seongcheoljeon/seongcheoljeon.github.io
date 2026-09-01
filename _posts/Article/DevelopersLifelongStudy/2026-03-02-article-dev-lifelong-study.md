@@ -8,7 +8,7 @@ categories: [Article]
 tags: [Article]
 pin: false
 image:
-  path: /assets/img/common/title/article_title.jpg
+  path: /assets/img/common/title/article_title.png
 ---
 
 > 실력은 고통의 총합이다.

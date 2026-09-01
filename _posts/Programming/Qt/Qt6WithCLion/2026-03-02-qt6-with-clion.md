@@ -8,7 +8,7 @@ categories: [Programming, Qt]
 tags: [Qt, CLion]
 pin: false
 image:
-  path: /assets/img/common/title/qt_title.jpg
+  path: /assets/img/common/title/qt_title.png
 ---
 
 Jetbrains의 `CLion`에서 `Qt6`를 실행해보자.

@@ -8,7 +8,7 @@ categories: [Editor, VisualStudio]
 tags: [Editor, VisualStudio]
 pin: false
 image:
-  path: "/assets/img/common/title/vs_title.jpg"
+  path: "/assets/img/common/title/vs_title.png"
 ---
 
 <style>

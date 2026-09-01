@@ -10,7 +10,7 @@ categories: [Unreal Engine, Rendering]
 tags: [Unreal Engine, Rendering]
 pin: false
 image:
-  path: "/assets/img/common/title/ue_title.jpg"
+  path: "/assets/img/common/title/ue_title.png"
 mermaid: true
 ---
 

@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, Smart Pointer, Unreal Engine]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## C++ Smart Pointer

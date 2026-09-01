@@ -8,7 +8,7 @@ categories: [Programming, Python]
 tags: [Python, pyenv]
 pin: false
 image:
-  path: /assets/img/common/title/python_title.jpg
+  path: /assets/img/common/title/python_title.png
 ---
 
 [pyenv](https://github.com/pyenv/pyenv)는 OS상에서 여러 버전의 `Python`을 안전하게 설치할 수 있도록 도와주는 open-source 라이브러리이다.

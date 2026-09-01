@@ -8,7 +8,7 @@ categories: [Graphics, DirectX]
 tags: [DirectX, Qt]
 pin: false
 image:
-  path: "/assets/img/common/title/directx_title.jpg"
+  path: "/assets/img/common/title/directx_title.png"
 ---
 
 ## 왜 Qt + DirectX인가

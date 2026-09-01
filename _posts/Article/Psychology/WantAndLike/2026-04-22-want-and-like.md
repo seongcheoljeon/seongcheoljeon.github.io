@@ -8,7 +8,7 @@ categories: [Article]
 tags: [Article, Psychology]
 pin: false
 image:
-  path: /assets/img/common/title/article_title.jpg
+  path: /assets/img/common/title/article_title.png
 ---
 
 ## 행복의 심리학: 원함(Want)과 좋아함(Like)

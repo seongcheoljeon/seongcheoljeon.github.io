@@ -8,7 +8,7 @@ categories: [Programming, Python]
 tags: [Python, Poetry]
 pin: false
 image:
-  path: /assets/img/common/title/python_title.jpg
+  path: /assets/img/common/title/python_title.png
 ---
 
 ## poetry란?

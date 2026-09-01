@@ -6,7 +6,7 @@ order: 5
 
 <div class="project-card" data-category="graphics">
   <div class="project-thumbnail">
-    <img src="/assets/img/projects/OpenGL_Project/opengl_title.jpg" alt="OpenGL Project">
+    <img src="/assets/img/projects/OpenGL_Project/opengl_title.png" alt="OpenGL Project">
     <span class="project-status wip">In Progress</span>
     <span class="project-category-badge">Graphics</span>
   </div>

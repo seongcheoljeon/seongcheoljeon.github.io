@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, C Linking]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 C언어의 역사가 오래된 만큼 C언어로 작성된 많은 라이브러리와 소스 코드가 존재하며, 지금도 C언어는 여러 분야에서 활발히 사용되고 있다. 현재 많은 C++ 프로그램 개발자들이 기존에 작성된 C 소스 코드를 이용하거나 C 라이브러리를 사용하고 있기 때문에, C++ 프로그램에서 C 코드를 연결하여 사용하는 방법을 알아둘 필요가 있다.

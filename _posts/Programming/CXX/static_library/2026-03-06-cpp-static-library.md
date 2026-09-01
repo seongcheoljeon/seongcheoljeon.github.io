@@ -9,7 +9,7 @@ tags: [C++, Static Library]
 pin: false
 mermaid: true
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## 📦 오브젝트 파일 vs 정적 라이브러리

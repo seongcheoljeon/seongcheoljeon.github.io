@@ -10,7 +10,7 @@ categories: [DevTools, Git]
 tags: [Git, gitlab-flow]
 pin: false
 image:
-  path: "/assets/img/common/title/git_title.jpg"
+  path: "/assets/img/common/title/git_title.png"
 mermaid: true
 ---
 

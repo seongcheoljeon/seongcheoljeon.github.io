@@ -8,7 +8,7 @@ categories: [Programming, C++]
 tags: [C++, dllexport, dllimport, __declspec]
 pin: false
 image:
-  path: /assets/img/common/title/cpp_title.jpg
+  path: /assets/img/common/title/cpp_title.png
 ---
 
 ## Dynamic Library (dll) - dllexport / dllimport (MSVC)

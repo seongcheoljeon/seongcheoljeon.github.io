@@ -8,7 +8,7 @@ categories: [Unreal Engine]
 tags: [Unreal Engine, Article]
 pin: false
 image: 
-  path: /assets/img/common/title/ue_title.jpg
+  path: /assets/img/common/title/ue_title.png
 ---
 
 ## Blueprints

@@ -10,7 +10,7 @@ categories: [Unreal Engine, Rendering]
 tags: [Unreal Engine, Rendering]
 pin: false
 image:
-  path: "/assets/img/common/title/ue_title.jpg"
+  path: "/assets/img/common/title/ue_title.png"
 ---
 
 ## [UE5] Color Correct Regions 플러그인 (1/5)

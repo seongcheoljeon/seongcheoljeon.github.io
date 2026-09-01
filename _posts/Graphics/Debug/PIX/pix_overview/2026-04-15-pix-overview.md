@@ -8,7 +8,7 @@ categories: [Graphics, Debug, PIX]
 tags: [PIX, Direct3D 12, GPU Debugging, Profiling, Frame Analysis]
 pin: false
 image:
-  path: "/assets/img/common/title/ms_pix_title.jpg"
+  path: "/assets/img/common/title/ms_pix_title.png"
 ---
 
 ## PIX란

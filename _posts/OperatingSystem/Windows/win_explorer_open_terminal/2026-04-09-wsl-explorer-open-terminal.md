@@ -8,7 +8,7 @@ categories: [OS, Windows]
 tags: [OS, Windows, Terminal]
 pin: false
 image:
-  path: "/assets/img/common/title/windows_title.jpg"
+  path: "/assets/img/common/title/windows_title.png"
 ---
 
 Windows 탐색기에서 우클릭 → **"터미널에서 열기"** 를 하면 PowerShell은 해당 경로로 자동 이동하지만,
