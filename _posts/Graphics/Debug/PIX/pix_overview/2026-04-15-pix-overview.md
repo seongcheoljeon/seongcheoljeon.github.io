@@ -201,16 +201,16 @@ PIX의 **Select Target Process** 창에서 패키지된 실행 파일 경로를 
 
 커맨드 라인에 `-attachPIX -d3ddebug` 옵션을 붙여 실행한 뒤, 게임 내 콘솔(`~`)에서 다음 명령을 실행한다.
 
-**방법 3 - 비주얼스튜디오에서 설정:**
-
-```-AttachPix를 Command Arguments에 추가하면 된다.
-```
-
 ```
 pix.GpuCaptureFrame
 ```
 
 캡처 파일은 `[PackageDir]/Windows/[ProjectName]/Saved/PixCaptures`에 저장된다.
+
+**방법 3 - 비주얼스튜디오에서 설정:**
+
+`-AttachPix`를 `Command Arguments`에 추가하면 된다.
+![img](img/image0.png)
 
 ### Windows 환경 설정
 
