@@ -74,13 +74,13 @@ layout: compress
 
     <div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div>
 
+    <!-- 전 페이지 공통 이펙트. 페이지 한정 이펙트는 해당 레이아웃에서 include:
+         card-tilt → home.html, code-line-highlight → post.html -->
     {% include particles.html %}
     {% include typed-tagline.html %}
     {% include custom-cursor.html %}
-    {% include card-tilt.html %}
     {% include mouse-trail.html %}
     {% include scroll-fade-in.html %}
-    {% include code-line-highlight.html %}
     {% include glitch-title.html %}
     {% include tag-hover.html %}
     {% include sidebar-visitor.html %}

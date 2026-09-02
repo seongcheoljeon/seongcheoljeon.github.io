@@ -1,22 +1,46 @@
 <!-- Typed.js Tagline Effect -->
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"
+  integrity="sha384-cMrTlShXEGSdSFA359p+3aVUxK/R+0TAfbRZMcTlAn8yqzxEDj05QsS65nTFMMj4"
+  crossorigin="anonymous"
+  defer
+></script>
 <script>
   (function () {
-    var el = document.getElementById('typed-tagline');
-    if (!el) return;
-    new Typed('#typed-tagline', {
-      strings: [
-        'Graphics Programmer',
-        'Rendering Engineer',
-        'UE5 Developer',
-      ],
-      typeSpeed: 60,
-      backSpeed: 35,
-      backDelay: 1800,
-      startDelay: 400,
-      loop: true,
-      showCursor: true,
-      cursorChar: '|',
-    });
+    function init() {
+      var el = document.getElementById('typed-tagline');
+      if (!el) return;
+
+      /* CDN 로드 실패 또는 모션 축소 설정 시 정적 텍스트로 폴백 */
+      if (
+        typeof Typed === 'undefined' ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        el.textContent = 'Graphics Programmer';
+        return;
+      }
+
+      new Typed('#typed-tagline', {
+        strings: [
+          'Graphics Programmer',
+          'Rendering Engineer',
+          'UE5 Developer',
+        ],
+        typeSpeed: 60,
+        backSpeed: 35,
+        backDelay: 1800,
+        startDelay: 400,
+        loop: true,
+        showCursor: true,
+        cursorChar: '|',
+      });
+    }
+
+    /* defer 스크립트는 DOMContentLoaded 직전에 실행되므로 그 이후에 초기화 */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   })();
 </script>

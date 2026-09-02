@@ -62,6 +62,11 @@
           cachedRect = null;
           overlay.style.opacity = '0';
         });
+
+        /* cachedRect 는 viewport 상대 좌표라 페이지 스크롤 시 낡는다 — 호버 중일 때만 갱신 */
+        window.addEventListener('scroll', function () {
+          if (cachedRect) cachedRect = pre.getBoundingClientRect();
+        }, { passive: true });
       });
     }
 

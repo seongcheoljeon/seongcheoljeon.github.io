@@ -14,6 +14,10 @@
 
 <script>
   (function () {
+    /* 모션 축소 설정 시 애니메이션 없이 콘텐츠 즉시 표시
+       (.fade-in-target 클래스는 JS에서만 부여하므로 여기서 끝내면 안전) */
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     /* 관찰 대상 선택자 */
     var SELECTORS = [
       /* 홈 포스트 카드 */

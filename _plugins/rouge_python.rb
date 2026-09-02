@@ -25,6 +25,7 @@ module Rouge
 
       tag     "python"
       aliases "py", "python3"
+      # NOTE: tag "python" + aliases 로 내장 Python 렉서를 전역 대체한다.
 
       # ------------------------------------------------------------------
       # Token aliases

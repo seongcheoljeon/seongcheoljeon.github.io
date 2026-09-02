@@ -42,6 +42,13 @@
       var interval = duration / steps;
       var step     = 0;
 
+      /* 모션 축소 설정 시 스크램블 없이 최종 숫자만 확정 */
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = target;
+        el.classList.add('matrix-done');
+        return;
+      }
+
       el.classList.add('matrix-counting');
       el.classList.remove('matrix-done');
 

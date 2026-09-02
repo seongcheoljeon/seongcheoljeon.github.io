@@ -46,10 +46,25 @@
   [data-mode='light'] .ripple {
     background: rgba(30, 100, 220, 0.18);
   }
+
+  /* 모션 축소 설정: 이동/확산 애니메이션 제거 (색상 피드백은 유지) */
+  @media (prefers-reduced-motion: reduce) {
+    .tag:hover,
+    .post-tag:hover {
+      transform: none;
+    }
+
+    .ripple {
+      animation: none;
+      display: none;
+    }
+  }
 </style>
 
 <script>
   (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     function addRipple(e) {
       var el   = e.currentTarget;
       var rect = el.getBoundingClientRect();

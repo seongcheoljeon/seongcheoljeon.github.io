@@ -18,6 +18,7 @@
 <script>
   (function () {
     if (navigator.maxTouchPoints > 0 || window.innerWidth <= 1024) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const canvas = document.getElementById('particles-canvas');
     const ctx = canvas.getContext('2d');
@@ -149,6 +150,10 @@
       }
     }
 
+    /* alpha 버킷별로 그룹화해서 stroke 호출 최소화 (프레임마다 재할당하지 않고 재사용) */
+    const BUCKETS = 5;
+    const buckets = Array.from({ length: BUCKETS }, () => []);
+
     function drawConnections() {
       const colors = cachedColors;
       const [r, g, b] = colors.line;
@@ -157,9 +162,7 @@
       ctx.lineWidth = 0.8;
       ctx.beginPath();
 
-      /* alpha 버킷별로 그룹화해서 stroke 호출 최소화 */
-      const BUCKETS = 5;
-      const buckets = Array.from({ length: BUCKETS }, () => []);
+      for (let bi = 0; bi < BUCKETS; bi++) buckets[bi].length = 0;
 
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -216,9 +219,14 @@
       }
     });
 
+    /* 드래그 리사이즈 중 파티클 전량 재생성이 초당 수십 회 돌지 않도록 디바운스 */
+    let resizeTimer;
     window.addEventListener('resize', function() {
-      resize();
-      initParticles();
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        resize();
+        initParticles();
+      }, 150);
     }, { passive: true });
 
     window.addEventListener('mousemove', function(e) {
@@ -233,6 +241,6 @@
 
     resize();
     initParticles();
-    animate();
+    animId = requestAnimationFrame(animate); /* timestamp 인자를 보장 */
   })();
 </script>

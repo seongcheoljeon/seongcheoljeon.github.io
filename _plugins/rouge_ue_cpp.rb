@@ -27,6 +27,9 @@ module Rouge
 
       tag     "ue_cpp"
       aliases "uecpp", "cpp", "c++"
+      # NOTE: aliases 에 "cpp"/"c++" 가 포함되어 있어 사이트의 모든 ```cpp 블록이
+      #       이 렉서를 탄다 (내장 C++ 렉서를 전역 대체). 순수 C++ 코드도
+      #       UE_TYPE_RE 휴리스틱(F/U/A/T/E/I/S/N + 대문자 접두)에 걸릴 수 있음.
 
       # -----------------------------------------------------------------------
       # UE Core Macros (.nd → purple #bd63c5)

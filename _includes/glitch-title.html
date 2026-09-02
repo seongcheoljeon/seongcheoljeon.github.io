@@ -61,6 +61,8 @@
 
 <script>
   (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     function init() {
       var title = document.querySelector('.site-title');
       if (!title) return;

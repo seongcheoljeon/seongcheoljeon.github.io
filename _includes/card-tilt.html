@@ -3,12 +3,18 @@
   .post-preview {
     transform-style: preserve-3d;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  }
+
+  /* 호버 중에만 GPU 레이어 점유 (상시 will-change 는 카드 수만큼 레이어를 잡아먹음) */
+  .post-preview:hover {
     will-change: transform;
   }
 </style>
 
 <script>
   (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const MAX_TILT = 8;        /* 최대 기울기 각도 (deg) */
     const SCALE   = 1.03;      /* 호버 시 확대 비율 */
 
@@ -38,6 +44,11 @@
         rect = null;
         resetTilt(card);
       });
+
+      /* rect 는 viewport 상대 좌표라 스크롤하면 낡는다 — 호버 중일 때만 갱신 */
+      window.addEventListener('scroll', function () {
+        if (rect) rect = card.getBoundingClientRect();
+      }, { passive: true });
     }
 
     function init() {

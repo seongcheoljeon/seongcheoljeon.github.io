@@ -77,6 +77,12 @@
       var target = parseInt(el.getAttribute('data-target'), 10);
       if (isNaN(target) || target <= 0) { el.textContent = '0'; return; }
 
+      /* 모션 축소 설정 시 스크램블 없이 최종 숫자만 확정 */
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = target.toString();
+        return;
+      }
+
       var duration = 700;
       var steps    = 20;
       var step     = 0;

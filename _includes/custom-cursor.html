@@ -88,6 +88,7 @@
 <script>
   (function () {
     if (navigator.maxTouchPoints > 0 || window.innerWidth <= 1024) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const crosshair = document.getElementById('crosshair');
     if (!crosshair) return;
