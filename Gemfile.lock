@@ -44,7 +44,7 @@ GEM
     fiber-local (1.1.0)
       fiber-storage
     fiber-storage (1.0.1)
-    fiddle (1.1.6)
+    fiddle (1.1.8)
     forwardable-extended (2.6.0)
     google-protobuf (4.33.5-x64-mingw-ucrt)
       bigdecimal
