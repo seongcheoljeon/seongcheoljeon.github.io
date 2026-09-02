@@ -26,6 +26,3 @@ node_modules
 # Misc
 _sass/vendors
 assets/js/dist
-
-# Test files
-test_*

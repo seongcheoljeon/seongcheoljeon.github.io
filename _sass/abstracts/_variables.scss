@@ -18,7 +18,8 @@ $back2top-size: 2.75rem !default;
 
 /* syntax highlight */
 
-$code-font-size: 0.9rem !default;
+/* 황금비 스케일: 본문 1.08rem ÷ φ^¼(1.128) */
+$code-font-size: 0.957rem !default;
 $code-header-height: 2.25rem !default;
 $code-dot-size: 0.75rem !default;
 $code-dot-gap: 0.5rem !default;
@@ -26,5 +27,5 @@ $code-icon-width: 1.75rem !default;
 
 /* fonts */
 
-$font-family-base: 'Pretendard', 'Microsoft Yahei', sans-serif !default;
-$font-family-heading: 'Pretendard', 'Microsoft Yahei', sans-serif !default;
+$font-family-base: 'MaruBuri', 'Noto Serif KR', serif !default;
+$font-family-heading: 'MaruBuri', 'Noto Serif KR', serif !default;

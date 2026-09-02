@@ -76,7 +76,7 @@ layout: compress
 
     <!-- 전 페이지 공통 이펙트. 페이지 한정 이펙트는 해당 레이아웃에서 include:
          card-tilt → home.html, code-line-highlight → post.html -->
-    {% include particles.html %}
+    {% unless page.layout == 'post' %}{% include particles.html %}{% endunless %}
     {% include typed-tagline.html %}
     {% include custom-cursor.html %}
     {% include mouse-trail.html %}

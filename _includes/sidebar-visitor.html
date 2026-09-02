@@ -7,18 +7,18 @@
     var id = '{{ site.analytics.goatcounter.id }}';
     if (!id) return;
 
-    /* GoatCounter 공개 API: 사이트 전체 총 방문수 */
-    var url = 'https://' + id + '.goatcounter.com/api/v0/stats/total';
+    /* GoatCounter 공개 카운터 엔드포인트. TOTAL = 사이트 전체 페이지뷰, 인증 불필요 */
+    var url = 'https://' + id + '.goatcounter.com/counter/TOTAL.json';
 
-    fetch(url, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer qj6qd9i73mqz10prw4795bgkb23wtriihyj2qcj13d2ufs8bg6' } })
+    fetch(url)
       .then(function (res) {
         if (!res.ok) throw new Error('API error');
         return res.json();
       })
       .then(function (data) {
-        /* total 필드: { total: N, total_unique: N } */
-        var count = (data.total_unique !== undefined) ? data.total_unique : data.total;
-        if (count === undefined) throw new Error('No data');
+        /* count 필드는 서식 문자열(예: "1 234") → 숫자만 추출 */
+        var count = parseInt(String(data.count).replace(/\D/g, ''), 10);
+        if (isNaN(count)) throw new Error('No data');
 
         /* 모션 축소 설정 시 스크램블 없이 최종 숫자만 확정 */
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

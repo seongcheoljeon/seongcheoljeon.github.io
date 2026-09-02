@@ -22,7 +22,3 @@ updates:
           - "major"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "devcontainers"
-    directory: "/"
-    schedule:
-      interval: weekly

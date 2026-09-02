@@ -5,45 +5,8 @@
 @use '../themes/light';
 @use '../themes/dark';
 
-/* JetBrains Mono */
-@font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/assets/fonts/JetBrainsMono/JetBrainsMono-Regular.woff2')
-    format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/assets/fonts/JetBrainsMono/JetBrainsMono-Italic.woff2')
-    format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/assets/fonts/JetBrainsMono/JetBrainsMono-Bold.woff2')
-    format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/assets/fonts/JetBrainsMono/JetBrainsMono-BoldItalic.woff2')
-    format('woff2');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
 :root {
-  font-size: 16px;
+  font-size: 15px; /* 16px에서 한 단계 축소. rem/em 기반이라 전체 스케일이 같은 비율로 줄어듦 */
 }
 
 html {
@@ -170,10 +133,6 @@ main {
   font-size: 1.08rem;
   margin-top: 2rem;
   overflow-wrap: break-word;
-
-  @include bp.xl {
-    font-size: 1.03rem;
-  }
 
   a {
     &.popup {

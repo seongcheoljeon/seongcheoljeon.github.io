@@ -3,7 +3,7 @@
 
 %heading {
   color: var(--heading-color);
-  font-weight: 400;
+  font-weight: 600;
   font-family: v.$font-family-heading;
   scroll-margin-top: 3.5rem;
 }
@@ -122,11 +122,11 @@
 }
 
 %text-sm {
-  font-size: 0.85rem;
+  font-size: 0.886rem; /* 1rem ÷ φ^¼ */
 }
 
 %text-xs {
-  font-size: 0.8rem;
+  font-size: 0.786rem; /* 1rem ÷ φ^½ */
 }
 
 %sup-fn-target {

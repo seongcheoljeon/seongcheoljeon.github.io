@@ -33,7 +33,7 @@ kbd,
   pre {
     margin-bottom: 0;
     font-size: v.$code-font-size;
-    line-height: 1.4rem;
+    line-height: 1.618;
   }
 
   table {
@@ -73,7 +73,7 @@ code {
   color: var(--code-color);
 
   &.highlighter-rouge {
-    font-size: v.$code-font-size;
+    font-size: 0.886em; /* 본문 ÷ φ^¼ */
     padding: 3px 5px;
     overflow-wrap: break-word;
     border-radius: v.$radius-sm;

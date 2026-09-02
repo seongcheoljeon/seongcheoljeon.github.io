@@ -79,14 +79,11 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
 
-  <!-- Pretendard Font -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <!-- MaruBuri Font (self-hosted, subset woff2) -->
+  <link rel="stylesheet" href="{{ '/assets/fonts/MaruBuri/maruburi.css' | relative_url }}">
 
   <!-- JetBrains Mono Font (self-hosted, ligature 지원) -->
   <link rel="stylesheet" href="{{ '/assets/fonts/JetBrainsMono/jetbrains-mono.css' | relative_url }}">
-
-  <!-- Web Font -->
-  <link rel="stylesheet" href="{{ site.data.origin[type].webfonts | relative_url }}">
 
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{{ site.data.origin[type].fontawesome.css | relative_url }}">
