@@ -48,11 +48,6 @@ social:
 # Site Verification Settings
 webmaster_verifications:
   google: v9x7MA3_354NT3dz8eKX73ZWXAcLmBI_NQxXluRqRjg
-  bing: # fill in your Bing verification code
-  alexa: # fill in your Alexa verification code
-  yandex: # fill in your Yandex verification code
-  baidu: # fill in your Baidu verification code
-  facebook: # fill in your Facebook verification code
 
 # ↑ --------------------------
 # The end of `jekyll-seo-tag` settings
@@ -82,15 +77,8 @@ pageviews:
 # theme_mode: # [light | dark]
 theme_mode: dark
 
-# The CDN endpoint for media resources.
-# Notice that once it is assigned, the CDN url
-# will be added to all media resources (site avatar, posts' images, audio and video files) paths starting with '/'
-#
-# e.g. 'https://cdn.com'
-cdn: ""
-
 # the avatar on sidebar, support local or CORS resources
-avatar: "/assets/img/favicons/avatar.png"
+avatar: "/assets/img/common/my_pic.jpeg"
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
@@ -113,14 +101,6 @@ comments:
     input_position: bottom # optional, default to 'bottom'
     lang: en # optional, default to the value of `site.lang`
     reactions_enabled: 1 # optional, default to the value of `1`
-
-# Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
-assets:
-  self_host:
-    enabled: # boolean, keep empty means false
-    # specify the Jekyll environment, empty means both
-    # only works if `assets.self_host.enabled` is 'true'
-    env: # [development | production]
 
 pwa:
   enabled: true # The option for PWA feature (installable)

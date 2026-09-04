@@ -67,6 +67,7 @@ $sidebar-display: 'sidebar-display'; /* the attribute for sidebar display */
     }
 
     img {
+      object-fit: cover; /* 비정사각 원본도 원형 아바타에 맞게 크롭 */
       transition: transform 0.5s;
 
       &:hover {
