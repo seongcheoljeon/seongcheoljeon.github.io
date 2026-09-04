@@ -1,7 +1,7 @@
 <!-- https://giscus.app/ -->
 <script>
   (function () {
-    const themeMapper = Theme.getThemeMapper('light', 'dark');
+    const themeMapper = Theme.getThemeMapper('light', '{{ "/assets/css/giscus-dark.css" | absolute_url }}');
     const initTheme = themeMapper[Theme.visualState];
 
     let lang = '{{ site.comments.giscus.lang | default: lang }}';
