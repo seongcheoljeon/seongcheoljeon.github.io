@@ -106,6 +106,36 @@ main {
   --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-8);
 }
 
+/* MaruBuri — 절대 URL 필수 (iframe origin은 giscus.app). 댓글 본문에 쓰이는 weight만 */
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://seongcheoljeon.github.io/assets/fonts/MaruBuri/MaruBuri-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://seongcheoljeon.github.io/assets/fonts/MaruBuri/MaruBuri-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://seongcheoljeon.github.io/assets/fonts/MaruBuri/MaruBuri-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 댓글 본문만 마루부리 — UI(버튼/라벨/사용자명)와 코드는 giscus 기본 폰트 유지 */
+main .markdown {
+  font-family: 'MaruBuri', 'Noto Serif KR', serif;
+}
+
 /* code blocks in comments — blog --highlight-bg-color */
 main .markdown pre,
 main .markdown .highlight pre {
