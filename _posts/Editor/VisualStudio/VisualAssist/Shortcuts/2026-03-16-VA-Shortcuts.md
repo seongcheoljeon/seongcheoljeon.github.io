@@ -1,7 +1,7 @@
 ---
 title: "[Editor/VisualStudio] Visual Assist : Shortcuts"
 description: >-
-  Visual Assist의 주요 단축키와 생산성을 높이는 핵심 기능을 간단히 정리한다.
+  Visual Assist의 주요 단축키를 기본 키 바인딩 기준으로 카테고리별로 정리한다.
 author: seongcheol
 date: 2026-03-16 01:45:00 +0900
 categories: [Editor, VisualStudio]
@@ -11,165 +11,75 @@ image:
   path: "/assets/img/common/title/vs_title.png"
 ---
 
-<style>
-/* ── 카드 컨테이너 ── */
-.va { background:#0d0e11; border-radius:14px; padding:28px 32px 32px; font-family:var(--font-sans, sans-serif); max-width:860px; margin:8px auto; border:1px solid #1e2028; }
-.va + .va { margin-top:20px; }
+> Visual Assist 기본 단축키 기준이다. VA는 Visual Studio에 이미 할당된 키를 **덮어쓰지 않으므로** 환경에 따라 일부 단축키가 비어 있을 수 있다. † 표시는 설치 직후에는 할당되지 않고 `VAssistX › Help › Keyboard Shortcuts › Recommended` 에서 권장 단축키를 수락했을 때 할당되며, ‡ 표시는 권장 수락 시 텍스트 에디터 밖(전역)으로 범위가 확장된다. 현재 바인딩은 `VAssistX › Help › Keyboard Shortcuts` 에서 확인하고, 변경은 `Tools › Options › Environment › Keyboard` 의 `VAssistX.*` 명령에서 한다. 출처: Whole Tomato 공식 문서 [Keyboard Shortcuts](https://www.wholetomato.com/en/documentation/configuration/keyboard-shortcuts) (Updated Jun 2026).
+{: .prompt-info }
 
-/* ── 카드 타이틀 ── */
-.va-title { font-size:20px; font-weight:600; color:#e2e4ec; margin:0 0 20px; display:flex; align-items:center; gap:10px; padding-bottom:16px; border-bottom:1px solid #1e2028; }
+## 자주 쓰는 단축키
 
-/* ── 그리드 (1열) ── */
-.va-grid { display:grid; grid-template-columns:1fr; }
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Alt</kbd>+<kbd>G</kbd> | 선언부 ↔ 구현부 이동 (GoTo Implementation) — 대상이 여럿이면 메뉴 표시 |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd> | 관련 심볼로 이동 (GoTo Related) — 기반 클래스·오버라이드·타입 등 |
+| <kbd>Alt</kbd>+<kbd>O</kbd> | 대응 파일 열기 (Open Corresponding File) — .h ↔ .cpp |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>O</kbd> ‡ | 솔루션 내 파일 열기 (Open File in Solution) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd> | 솔루션 내 심볼 찾기 (Find Symbol in Solution) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> | 참조 찾기 (Find References) |
+| <kbd>Alt</kbd>+<kbd>M</kbd> | 파일 내 메서드 목록 (List Methods in File) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>Q</kbd> | 빠른 작업 및 리팩터링 메뉴 (Quick Action and Refactoring) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> | 이름 바꾸기 (Rename) — 선언·정의·모든 참조 일괄 |
 
-/* ── 섹션 헤더 ── */
-.va-section { display:flex; align-items:center; font-size:11px; font-weight:700; color:#9ca3af; letter-spacing:.12em; text-transform:uppercase; margin:24px 0 4px; padding:7px 12px; background:#13151a; border-left:3px solid #3b82f6; border-radius:0 6px 6px 0; }
+## 탐색
 
-/* ── 단축키 행 ── */
-.va-row { display:flex; align-items:center; border-bottom:1px solid #13151a; transition:background .12s; }
-.va-row:nth-child(even) { background:#0f1014; }
-.va-row:hover { background:#161a22; }
+### 심볼 · 파일 이동
 
-/* ── 키 영역 ── */
-.va-key { display:inline-flex; align-items:center; flex-wrap:wrap; gap:4px; flex-shrink:0; width:260px; padding:10px 14px 10px 12px; }
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Alt</kbd>+<kbd>G</kbd> | 선언부 ↔ 구현부 이동 (GoTo Implementation) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd> | 관련 심볼로 이동 (GoTo Related) |
+| <kbd>Alt</kbd>+<kbd>O</kbd> | 대응 파일 열기 (Open Corresponding File) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>O</kbd> ‡ | 솔루션 내 파일 열기 (Open File in Solution) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd> | 솔루션 내 심볼 찾기 (Find Symbol in Solution) |
+| <kbd>Alt</kbd>+<kbd>M</kbd> | 파일 내 메서드 목록 (List Methods in File) — VA Outline 없이 현재 파일의 클래스·메서드로 점프 |
 
-/* ── 키 / 설명 구분 세로선 ── */
-.va-divider { width:1px; height:38px; background:#1e2028; flex-shrink:0; margin-right:16px; }
+### 위치 이동
 
-/* ── 설명 텍스트 ── */
-.va-desc { font-size:14px; color:#c4c8d4; flex:1; min-width:0; padding:10px 12px 10px 0; line-height:1.5; }
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Alt</kbd>+<kbd>←</kbd> ‡ | 이전 위치로 (Navigate Back) |
+| <kbd>Alt</kbd>+<kbd>→</kbd> † | 다음 위치로 (Navigate Forward) |
+| <kbd>Alt</kbd>+<kbd>↑</kbd> † | 이전 스코프로 (Move to Previous Scope) |
+| <kbd>Alt</kbd>+<kbd>↓</kbd> † | 다음 스코프로 (Move to Next Scope) |
 
-/* ── kbd 키캡 ── */
-.va kbd { display:inline-block; background:#1c1f2b; border:1px solid #373d50; border-bottom:2.5px solid #373d50; border-radius:6px; padding:2px 8px; font-size:12px; font-weight:600; color:#dde1f0; white-space:nowrap; line-height:1.7; box-shadow:0 1px 0 #080a0d; }
+## 검색
 
-/* ── + , 구분자 ── */
-.va .sep { font-size:11px; color:#4b5263; font-weight:500; padding:0 1px; }
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> | 참조 찾기 (Find References) — 결과 창에서 파일별 그룹·읽기/쓰기 구분 |
+| <kbd>Alt</kbd>+<kbd>K</kbd> † | 커서 단어 강조 (Find Selected) — Ctrl+F 검색을 실행한 것처럼 인스턴스 하이라이트 |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>H</kbd> | VA Hashtags 창 열기 — 주석 내 `#tag` 북마크 모음 |
 
-/* ── 핵심 기능 행 ── */
-.va-feat-row { display:grid; grid-template-columns:36px 1fr; gap:0 14px; align-items:start; padding:14px 0; border-bottom:1px solid #13151a; transition:background .12s; }
-.va-feat-row:nth-child(even) { background:#0f1014; }
-.va-feat-row:hover { background:#161a22; }
-.va-feat-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-.va-feat-body { display:flex; flex-direction:column; gap:4px; }
-.va-feat-name { font-size:15px; font-weight:600; color:#e2e4ec; }
-.va-feat-desc { font-size:14px; color:#9ca3b4; line-height:1.65; }
-.va-feat-kbd { margin-top:6px; }
+## 편집
 
-/* ── 링크 스타일 ── */
-.va a { color:inherit; text-decoration:underline dotted #3b82f6; text-underline-offset:3px; text-decoration-thickness:1px; }
-.va a:hover { color:#93c5fd; text-decoration-style:solid; }
-</style>
+### 리팩터링 · 코드 생성
 
-<!-- ===== 카드 1 : 단축키 ===== -->
-<div class="va">
-  <p class="va-title">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="2" rx="1" fill="#6b7280"/><rect x="2" y="8" width="10" height="2" rx="1" fill="#6b7280"/><rect x="2" y="13" width="12" height="2" rx="1" fill="#6b7280"/></svg>
-    Visual Assist — 단축키
-  </p>
-  <div class="va-grid">
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>Q</kbd> | 빠른 작업 및 리팩터링 메뉴 (Quick Action and Refactoring) — Extract Method, Add Include, Document Method 등은 기본 단축키가 없어 이 메뉴에서 실행 |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> | 이름 바꾸기 (Rename) |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd> | 사용처로부터 생성 (Create From Usage) — 미정의 심볼에서 선언·정의 생성 |
 
-    <p class="va-section">탐색 · NAVIGATION</p>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>G</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/goto-implementation" target="_blank" rel="noopener">선언부 ↔ 구현부 이동</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>G</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/goto-related" target="_blank" rel="noopener">관련 심볼로 이동</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>O</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/open-corresponding-file" target="_blank" rel="noopener">대응 파일 열기 (.h ↔ .cpp)</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>O</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/open-file-in-solution" target="_blank" rel="noopener">솔루션 내 파일 빠른 열기</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>←</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/navigate-back-and-forward" target="_blank" rel="noopener">이전 위치로 뒤로 가기</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>→</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/navigate-back-and-forward" target="_blank" rel="noopener">다음 위치로 앞으로 가기</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>↓</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/move-scope" target="_blank" rel="noopener">다음 범위로 이동</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>↑</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/move-scope" target="_blank" rel="noopener">이전 범위로 이동</a></span></div>
+### 선택 (Smart Select)
 
-    <p class="va-section">검색 · SEARCH</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>F</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/find-references" target="_blank" rel="noopener">현재 심볼 참조 찾기</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>S</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/find-symbol-in-solution" target="_blank" rel="noopener">솔루션 내 심볼 검색</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>K</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/code-understanding/highlight-find-results#findSelected" target="_blank" rel="noopener">커서 단어 인스턴스 강조</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>M</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/list-methods-in-file" target="_blank" rel="noopener">파일 내 클래스·메소드 목록</a></span></div>
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>]</kbd> † | 선택 확장 (Smart Select Extend) — 작은 단위 |
+| <kbd>Alt</kbd>+<kbd>]</kbd> | 블록 선택 확장 (Smart Select Extend Block) — 큰 단위 |
+| <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>[</kbd> † | 선택 축소 (Smart Select Shrink) |
+| <kbd>Alt</kbd>+<kbd>[</kbd> | 블록 선택 축소 (Smart Select Shrink Block) |
 
-    <p class="va-section">편집 · EDIT</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>C</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/code-generation/create-from-usage" target="_blank" rel="noopener">심볼 생성 (작업 중)</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>R</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/refactoring/rename" target="_blank" rel="noopener">심볼 이름 바꾸기 (전체 반영)</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>Q</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/refactoring/access-to-refactoring-and-code-generation" target="_blank" rel="noopener">퀵 액션 · 리팩토링 메뉴</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>A</kbd></span><span class="va-divider"></span><span class="va-desc">코드 주석 자동 생성 (Doxygen / XML)</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>J</kbd></span><span class="va-divider"></span><span class="va-desc">코드 스니펫 삽입</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Ctrl</kbd><span class="sep">+</span><kbd>Shift</kbd><span class="sep">+</span><kbd>V</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/coding-assistance/multiple-clipboards" target="_blank" rel="noopener">클립보드 히스토리 붙여넣기</a></span></div>
+### 클립보드 · 보기
 
-    <p class="va-section">선택 · SELECTION</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>]</kbd></span><span class="va-divider"></span><span class="va-desc">선택 영역 조금씩 확장</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>]</kbd></span><span class="va-divider"></span><span class="va-desc">선택 영역 크게 확장</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>[</kbd></span><span class="va-divider"></span><span class="va-desc">선택 영역 조금씩 축소</span></div>
-    <div class="va-row"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>[</kbd></span><span class="va-divider"></span><span class="va-desc">선택 영역 크게 축소</span></div>
-
-    <p class="va-section">기타 · MISC</p>
-    <div class="va-row"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>H</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/navigation/va-hashtags" target="_blank" rel="noopener">VA 해쉬태그 창 열기</a></span></div>
-    <div class="va-row"><span class="va-key"><kbd>Ctrl</kbd><span class="sep">+</span><kbd>0</kbd></span><span class="va-divider"></span><span class="va-desc"><a href="https://www.wholetomato.com/documentation/coding-assistance/reset-editor-zoom" target="_blank" rel="noopener">에디터 확대 100% 리셋</a></span></div>
-
-  </div>
-</div>
-
-<!-- ===== 카드 2 : 핵심 기능 ===== -->
-<div class="va">
-  <p class="va-title">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#6b7280" stroke-width="1.5"/><path d="M9 6v4l2.5 2.5" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round"/></svg>
-    Visual Assist — 핵심 기능
-  </p>
-  <div class="va-grid">
-
-    <p class="va-section">코드 인텔리전스 · INTELLIGENCE</p>
-
-    <div class="va-feat-row">
-      <div class="va-feat-icon" style="background:#1a2236"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 7.5h9M3 4.5h6M3 10.5h7" stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-      <div class="va-feat-body">
-        <span class="va-feat-name">향상된 IntelliSense</span>
-        <span class="va-feat-desc">VA 자체 C++ 파서를 사용해 VS 기본 IntelliSense보다 빠르고 정확한 자동완성을 제공한다. 대규모 프로젝트·UE5 코드베이스에서 특히 체감 차이가 크다.</span>
-      </div>
-    </div>
-
-    <div class="va-feat-row">
-      <div class="va-feat-icon" style="background:#1a2a1e"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="5" cy="5" r="2" fill="#10b981"/><circle cx="10" cy="5" r="2" fill="#f59e0b"/><circle cx="5" cy="10" r="2" fill="#8b5cf6"/><circle cx="10" cy="10" r="2" fill="#ef4444"/></svg></div>
-      <div class="va-feat-body">
-        <span class="va-feat-name">향상된 색상 강조 (Enhanced Colorization)</span>
-        <span class="va-feat-desc">지역 변수·멤버 변수·매크로·타입·함수를 역할별로 세밀하게 구분해 착색한다. VS 기본 색상보다 훨씬 많은 구분 기준을 제공하며, VA Options에서 색상을 자유롭게 커스터마이징할 수 있다.</span>
-      </div>
-    </div>
-
-    <p class="va-section">탐색 · NAVIGATION</p>
-
-    <div class="va-feat-row">
-      <div class="va-feat-icon" style="background:#1e1a2e"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6" cy="6" r="4" stroke="#8b5cf6" stroke-width="1.4"/><path d="M9.5 9.5L13 13" stroke="#8b5cf6" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-      <div class="va-feat-body">
-        <span class="va-feat-name"><a href="https://www.wholetomato.com/documentation/navigation/find-references" target="_blank" rel="noopener">Find References 패널</a></span>
-        <span class="va-feat-desc">심볼 참조 검색 결과를 인터랙티브 패널로 표시한다. 파일·범위별로 그룹화되며, 클릭 시 즉시 해당 위치로 이동한다. 대규모 리팩토링 전 영향 범위 파악에 유용하다.</span>
-        <span class="va-feat-kbd"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>F</kbd></span></span>
-      </div>
-    </div>
-
-    <div class="va-feat-row">
-      <div class="va-feat-icon" style="background:#1a2236"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="2" width="4" height="4" rx="1" fill="#3b82f6"/><rect x="2" y="9" width="4" height="4" rx="1" fill="#3b82f6" opacity=".5"/><path d="M8 4h5M8 11h5" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-      <div class="va-feat-body">
-        <span class="va-feat-name"><a href="https://www.wholetomato.com/documentation/navigation/list-methods-in-file" target="_blank" rel="noopener">VA Outline</a></span>
-        <span class="va-feat-desc">현재 파일의 클래스·함수·멤버를 트리 구조로 탐색한다. 대형 헤더 파일에서 원하는 심볼로 즉시 점프할 수 있다.</span>
-        <span class="va-feat-kbd"><span class="va-key"><kbd>Alt</kbd><span class="sep">+</span><kbd>M</kbd></span></span>
-      </div>
-    </div>
-
-    <p class="va-section">코드 관리 · CODE MANAGEMENT</p>
-
-    <div class="va-feat-row">
-      <div class="va-feat-icon" style="background:#2a1e1e"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11M5 4V2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5V4M4 4v8.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V4" stroke="#ef4444" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-      <div class="va-feat-body">
-        <span class="va-feat-name"><a href="https://www.wholetomato.com/documentation/navigation/va-hashtags" target="_blank" rel="noopener">VA Hashtags</a></span>
-        <span class="va-feat-desc">코드 내 <code style="background:#1e2028;padding:1px 5px;border-radius:4px;font-size:11px;color:#c8ccd8">//TODO</code> <code style="background:#1e2028;padding:1px 5px;border-radius:4px;font-size:11px;color:#c8ccd8">//FIXME</code> 또는 커스텀 태그(<code style="background:#1e2028;padding:1px 5px;border-radius:4px;font-size:11px;color:#c8ccd8">#my-tag</code>)를 북마크로 수집해 한곳에서 관리한다. VA Options에서 커스텀 태그를 자유롭게 정의할 수 있다.</span>
-        <span class="va-feat-kbd"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>H</kbd></span></span>
-      </div>
-    </div>
-
-    <div class="va-feat-row">
-      <div class="va-feat-icon" style="background:#1a2a1e"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M4 2h7l2 2v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="#10b981" stroke-width="1.3"/><path d="M5 7h5M5 9.5h3" stroke="#10b981" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-      <div class="va-feat-body">
-        <span class="va-feat-name">Document Code (자동 주석 생성)</span>
-        <span class="va-feat-desc">함수·클래스 위에서 실행하면 파라미터·반환값이 포함된 Doxygen / XML 주석 템플릿을 자동으로 삽입한다. 기존 주석이 있으면 파라미터 변경분만 갱신한다.</span>
-        <span class="va-feat-kbd"><span class="va-key"><kbd>Shift</kbd><span class="sep">+</span><kbd>Alt</kbd><span class="sep">+</span><kbd>A</kbd></span></span>
-      </div>
-    </div>
-
-  </div>
-</div>
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> † | 다중 클립보드 붙여넣기 메뉴 (Multiple Clipboards) |
+| <kbd>Ctrl</kbd>+<kbd>0</kbd> † | 에디터 확대 100% 리셋 (Reset Editor Zoom) |
