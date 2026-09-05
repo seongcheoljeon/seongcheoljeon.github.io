@@ -204,6 +204,63 @@ image:
 | <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>0</kbd> | Developer Documentation 창 열기 |
 | <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>?</kbd> | 키보드 힌트 표시 (Show Keyboard Hints) |
 
+## 시뮬레이터 (Simulator.app)
+
+> Simulator는 Xcode와 별도 앱이므로 아래 단축키는 **Simulator 창에 포커스가 있을 때** 동작한다. Xcode 26.6 번들 Simulator 16.0의 기본 메뉴 바인딩(`MainMenu.nib`)에서 추출했으며, iPhone 시뮬레이터에 해당하는 항목만 정리했다. visionOS 전용 카메라 모드·Optic ID, Apple TV Remote 등은 제외.
+{: .prompt-info }
+
+### 디바이스 (Device 메뉴)
+
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>⌘</kbd>+<kbd>←</kbd> / <kbd>⌘</kbd>+<kbd>→</kbd> | 기기 회전 (Rotate Left / Rotate Right) |
+| <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>H</kbd> | 홈 (Home) |
+| <kbd>⌃</kbd>+<kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>H</kbd> | 앱 전환기 (App Switcher) |
+| <kbd>⌘</kbd>+<kbd>L</kbd> | 잠금 (Lock) |
+| <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>B</kbd> | 사이드 버튼 (Side Button) |
+| <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>Z</kbd> | 흔들기 (Shake) |
+| <kbd>⌥</kbd>+<kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>H</kbd> | Siri 호출 (Siri) |
+
+### 기능 (Features 메뉴)
+
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>A</kbd> | 라이트 ↔ 다크 모드 전환 (Toggle Appearance) |
+| <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>+</kbd> / <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>-</kbd> | Dynamic Type 글자 크기 증감 (Increase / Decrease Preferred Text Size) |
+| <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>M</kbd> | Face ID · Touch ID 인증 성공 (Matching Face / Touch) |
+| <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>N</kbd> | Face ID · Touch ID 인증 실패 (Non-matching Face / Touch) |
+| <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>A</kbd> | Apple Pay 승인 (Authorize Apple Pay) |
+| <kbd>⌘</kbd>+<kbd>Y</kbd> | 통화 중 상태 바 토글 (Toggle In-call Status Bar) |
+| <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>I</kbd> | iCloud 동기화 트리거 (Trigger iCloud Sync) |
+
+### 입출력 (I/O 메뉴)
+
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>⌘</kbd>+<kbd>K</kbd> | 소프트웨어 키보드 표시/숨기기 (Toggle Software Keyboard) |
+| <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>K</kbd> | Mac 키보드를 하드웨어 키보드로 연결 (Connect Hardware Keyboard) |
+| <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>K</kbd> | 키보드 입력을 기기로 전송 (Send Keyboard Input to Device) |
+| <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>K</kbd> | 포인터를 기기로 전송 (Send Pointer to Device) |
+| <kbd>⌘</kbd>+<kbd>↑</kbd> / <kbd>⌘</kbd>+<kbd>↓</kbd> | 볼륨 증감 (Increase / Decrease Volume) |
+
+### 화면 캡처 · 창 (File / Edit / Window 메뉴)
+
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>⌘</kbd>+<kbd>S</kbd> | 스크린샷 저장 (Save Screen) — <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>S</kbd> 는 저장 옵션 지정 |
+| <kbd>⌘</kbd>+<kbd>R</kbd> | 화면 녹화 시작/중지 (Record Screen) — <kbd>⌥</kbd>+<kbd>⌘</kbd>+<kbd>R</kbd> 은 녹화 옵션 지정 |
+| <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>C</kbd> | 화면을 클립보드로 복사 (Copy Screen) |
+| <kbd>⌘</kbd>+<kbd>V</kbd> | Mac 클립보드 텍스트를 기기에 붙이기 (Paste) |
+| <kbd>⌘</kbd>+<kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> / <kbd>4</kbd> | 창 크기 — 1: Physical Size, 2: Point Accurate, 3: Pixel Accurate, 4: Fit Screen |
+| <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>W</kbd> | 시뮬레이터 창 닫기 — 기기 종료 확인 (Close Window…) |
+
+### 디버그 (Debug 메뉴)
+
+| 단축키 | 동작 |
+| :--- | :--- |
+| <kbd>⇧</kbd>+<kbd>⌘</kbd>+<kbd>M</kbd> | 메모리 경고 시뮬레이션 (Simulate Memory Warning) |
+| <kbd>⌘</kbd>+<kbd>/</kbd> | 시스템 로그 열기 (Open System Log…) |
+
 ## 기타
 
 | 단축키 | 동작 |
