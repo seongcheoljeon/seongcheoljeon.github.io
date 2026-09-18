@@ -31,3 +31,31 @@ order: 5
     </div>
   </div>
 </div>
+
+<div class="project-card" data-category="houdini" data-date="2026-09">
+  <div class="project-thumbnail">
+    <img src="/assets/img/projects/Houdini_iHDA_Project/houdini_title.png" alt="Houdini iHDA Project">
+    <span class="project-status done">Done</span>
+    <span class="project-category-badge">Houdini</span>
+  </div>
+  <div class="project-body">
+    <h2 class="project-title">Houdini Individual HDA Project</h2>
+    <p class="project-period">
+      <i class="fas fa-calendar-alt fa-fw"></i>2020.01 ~ 완료
+    </p>
+    <p class="project-desc">
+      개인 및 Team/Studio에서 Houdini Assets을 관리하는 어플리케이션
+    </p>
+    <div class="project-stack">
+      <span class="stack-badge">Python</span>
+      <span class="stack-badge">RDBMS</span>
+      <span class="stack-badge">Qt</span>
+      <span class="stack-badge">Houdini</span>
+    </div>
+    <div class="project-links">
+      <a href="https://github.com/seongcheoljeon/IndividualHDA" class="project-link" target="_blank">
+        <i class="fab fa-github fa-fw"></i> GitHub
+      </a>
+    </div>
+  </div>
+</div>
