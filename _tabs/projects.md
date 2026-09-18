@@ -44,10 +44,11 @@ order: 5
       <i class="fas fa-calendar-alt fa-fw"></i>2020.01 ~ 완료
     </p>
     <p class="project-desc">
-      개인 및 Team/Studio에서 Houdini Assets을 관리하는 어플리케이션
+      개인 및 Team/Studio에서 Houdini Assets(HDA)를 관리하는 어플리케이션
     </p>
     <div class="project-stack">
       <span class="stack-badge">Python</span>
+      <span class="stack-badge">AI</span>
       <span class="stack-badge">RDBMS</span>
       <span class="stack-badge">Qt</span>
       <span class="stack-badge">Houdini</span>
