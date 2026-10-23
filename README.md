@@ -21,5 +21,12 @@ npm install
 npm run build
 ```
 
+```bash
 `bundle exec jekyll serve`
+```
+
+실시간 갱신이 자동으로 되길 원한다면 아래의 명령으로!
+
+```bash
 `bundle exec jekyll serve --livereload`
+```
