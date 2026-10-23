@@ -196,6 +196,7 @@ exclude:
   - "_posts/**/*.webm"
   - "_posts/**/*.mov"
   - "_posts/**/*.pdf"
+  - "_posts/**/*.ini"
 
 jekyll-archives:
   enabled: [categories, tags]

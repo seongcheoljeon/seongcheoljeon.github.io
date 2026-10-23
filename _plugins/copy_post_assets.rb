@@ -14,7 +14,7 @@
 require "fileutils"
 
 module CopyPostAssets
-  COPY_EXTENSIONS = %w[.png .jpg .jpeg .gif .webp .svg .avif .bmp .tiff .tif .ico .mp4 .webm .mov .pdf].freeze
+  COPY_EXTENSIONS = %w[.png .jpg .jpeg .gif .webp .svg .avif .bmp .tiff .tif .ico .mp4 .webm .mov .pdf .ini].freeze
   MARKDOWN_EXTENSIONS = %w[.md .markdown].freeze
 end
 
